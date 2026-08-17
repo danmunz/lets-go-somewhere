@@ -1,0 +1,1 @@
+{"name":"@lgs/backend","version":"0.1.0","private":true,"type":"module","scripts":{"build":"tsc -p tsconfig.json","dev":"tsx watch src/server.ts"},"dependencies":{"@hono/node-server":"^1.14.1","@lgs/shared":"*","hono":"^4.7.4"}}

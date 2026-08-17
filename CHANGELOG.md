@@ -10,6 +10,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial product documentation, implementation scaffold, and destination/activity seed data.
 - Production design-system tokens, component contracts, guidance, and approved product logo.
+- Local TypeScript workspace, shared schemas, seed validation, deterministic V1 ranking engine, presentation-safe API, destination-blind frontend flow, tests, and CI quality workflow.
 
 ### Changed
 

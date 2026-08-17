@@ -7,6 +7,7 @@
 - Seed content contains 24 destinations and 120 destination-blind activities.
 - Implementation scaffolding exists, but no application packages, Firebase project configuration, CI workflows, or runtime code have been created.
 - `design-system/` is now the visual source of truth; it contains tokens, base styles, component contracts, and the product logo.
+- Local V1 implementation now exists. Its `X-Demo-User` local roster adapter is intentionally rejected in production; Firebase Auth, Firestore persistence, and account-to-roster mapping require external deployment configuration.
 
 ## Key guardrails
 

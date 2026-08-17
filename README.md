@@ -6,7 +6,7 @@ The V1 use case is one fixed five-person trip in November 2026 (Dan, John, Matt,
 
 ## Status
 
-The repository is prepared for implementation. Product documentation and version-controlled seed content are complete; the frontend, backend, Firebase configuration, and CI workflows have not been implemented yet.
+The local V1 is implemented as a TypeScript workspace with a destination-blind React flow, a backend-owned deterministic ranking engine, seed validation, tests, and CI checks. Firebase configuration, Firestore persistence, and the approved Google-account roster mapping remain deployment handoff work.
 
 ## Repository map
 
@@ -36,9 +36,10 @@ Treat these files as product content: activity wording must preserve destination
 
 ## Implementation order
 
-1. Establish the TypeScript workspace, shared schemas, and design-system imports.
-2. Implement and test the ranking engine against the seed data.
-3. Build the destination-blind comparison flow and gated preference profile.
-4. Add Google authentication, persistence, and the group reveal.
+1. `npm install`
+2. `npm run validate:seed && npm test && npm run typecheck && npm run build`
+3. In one terminal run `npm run dev -w backend`; in another run `npm run dev -w frontend`.
+
+The shipped identity selector is development-only. Before any production deployment, complete the Firebase handoff in [docs/implementation-spec.md](docs/implementation-spec.md).
 
 See [AGENTS.md](AGENTS.md) for contribution standards.
