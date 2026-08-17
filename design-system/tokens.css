@@ -1,0 +1,57 @@
+@font-face { font-family: 'Contrail One'; src: url('./assets/fonts/ContrailOne-Regular.ttf') format('truetype'); font-display: swap; font-style: normal; font-weight: 400; }
+@font-face { font-family: 'Jost'; src: url('./assets/fonts/Jost-VariableFont_wght.ttf') format('truetype'); font-display: swap; font-style: normal; font-weight: 100 900; }
+@font-face { font-family: 'Jost'; src: url('./assets/fonts/Jost-Italic-VariableFont_wght.ttf') format('truetype'); font-display: swap; font-style: italic; font-weight: 100 900; }
+@font-face { font-family: 'Nanum Gothic Coding'; src: url('./assets/fonts/NanumGothicCoding-Regular.ttf') format('truetype'); font-display: swap; font-style: normal; font-weight: 400; }
+@font-face { font-family: 'Nanum Gothic Coding'; src: url('./assets/fonts/NanumGothicCoding-Bold.ttf') format('truetype'); font-display: swap; font-style: normal; font-weight: 700; }
+
+:root {
+  --color-night: #1b1714;
+  --color-night-light: #252019;
+  --color-night-lighter: #302922;
+  --color-amber: #d4924d;
+  --color-amber-light: #e0a96a;
+  --color-amber-dark: #8e5725;
+  --color-olive: #6d8c4a;
+  --color-olive-light: #8aab62;
+  --color-olive-dark: #3f5729;
+  --color-terra: #c04f3d;
+  --color-terra-dark: #943627;
+  --color-terra-light: #d46b5a;
+  --color-trail-blue: #4b7eb2;
+  --color-white: #f2ebe3;
+  --color-gray-100: #e8dfd5;
+  --color-gray-300: #c0b3a2;
+  --color-gray-400: #8c7e6e;
+  --color-gray-500: #6e6256;
+  --surface-base: var(--color-night);
+  --surface-card: var(--color-night-light);
+  --surface-elevated: var(--color-night-lighter);
+  --surface-overlay: rgba(27, 23, 20, .92);
+  --surface-glass: rgba(37, 32, 25, .88);
+  --text-primary: var(--color-white);
+  --text-secondary: var(--color-gray-300);
+  --text-muted: var(--color-gray-400);
+  --text-faint: var(--color-gray-500);
+  --border-subtle: rgba(242, 235, 227, .08);
+  --border-default: rgba(242, 235, 227, .12);
+  --border-strong: rgba(242, 235, 227, .22);
+  --accent-primary: var(--color-amber);
+  --accent-primary-hover: var(--color-amber-light);
+  --accent-primary-glow: rgba(212, 146, 77, .3);
+  --accent-success: var(--color-olive);
+  --accent-success-hover: var(--color-olive-light);
+  --accent-warn: var(--color-terra);
+  --accent-danger: var(--color-terra-dark);
+  --font-display: 'Contrail One', system-ui, sans-serif;
+  --font-body: 'Jost', system-ui, sans-serif;
+  --font-mono: 'Nanum Gothic Coding', ui-monospace, monospace;
+  --text-xs: .75rem; --text-sm: .875rem; --text-base: 1rem; --text-lg: 1.125rem; --text-xl: 1.25rem; --text-2xl: 1.5rem; --text-3xl: 1.875rem; --text-4xl: 2.25rem; --text-5xl: 3rem; --text-6xl: 3.75rem;
+  --leading-tight: 1.15; --leading-snug: 1.3; --leading-normal: 1.5; --leading-relaxed: 1.65;
+  --weight-normal: 400; --weight-medium: 500; --weight-semibold: 600; --weight-bold: 700;
+  --tracking-tight: -.01em; --tracking-wide: .04em; --tracking-caps: .08em;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px; --space-16: 64px; --space-20: 80px; --space-24: 96px;
+  --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; --radius-xl: 18px; --radius-2xl: 24px; --radius-full: 9999px;
+  --shadow-sm: 0 2px 8px -2px rgba(20,15,10,.4); --shadow-md: 0 8px 20px -4px rgba(20,15,10,.5); --shadow-lg: 0 16px 32px -8px rgba(20,15,10,.6); --shadow-glow-amber: 0 0 0 1px var(--accent-primary), 0 14px 32px -6px var(--accent-primary-glow);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1); --ease-smooth: cubic-bezier(.4, 0, .2, 1); --ease-spin: cubic-bezier(.2, .8, .2, 1); --duration-fast: 150ms; --duration-normal: 250ms; --duration-slow: 400ms; --duration-reveal: 600ms;
+  --content-narrow: 640px; --content-max: 1200px; --content-wide: 1440px;
+}

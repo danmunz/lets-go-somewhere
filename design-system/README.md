@@ -1,0 +1,39 @@
+# Let’s Go Somewhere Design System
+
+This is the implementation source of truth for Let’s Go Somewhere’s visual language. It adapts the supplied design-system package for the production repository.
+
+## Foundations
+
+- **Mood:** warm, dark, tactile adventure—not generic travel-tech.
+- **Color:** amber is the primary action color; olive means completed/success; terracotta is destructive or cautionary; trail blue is secondary only.
+- **Type:** Contrail One for uppercase display headings, Jost for UI and body copy, Nanum Gothic Coding for data and scores.
+- **Layout:** 4px spacing grid; generous radii; dark surfaces with white-alpha borders.
+- **Accessibility:** primary buttons use dark text on amber; all interactive controls have visible keyboard focus and honor reduced motion.
+
+## Files
+
+- `tokens.css` — design tokens and local `@font-face` declarations.
+- `base.css` — reset, defaults, keyboard focus, and reduced-motion behavior.
+- `components.css` — CSS contracts for Button, Card, Activity Card, Badge, Progress Bar, Avatar, Toast, and Input.
+- `assets/logo.png` — approved product logo. Existing traveler artwork remains in [`../assets/images/`](../assets/images/).
+- `assets/fonts/` — local Jost, Contrail One, and Nanum Gothic Coding files with their OFL licenses; no external font request is required.
+
+## Product rules
+
+- V1 uses no activity photography. Character art is allowed only in roster, progress, waiting, and celebratory UI—not within destination-blind activity cards.
+- Use sentence case for labels and CTAs; display headings are uppercase through the display face.
+- Keep comparison cards visually symmetric. Never use color, imagery, size, or motion to imply a preferred option.
+- Motion is purposeful: 150ms feedback, 250ms component transitions, 400–600ms comparison/reveal transitions. Do not animate essential information only through motion.
+
+## Component contracts
+
+| Component | Required behavior |
+| --- | --- |
+| Button | 44px minimum hit area; primary uses amber with dark text. |
+| Activity Card | Whole card is the control; use button semantics or `aria-pressed`; preserve equal visual weight. |
+| Progress Bar | Shows only approximate study progress, never a false exact question count. |
+| Avatar | Decorative character imagery gets meaningful alt text only when it conveys participant identity. |
+| Toast | Non-blocking status; do not use it for errors that require action. |
+| Input | Visible label, error text, and keyboard focus. |
+
+Import `base.css` once at the frontend entry point, then `components.css` where component contracts are needed.
