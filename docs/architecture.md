@@ -12,8 +12,8 @@ The system uses those choices to infer:
 
 - individual activity preferences;
 - broader experience-category preferences;
-- individual destination rankings;
-- practical trip rankings;
+- individual top-five destination results;
+- display-only practical context in V1 (with practical rankings deferred);
 - aggregate group preferences.
 
 The architecture is intentionally simple for the MVP while preserving clear seams for more sophisticated ranking models, airfare integrations, admin tooling, richer analytics, and multi-group use later.
@@ -211,10 +211,10 @@ Provides the complete user-facing experience, including:
 - destination-blind activity comparisons;
 - progress feedback;
 - preference-profile reveal;
-- individual destination ranking;
-- practical trip ranking;
+- gated individual top-five result;
+- display-only practical context after the reveal;
 - group results;
-- organizer/admin functionality.
+- post-MVP organizer/admin functionality.
 
 **Technologies:**
 
@@ -253,7 +253,7 @@ Google sign-in creates a stable Firebase `uid`, which becomes the canonical appl
 
 Authentication is separate from group membership.
 
-A signed-in user may eventually participate in multiple trip groups.
+A signed-in user may eventually participate in multiple trip groups; V1 admits only the fixed five-person roster.
 
 Example:
 
@@ -283,7 +283,7 @@ Responsibilities include:
 - selecting the next activity pair;
 - calculating user rankings;
 - calculating group rankings;
-- managing destinations and activities;
+- reading V1 seed-backed destinations and activities (management is post-MVP);
 - exposing practical-trip metadata;
 - supporting future external integrations.
 
@@ -511,7 +511,7 @@ Example:
   "destinationId": "antigua",
   "title": "Camp above the clouds beside an erupting volcano",
   "description": "Hike into the mountains, spend the night on a ridge, and watch a neighboring volcano erupt after dark.",
-  "imageUrl": "...",
+  "imageUrl": null,
   "attributes": {
     "adventure": 5,
     "nature": 5,
@@ -886,7 +886,7 @@ The selection policy should be encapsulated entirely within `selectPair.ts`.
 
 ---
 
-## 10. Pure Preference vs. Practical Ranking
+## 10. Pure Preference and Practical Context
 
 The system should preserve two distinct concepts.
 
@@ -902,7 +902,7 @@ Based only on activity choices.
 
 V1 shows approximate, curated airfare, weather, and friction notes alongside revealed finalists. It does not compute a practical score or a second ranking because the current logistics data is not sufficiently complete or fresh.
 
-Conceptually:
+The eventual practical-ranking extension would look like:
 
 ```text
 Preference Model
@@ -1245,13 +1245,7 @@ Seed files can remain useful for fixtures and development environments.
 
 ### MVP
 
-Static activity images can live in:
-
-```text
-frontend/public/activities/
-```
-
-and deploy with Firebase Hosting.
+V1 activity comparisons are text-only. Do not add activity or destination imagery to the seed data or comparison UI.
 
 ### V2
 
@@ -1290,11 +1284,11 @@ For a small number of destinations, ranking calculations can occur synchronously
 For example:
 
 ```text
-16 destinations
+24 destinations
 ×
-6 activities
+5 activities
 ≈
-96 activities
+120 activities
 ```
 
 Even though many theoretical pairs exist, only a small subset needs evaluation.
@@ -1369,15 +1363,14 @@ Add infrastructure only when a demonstrated requirement justifies it.
 
 - Google sign-in
 - persistent users
-- trip groups
+- one fixed five-person trip roster
 - destination-blind pairwise comparisons
 - adaptive comparison selection
 - activity scoring
 - destination scoring
 - experience-category preferences
-- individual results
+- gated individual top-five results
 - group rankings
-- organizer destination/activity management
 
 ### V2
 
@@ -1388,7 +1381,7 @@ Potential additions:
 - more rigorous information-gain comparison selection;
 - dynamic airfare data;
 - practical-trip ranking;
-- destination and activity image generation;
+- activity and destination imagery;
 - real-time group-completion status;
 - shareable result pages;
 - improved organizer dashboard;
@@ -1425,8 +1418,8 @@ The current ranking-module interface is intended to make this optional extractio
 | Backend | TypeScript HTTP API | Shared language/types with frontend |
 | Backend hosting | Cloud Run | Managed, conventional server runtime, scale-to-zero |
 | Database | Firestore | Simple document-oriented application state |
-| Initial images | Firebase Hosting/static | No need for object storage in MVP |
-| Future images | Cloud Storage | User-generated/admin-managed media |
+| Initial activity imagery | None | V1 comparisons are text-only |
+| Future images | Cloud Storage or static hosting | Post-MVP, subject to blindness review |
 | CI/CD | GitHub Actions | Natural GitHub integration |
 | Ranking | Isolated domain module | Allows algorithms to evolve independently |
 | Source of truth | Raw comparisons | Allows complete model recomputation |
@@ -1448,6 +1441,7 @@ Do not initially build:
 - server-side rendered frontend;
 - complex real-time synchronization;
 - direct client-controlled Firestore business logic.
+- self-serve trip creation, organizer content management, or multi-group administration.
 
 These can be reconsidered only if actual requirements emerge.
 

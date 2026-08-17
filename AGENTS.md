@@ -6,12 +6,15 @@ These standards apply to every contributor working on **Let's Go Somewhere**.
 
 This is a destination-blind preference game, not a destination-ranking survey. Before the reveal, do not expose destination names, countries, flags, airport codes, airfare, maps, or overt destination labels. Authentic cultural and environmental detail is allowed: the product reduces destination-brand bias rather than guaranteeing geographic anonymity.
 
-The source of truth is:
+When documents appear to conflict, use this precedence order:
 
-- [Product specification](docs/spec.md) for product behavior and data requirements.
-- [User journey map](docs/ux.md) for interaction and screen requirements.
-- [Architecture overview](docs/architecture.md) for technical boundaries.
-- [Project origins](docs/project-origins-background.md) for the initial trip constraints and intent.
+- [Product specification](docs/spec.md) defines product behavior and data requirements.
+- [User journey map](docs/ux.md) defines the required interaction and screen behavior within that product boundary.
+- [Architecture overview](docs/architecture.md) defines technical boundaries and data ownership.
+- [`design-system/`](design-system/) defines visual implementation rules.
+- [Project origins](docs/project-origins-background.md) is background and intent, not a competing implementation specification.
+
+`seed/` is the canonical current content set; shared runtime schemas must express the field names used there and in the product specification.
 
 ## Repository conventions
 

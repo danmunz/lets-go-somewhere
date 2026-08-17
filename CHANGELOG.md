@@ -10,3 +10,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Initial product documentation, implementation scaffold, and destination/activity seed data.
 - Production design-system tokens, component contracts, guidance, and approved product logo.
+
+### Changed
+
+- Clarified the fixed five-person V1 scope, Google-authenticated roster, group reveal embargo, text-only comparison cards, and display-only practical context.
+- Aligned documentation precedence, design-system references, and seed/schema examples for implementation.

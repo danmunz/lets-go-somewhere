@@ -580,7 +580,7 @@ Their task is simply:
 
 Destination names are hidden during preference collection because they create bias.
 
-They are revealed immediately once the blind exercise is complete.
+For this five-person MVP, a completed traveler sees only their preference profile until the whole roster completes (or Dan explicitly ends the study). Destination names then reveal for everyone together.
 
 This is not secrecy for its own sake.
 

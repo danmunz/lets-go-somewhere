@@ -12,4 +12,4 @@
 
 - Destination blindness is the central product requirement until the result reveal.
 - The ranking engine belongs in `backend/`; shared contracts belong in `shared/`.
-- `assets/` contains supplied design-reference material, including personal imagery. Do not move it into runtime UI without explicit approval.
+- `assets/` contains supplied traveler artwork approved only for roster, progress, waiting, and celebratory UI. Never use it in destination-blind activity cards; the logo and all visual tokens live in `design-system/`.

@@ -2,7 +2,7 @@
 
 **Let's Go Somewhere** is a destination-blind group-trip preference game. Participants make quick choices between specific experiences; the app then reveals which destinations best match their preferences and where the group has the strongest overlap.
 
-The first use case is a five-person trip in November 2026, but the product is designed to support many groups and trip types.
+The V1 use case is one fixed five-person trip in November 2026 (Dan, John, Matt, Peter, and James). Support for self-serve trip creation, multiple groups, and other trip types is deliberately post-MVP.
 
 ## Status
 
@@ -10,9 +10,10 @@ The repository is prepared for implementation. Product documentation and version
 
 ## Repository map
 
-- `docs/` — product, UX, architecture, origin context, and architecture decisions.
+- `docs/` — product, UX, architecture, origin context, and design guidance.
 - `seed/` — canonical initial destination and activity content.
-- `assets/` — design-reference assets supplied during discovery; not production UI assets by default.
+- `design-system/` — production visual tokens, CSS contracts, local fonts, and approved logo.
+- `assets/` — supplied traveler artwork; approved only for the roster, progress, waiting, and celebratory UI.
 - `frontend/` — future React/Vite client.
 - `backend/` — future TypeScript API and ranking engine.
 - `shared/` — future shared types, schemas, and constants.
@@ -35,9 +36,9 @@ Treat these files as product content: activity wording must preserve destination
 
 ## Implementation order
 
-1. Establish the TypeScript workspace and shared schemas.
+1. Establish the TypeScript workspace, shared schemas, and design-system imports.
 2. Implement and test the ranking engine against the seed data.
-3. Build the destination-blind comparison flow.
-4. Add Firebase authentication, persistence, and group results.
+3. Build the destination-blind comparison flow and gated preference profile.
+4. Add Google authentication, persistence, and the group reveal.
 
 See [AGENTS.md](AGENTS.md) for contribution standards.

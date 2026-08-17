@@ -26,7 +26,7 @@ Behind the scenes, each activity is associated with a destination and one or mor
 2. Which individual activities they find appealing
 3. Which destinations contain the strongest overall bundle of those experiences
 
-At the end, the site reveals the user's inferred destination ranking.
+After the group reveal gate opens, the site reveals each user's inferred top-five destinations and the group result.
 
 The central product idea becomes:
 
@@ -551,8 +551,8 @@ Approximate UX expectations:
 |---:|---:|---:|
 | 8 | 5–6 | 15–20 |
 | 12 | 5–6 | 20–25 |
-| 24 | 5 | 28–35 |
 | 20 | 5–8 | 28–35 |
+| 24 | 5 | 28–35 |
 | 30 | 5–8 | 35–45 |
 
 The number of theoretical pairs explodes.
@@ -597,7 +597,7 @@ The primary screen is extremely simple.
 
 Hike into the mountains, spend the night on a ridge, and watch a neighboring volcano erupt after dark.
 
-[optional image]
+No image in V1.
 
 **PICK THIS**
 
@@ -609,7 +609,7 @@ Hike into the mountains, spend the night on a ridge, and watch a neighboring vol
 
 Walk through old mining tunnels and underground roads before emerging into plazas and hillside neighborhoods.
 
-[optional image]
+No image in V1.
 
 **PICK THIS**
 
@@ -799,7 +799,7 @@ This builds anticipation before revealing where those preferences lead.
 
 # 30. Group Reveal Gate
 
-After a participant finishes, show their attribute profile only. Named destinations, destination details, and sharing remain embargoed until all five roster members have finished or the organizer explicitly ends the study.
+After a participant finishes, show their attribute profile only. Named destinations, destination details, and sharing remain embargoed until all five roster members have finished or Dan explicitly ends the study.
 
 # 31. Destination Reveal
 
@@ -1075,6 +1075,8 @@ These are useful both socially and analytically.
 
 # 41. Organizer Controls (post-MVP)
 
+V1 has no organizer UI: its fixed trip configuration is loaded from version-controlled seed data. Any future organizer change must create or select a new immutable study snapshot; never modify a candidate set after the first response or silently rewrite a historical result.
+
 A lightweight organizer interface should allow:
 
 - Add destination
@@ -1122,7 +1124,7 @@ Set:
 
 Its activities are removed from future comparisons.
 
-If results have already been collected, the destination can simply be excluded and rankings recomputed from remaining data.
+If results have already been collected, preserve the original snapshot and results. A changed candidate set must become a new study rather than altering historical comparisons or rankings.
 
 ---
 
@@ -1166,6 +1168,8 @@ The MVP needs:
 - Individual top-five result set
 - Basic group ranking
 - Simple preference-profile reveal
+
+V1 is a fixed seeded study for the five named roster members. It does **not** include self-serve trip creation, content editing, invitations, or an organizer dashboard.
 
 That alone is enough to make the concept work.
 

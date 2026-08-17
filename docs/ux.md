@@ -12,10 +12,12 @@ Its main purpose is to produce a concrete inventory of:
 - application states and edge cases;
 - transitions between screens;
 - moments of delight and friction;
-- organizer/admin journeys;
+- post-MVP organizer/admin journeys;
 - metrics that indicate whether each stage is working.
 
-The application has two primary roles:
+V1 has one participant role: an approved member of the fixed five-person roster. The organizer journey below is retained as a post-MVP reference; V1 uses the checked-in trip configuration and Dan may only end the study to open the reveal gate.
+
+The broader product has two primary roles:
 
 1. **Participant** — one of the travelers completing the preference exercise.
 2. **Organizer** — creates the trip, chooses destinations, invites participants, and ultimately views group results.
@@ -68,20 +70,18 @@ ANALYSIS / REVEAL SETUP
     ↓
 PREFERENCE PROFILE
     ↓
-DESTINATION REVEAL
+WAITING FOR GROUP
+    ↓
+GROUP REVEAL
     ↓
 DESTINATION DETAIL / "WHY"
     ↓
 FINAL GUT CHECK
     ↓
-PERSONAL RESULTS
-    ↓
-WAITING FOR GROUP
-    ↓
-GROUP REVEAL
+RESULTS
 ```
 
-Organizer journey:
+Post-MVP organizer journey:
 
 ```text
 SIGN IN
@@ -172,7 +172,7 @@ The system should gradually indicate progress without spoiling the result.
 
 Once destinations are revealed, the system should make the result understandable:
 
-> "You consistently chose mountain adventures, archaeological sites, and historic cities. Five of Antigua's six activities beat their opponents."
+> "You consistently chose mountain adventures, archaeological sites, and historic cities. Those experience types beat their opponents often enough to put this destination in your top five."
 
 The model should feel insightful, not arbitrary.
 
@@ -826,7 +826,7 @@ Avoid generic personality language that could describe anybody.
 
 ## Purpose
 
-Deliver the principal payoff after the entire roster completes the blind exercise or the organizer ends the study.
+Deliver the principal payoff after the entire roster completes the blind exercise or Dan ends the study.
 
 ## Required information
 
@@ -846,17 +846,17 @@ Example:
 3. Guanajuato, Mexico
 4. Medellín, Colombia
 5. Puebla, Mexico
-...
 ```
 
-### Each row/card should eventually include
+### Each V1 row/card should include
 
 - rank;
 - destination;
 - country;
 - preference score;
-- thumbnail;
 - expand/detail action.
+
+Thumbnails are post-MVP; V1 has no activity or destination imagery.
 
 ### Primary emphasis
 
@@ -1073,49 +1073,25 @@ Frame it as intentional:
 
 ## Purpose
 
-Create a stable, returnable summary of the user's completed exercise.
+Create a stable, returnable summary without leaking destination information before the group reveal gate opens.
 
 ## Required information
 
-### Top recommendation
-
-**#1 Antigua**
-
-### Complete ranking
-
-All active destinations.
-
 ### Preference profile
 
-Compact summary.
+Compact, destination-free summary of observed attribute preferences.
 
 ### Notable insights
 
 Examples:
 
-- **Surprise pick:** Guanajuato
-- **Favorite experience:** Acatenango
-- **Hardest matchup:** Quito vs. Antigua
 - **Strongest preference:** Adventure
-- **Strongest preference:** Adventure
+- **Most consistent theme:** Outdoors
+- **Closest choice:** two anonymous activity cards
 
-### Practical ranking
+### Practical context
 
-Potentially separate:
-
-> **What you want**
->
-> 1. Oaxaca  
-> 2. Antigua  
-> 3. Quito
-
-versus:
-
-> **What works best Nov. 11–15**
->
-> 1. Antigua  
-> 2. Quito  
-> 3. Guanajuato
+V1 can show a short note that logistics will be reviewed after the group reveal. It must not calculate or present a practical ranking.
 
 ### Group status
 
@@ -1123,13 +1099,11 @@ versus:
 
 ### Primary CTA before everyone finishes
 
-**Come back for the group reveal**
+**See group progress**
 
 ### Secondary
 
-- Share
 - Review comparisons
-- Explore destinations
 
 ## Transition
 
@@ -1140,6 +1114,8 @@ P11
  ↓
 P12 Waiting for Group
 ```
+
+Do not show destination names, rankings, destination details, or sharing until all five roster members finish or Dan ends the study. After the gate opens, P11 can link to P13 Group Reveal.
 
 If complete:
 
@@ -1522,7 +1498,9 @@ Resume seamlessly after Google sign-in.
 
 ---
 
-# 24. Organizer Journey
+# 24. Organizer Journey (post-MVP reference)
+
+These screens are intentionally out of V1 scope. The V1 build uses the fixed seeded trip, roster, and configuration described in the product specification; do not create organizer routes, CRUD interfaces, or multi-trip authorization to satisfy this section.
 
 ---
 
@@ -2087,22 +2065,22 @@ Several can be implemented as states or overlays rather than distinct routes.
 
 ---
 
-# 37. Organizer Screens
+# 37. Organizer Screens (post-MVP)
 
 | ID | Screen | Required for MVP? | Primary purpose |
 |---|---|---:|---|
-| O01 | Organizer Dashboard | Yes | View/create trips |
-| O02 | Create Trip | Yes | Name and dates |
-| O03 | Travelers & Origins | Recommended | Practical ranking context |
-| O04 | Destination Selection | Yes | Define candidate pool |
-| O05 | Activity Library | Yes | Manage experience cards |
-| O06 | Activity Editor | Yes | Create/edit one card |
-| O07 | Game Preview | Recommended | QA destination blindness |
-| O08 | Invite Participants | Yes | Launch |
-| O09 | Trip Status | Yes | Monitor completion |
-| O10 | Trip Settings | Yes | Manage configuration |
+| O01 | Organizer Dashboard | Post-MVP | View/create trips |
+| O02 | Create Trip | Post-MVP | Name and dates |
+| O03 | Travelers & Origins | Post-MVP | Logistics context |
+| O04 | Destination Selection | Post-MVP | Define candidate pool |
+| O05 | Activity Library | Post-MVP | Manage experience cards |
+| O06 | Activity Editor | Post-MVP | Create/edit one card |
+| O07 | Game Preview | Post-MVP | QA destination blindness |
+| O08 | Invite Participants | Post-MVP | Launch |
+| O09 | Trip Status | Post-MVP | Monitor completion |
+| O10 | Trip Settings | Post-MVP | Manage configuration |
 
-**MVP organizer screens: approximately 8–10.**
+**V1 organizer screens: none.**
 
 ---
 
@@ -2164,7 +2142,7 @@ AUTHENTICATED
              ▼
       INDIVIDUAL_COMPLETE
              │
-             ├── personal results
+             ├── destination-free personal profile
              │
              ▼
        GROUP_INCOMPLETE
@@ -2202,8 +2180,8 @@ The user knows activities but not destinations.
 Destination-aware.
 
 ```text
-Preference profile
-Destination ranking
+Preference profile (destination-free)
+Waiting for group
 Why this destination
 Hidden activity reveals
 Gut check
@@ -2218,7 +2196,6 @@ The trick is explained.
 Practical.
 
 ```text
-Individual results
 Group results
 Airfare
 Travel friction
@@ -2363,7 +2340,7 @@ Social experiences are vulnerable to the least-engaged participant.
 - persistent progress;
 - short completion time;
 - easy invite reminders;
-- useful personal results before group completion.
+- useful destination-free preference profiles before group completion.
 
 ---
 
@@ -2427,19 +2404,19 @@ Join trip
    ↓
 10-second explanation
    ↓
-~25 rapid comparisons
+Usually 28–35 rapid comparisons (24 minimum; 40 maximum)
    ↓
 Preference profile
    ↓
-Destination ranking reveal
+Waiting for group
    ↓
-Why these ranked highly
+Group destination reveal
+   ↓
+Why the top five ranked highly
    ↓
 Final gut check
    ↓
-Personal results
-   ↓
-Group results when ready
+Results
 ```
 
 The participant should be able to complete the entire active portion in one short phone session.
@@ -2498,26 +2475,7 @@ Supports:
 - P12
 - P13
 
-### 7. Organizer shell
-
-Supports:
-
-- O01
-- O04
-- O05
-- O09
-- O10
-
-### 8. Organizer form/editor
-
-Supports:
-
-- O02
-- O03
-- O06
-- O08
-
-So while this journey identifies roughly **24 conceptual screens/states**, the MVP probably needs only **~8 major reusable UI patterns**.
+The organizer shell and form/editor are post-MVP. V1 needs only the six participant templates above.
 
 ---
 
