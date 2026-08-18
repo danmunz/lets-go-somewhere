@@ -6,7 +6,7 @@
 
 1. Confirm the intended commit, seed digest, model decision, and deployment identifiers in [implementation status](implementation-status.md).
 2. Run `npm run validate:seed`, `npm test`, `npm run typecheck`, and `npm run build`.
-3. Confirm that the advanced model ADR is **PROMOTED**. If ADR 0003 says **DO NOT PROMOTE**, stop: the hosted app is not ready for the real one-shot decision.
+3. Run `npm run audit:model-policy` and the full model evaluation, then confirm that the advanced model ADR is **PROMOTED**. If ADR 0003 says **DO NOT PROMOTE**, stop: the hosted app is not ready for the real one-shot decision.
 4. Use only approved Google accounts from the private deployment configuration. Never put roster emails, tokens, service-account JSON, or `ROSTER_EMAILS` values in this repository.
 5. Record the exact seed digest and deployed commit in the private trip notes, not in source control.
 
