@@ -1245,7 +1245,7 @@ Seed files can remain useful for fixtures and development environments.
 
 ### MVP
 
-V1 activity comparisons are text-only. Do not add activity or destination imagery to the seed data or comparison UI.
+Activity comparisons may include an opaque local destination-photo asset as an intentionally accepted soft visual cue. The comparison-safe payload must exclude destination IDs, names, countries, coordinates, ranks, scores, gallery data, and photo-credit metadata. Coordinates and credited galleries are atlas-only fields, available after completion.
 
 ### V2
 
@@ -1418,7 +1418,7 @@ The current ranking-module interface is intended to make this optional extractio
 | Backend | TypeScript HTTP API | Shared language/types with frontend |
 | Backend hosting | Cloud Run | Managed, conventional server runtime, scale-to-zero |
 | Database | Firestore | Simple document-oriented application state |
-| Initial activity imagery | None | V1 comparisons are text-only |
+| Initial activity imagery | Opaque local destination photo | A deliberately accepted soft cue; all explicit geographic metadata stays embargoed |
 | Future images | Cloud Storage or static hosting | Post-MVP, subject to blindness review |
 | CI/CD | GitHub Actions | Natural GitHub integration |
 | Ranking | Isolated domain module | Allows algorithms to evolve independently |

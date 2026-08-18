@@ -1,26 +1,1010 @@
 [
-  {"id":"oaxaca","name":"Oaxaca","country":"Mexico","tagline":"A food-rich highland city of markets, ruins, and artisan villages","active":true,"airfare":{"nyc":480,"dc":500,"sfo":460},"travelFriction":3,"novemberWeather":"Dry, sunny days with cool evenings; excellent for walking and day trips."},
-  {"id":"cartagena","name":"Cartagena","country":"Colombia","tagline":"A walled Caribbean city with vivid streets and layered history","active":true,"airfare":{"nyc":390,"dc":450,"sfo":610},"travelFriction":3,"novemberWeather":"Hot, humid, and increasingly dry; afternoon showers remain possible."},
-  {"id":"antigua","name":"Antigua","country":"Guatemala","tagline":"A colonial highland town framed by volcanoes","active":true,"airfare":{"nyc":440,"dc":460,"sfo":520},"travelFriction":3,"novemberWeather":"Early dry season with mild days and cool nights."},
-  {"id":"lima","name":"Lima","country":"Peru","tagline":"A Pacific capital with exceptional food and deep pre-Columbian history","active":true,"airfare":{"nyc":620,"dc":650,"sfo":560},"travelFriction":4,"novemberWeather":"Mild and often overcast; little rain."},
-  {"id":"medellin","name":"Medellín","country":"Colombia","tagline":"A green mountain city of cable cars, neighborhoods, and nearby monoliths","active":true,"airfare":{"nyc":470,"dc":500,"sfo":650},"travelFriction":3,"novemberWeather":"Warm springlike temperatures; rain showers are possible."},
-  {"id":"quito","name":"Quito","country":"Ecuador","tagline":"A high-altitude colonial city beneath volcanic Andes","active":true,"airfare":{"nyc":540,"dc":560,"sfo":620},"travelFriction":3,"novemberWeather":"Cool at altitude with variable showers and clear mountain windows."},
-  {"id":"el-salvador","name":"El Salvador","country":"El Salvador","tagline":"A compact volcanic country of coffee hills, crater lakes, and pupusas","active":true,"airfare":{"nyc":390,"dc":420,"sfo":500},"travelFriction":3,"novemberWeather":"Dry season begins; warm days and clear volcano views."},
-  {"id":"guadalajara","name":"Guadalajara","country":"Mexico","tagline":"A grand western Mexican city of plazas, art, and regional cooking","active":true,"airfare":{"nyc":430,"dc":460,"sfo":330},"travelFriction":2,"novemberWeather":"Dry and sunny, with warm afternoons and cool evenings."},
-  {"id":"bogota","name":"Bogotá","country":"Colombia","tagline":"A highland capital of museums, street art, and mountain views","active":true,"airfare":{"nyc":410,"dc":440,"sfo":590},"travelFriction":3,"novemberWeather":"Cool, often cloudy, with periodic rain."},
-  {"id":"monterrey","name":"Monterrey","country":"Mexico","tagline":"A northern Mexican city enclosed by dramatic limestone mountains","active":true,"airfare":{"nyc":390,"dc":420,"sfo":300},"travelFriction":2,"novemberWeather":"Dry, comfortable hiking weather; cooler nights."},
-  {"id":"puebla-cholula","name":"Puebla + Cholula","country":"Mexico","tagline":"Colonial grandeur, ancient pyramids, and one of Mexico’s great food regions","active":true,"airfare":{"nyc":430,"dc":450,"sfo":480},"travelFriction":3,"novemberWeather":"Dry, sunny, and mild, with cool evenings at elevation."},
-  {"id":"granada-leon","name":"Granada + León","country":"Nicaragua","tagline":"Colonial cities and volcanic landscapes with an adventurous edge","active":true,"airfare":{"nyc":480,"dc":510,"sfo":580},"travelFriction":4,"novemberWeather":"Dry season begins; hot lowland days and clear mornings."},
-  {"id":"guanajuato","name":"Guanajuato","country":"Mexico","tagline":"A colorful hillside city of mines, tunnels, and theatrical streets","active":true,"airfare":{"nyc":440,"dc":470,"sfo":410},"travelFriction":3,"novemberWeather":"Dry, pleasant walking weather with crisp nights."},
-  {"id":"copan-ruinas","name":"Copán Ruinas","country":"Honduras","tagline":"A jungle-edge Maya city surrounded by coffee country","active":true,"airfare":{"nyc":540,"dc":560,"sfo":690},"travelFriction":5,"novemberWeather":"Warm days, cooler evenings, and decreasing rain."},
-  {"id":"detroit","name":"Detroit","country":"United States","tagline":"A comeback city of industrial history, music, art, and serious food","active":true,"airfare":{"nyc":180,"dc":190,"sfo":310},"travelFriction":1,"novemberWeather":"Cold and variable; ideal for museums, food, and indoor culture."},
-  {"id":"quebec-city","name":"Québec City","country":"Canada","tagline":"A fortified French-speaking city with old-world streets and river views","active":true,"airfare":{"nyc":310,"dc":360,"sfo":570},"travelFriction":2,"novemberWeather":"Cold, often wet or snowy, with short daylight."},
-  {"id":"banff","name":"Banff","country":"Canada","tagline":"An early-winter Rockies base of enormous scenery and hot springs","active":true,"airfare":{"nyc":500,"dc":520,"sfo":360},"travelFriction":4,"novemberWeather":"Early winter: cold, snowy, and condition-dependent."},
-  {"id":"cleveland","name":"Cleveland","country":"United States","tagline":"A lakefront industrial city paired with a nearby national park","active":true,"airfare":{"nyc":190,"dc":210,"sfo":330},"travelFriction":1,"novemberWeather":"Cold and potentially rainy; outdoor trails are still workable in layers."},
-  {"id":"sedona","name":"Sedona","country":"United States","tagline":"A red-rock hiking base with desert light and a comfortable town","active":true,"airfare":{"nyc":360,"dc":380,"sfo":240},"travelFriction":3,"novemberWeather":"Crisp, sunny hiking days and chilly nights."},
-  {"id":"moab","name":"Moab","country":"United States","tagline":"A desert gateway to arches, canyons, and otherworldly stone","active":true,"airfare":{"nyc":430,"dc":450,"sfo":330},"travelFriction":4,"novemberWeather":"Cool, dry days; freezing nights and occasional snow are possible."},
-  {"id":"chattanooga","name":"Chattanooga","country":"United States","tagline":"A compact river city set beneath ridges, caves, and Civil War history","active":true,"airfare":{"nyc":250,"dc":230,"sfo":420},"travelFriction":2,"novemberWeather":"Cool, generally pleasant hiking weather; rain is possible."},
-  {"id":"zion-springdale","name":"Zion / Springdale","country":"United States","tagline":"A canyon-country base for iconic hikes and sandstone walls","active":true,"airfare":{"nyc":300,"dc":320,"sfo":180},"travelFriction":3,"novemberWeather":"Cool, clear hiking conditions; water hikes depend on weather and flow."},
-  {"id":"el-paso-guadalupe-carlsbad","name":"El Paso → Guadalupe Mountains + Carlsbad Caverns","country":"United States","tagline":"A Chihuahuan Desert road trip from border-city food to high peaks and deep caverns","active":true,"airfare":{"nyc":360,"dc":390,"sfo":270},"travelFriction":4,"novemberWeather":"Mild, dry days with cold nights and possible strong winds."},
-  {"id":"palm-springs-joshua-tree-salton-sea","name":"Palm Springs → Joshua Tree + San Jacinto + Salton Sea","country":"United States","tagline":"A three-landscape desert trip from boulders to alpine forest to surreal inland sea","active":true,"airfare":{"nyc":470,"dc":425,"sfo":240},"travelFriction":2,"novemberWeather":"Warm desert days, cool evenings, and much colder conditions at elevation."}
+  {
+    "id": "oaxaca",
+    "name": "Oaxaca",
+    "country": "Mexico",
+    "tagline": "A food-rich highland city of markets, ruins, and artisan villages",
+    "active": true,
+    "airfare": {
+      "nyc": 480,
+      "dc": 500,
+      "sfo": 460
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Dry, sunny days with cool evenings; excellent for walking and day trips.",
+    "coordinates": {
+      "longitude": -96.7266,
+      "latitude": 17.0732
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/001.webp",
+        "sourceUrl": "https://unsplash.com/photos/kO-USq1pmR4",
+        "photographerName": "ryan doyle",
+        "photographerUrl": "https://unsplash.com/@rdoyle99",
+        "alt": "A destination photograph selected for Oaxaca's editorial travel gallery"
+      },
+      {
+        "path": "/media/cards/002.webp",
+        "sourceUrl": "https://unsplash.com/photos/92XOQbvqpdU",
+        "photographerName": "Roman Lopez",
+        "photographerUrl": "https://unsplash.com/@romanll",
+        "alt": "A destination photograph selected for Oaxaca's editorial travel gallery"
+      },
+      {
+        "path": "/media/cards/003.webp",
+        "sourceUrl": "https://unsplash.com/photos/Kswnnx95_YU",
+        "photographerName": "Matthew Essman",
+        "photographerUrl": "https://unsplash.com/@thetruth23",
+        "alt": "A destination photograph selected for Oaxaca's editorial travel gallery"
+      }
+    ],
+    "imageUrl": "/media/cards/001.webp"
+  },
+  {
+    "id": "cartagena",
+    "name": "Cartagena",
+    "country": "Colombia",
+    "tagline": "A walled Caribbean city with vivid streets and layered history",
+    "active": true,
+    "airfare": {
+      "nyc": 390,
+      "dc": 450,
+      "sfo": 610
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Hot, humid, and increasingly dry; afternoon showers remain possible.",
+    "coordinates": {
+      "longitude": -75.4794,
+      "latitude": 10.391
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/004.webp",
+        "sourceUrl": "https://unsplash.com/photos/colonial-street-and-church-in-cartagena-GcHar4P8V_Q",
+        "photographerName": "Ricardo Gomez Angel",
+        "photographerUrl": "https://unsplash.com/@rgaleriacom",
+        "alt": "A narrow street with colonial buildings and a yellow church tower in Cartagena, Colombia"
+      },
+      {
+        "path": "/media/cards/005.webp",
+        "sourceUrl": "https://unsplash.com/photos/woman-carrying-fruits-in-bowl-lexRTRXv-ok",
+        "photographerName": "Ricardo Gomez Angel",
+        "photographerUrl": "https://unsplash.com/@rgaleriacom",
+        "alt": "woman carrying fruits in bowl"
+      },
+      {
+        "path": "/media/cards/006.webp",
+        "sourceUrl": "https://unsplash.com/photos/red-blue-and-yellow-waving-flag--3-X9XPjUNU",
+        "photographerName": "Jorge Gardner",
+        "photographerUrl": "https://unsplash.com/@gardnerjorge",
+        "alt": "red, blue, and yellow waving flag"
+      }
+    ],
+    "imageUrl": "/media/cards/004.webp"
+  },
+  {
+    "id": "antigua",
+    "name": "Antigua",
+    "country": "Guatemala",
+    "tagline": "A colonial highland town framed by volcanoes",
+    "active": true,
+    "airfare": {
+      "nyc": 440,
+      "dc": 460,
+      "sfo": 520
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Early dry season with mild days and cool nights.",
+    "coordinates": {
+      "longitude": -90.734,
+      "latitude": 14.5586
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/007.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-city-street-with-a-clock-tower-in-the-background-uliZMHrDgzM",
+        "photographerName": "Rodrigo Escalante",
+        "photographerUrl": "https://unsplash.com/@rodmantgt",
+        "alt": "a city street with a clock tower in the background"
+      },
+      {
+        "path": "/media/cards/008.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-concrete-building-under-blue-sky-during-daytime-1uaUXmWQ_BE",
+        "photographerName": "Angello Pro",
+        "photographerUrl": "https://unsplash.com/@angello_pro",
+        "alt": "brown concrete building under blue sky during daytime"
+      },
+      {
+        "path": "/media/cards/009.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-clock-tower-with-a-mountain-in-the-background-XOSMdXIWk_I",
+        "photographerName": "By Topo",
+        "photographerUrl": "https://unsplash.com/@bytopo",
+        "alt": "a clock tower with a mountain in the background"
+      }
+    ],
+    "imageUrl": "/media/cards/007.webp"
+  },
+  {
+    "id": "lima",
+    "name": "Lima",
+    "country": "Peru",
+    "tagline": "A Pacific capital with exceptional food and deep pre-Columbian history",
+    "active": true,
+    "airfare": {
+      "nyc": 620,
+      "dc": 650,
+      "sfo": 560
+    },
+    "travelFriction": 4,
+    "novemberWeather": "Mild and often overcast; little rain.",
+    "coordinates": {
+      "longitude": -77.0428,
+      "latitude": -12.0464
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/010.webp",
+        "sourceUrl": "https://unsplash.com/photos/Yrqyn1Gb80k",
+        "photographerName": "Aarom Ore",
+        "photographerUrl": "https://unsplash.com/@creatorsproduce",
+        "alt": "A destination photograph selected for Lima's editorial travel gallery"
+      },
+      {
+        "path": "/media/cards/011.webp",
+        "sourceUrl": "https://unsplash.com/photos/4hMET7vYTAQ",
+        "photographerName": "Willian Justen de Vasconcellos",
+        "photographerUrl": "https://unsplash.com/@willianjusten",
+        "alt": "A destination photograph selected for Lima's editorial travel gallery"
+      },
+      {
+        "path": "/media/cards/012.webp",
+        "sourceUrl": "https://unsplash.com/photos/hjanvZlqoB8",
+        "photographerName": "McKayla Crump",
+        "photographerUrl": "https://unsplash.com/@funkmastacrump",
+        "alt": "A destination photograph selected for Lima's editorial travel gallery"
+      }
+    ],
+    "imageUrl": "/media/cards/010.webp"
+  },
+  {
+    "id": "medellin",
+    "name": "Medellín",
+    "country": "Colombia",
+    "tagline": "A green mountain city of cable cars, neighborhoods, and nearby monoliths",
+    "active": true,
+    "airfare": {
+      "nyc": 470,
+      "dc": 500,
+      "sfo": 650
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Warm springlike temperatures; rain showers are possible.",
+    "coordinates": {
+      "longitude": -75.5636,
+      "latitude": 6.2518
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/013.webp",
+        "sourceUrl": "https://unsplash.com/photos/houses-in-high-angle-photo-jc96wEf0rxI",
+        "photographerName": "Reiseuhu",
+        "photographerUrl": "https://unsplash.com/@reiseuhu",
+        "alt": "houses in high-angle photo"
+      },
+      {
+        "path": "/media/cards/014.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-view-of-a-city-with-mountains-in-the-background-6zY5fdQ5xL8",
+        "photographerName": "Rizvi Rahman",
+        "photographerUrl": "https://unsplash.com/@lucidexplore",
+        "alt": "a view of a city with mountains in the background"
+      },
+      {
+        "path": "/media/cards/015.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-large-group-of-buildings-on-top-of-a-hill-VAmoQuxONys",
+        "photographerName": "Gustavo Sánchez",
+        "photographerUrl": "https://unsplash.com/@gustavo0351",
+        "alt": "a large group of buildings on top of a hill"
+      }
+    ],
+    "imageUrl": "/media/cards/013.webp"
+  },
+  {
+    "id": "quito",
+    "name": "Quito",
+    "country": "Ecuador",
+    "tagline": "A high-altitude colonial city beneath volcanic Andes",
+    "active": true,
+    "airfare": {
+      "nyc": 540,
+      "dc": 560,
+      "sfo": 620
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Cool at altitude with variable showers and clear mountain windows.",
+    "coordinates": {
+      "longitude": -78.4678,
+      "latitude": -0.1807
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/016.webp",
+        "sourceUrl": "https://unsplash.com/photos/view-of-white-and-brown-painted-building-at-daytime-l0TziH9PJiM",
+        "photographerName": "Andres Medina",
+        "photographerUrl": "https://unsplash.com/@kiyoshi_jpg",
+        "alt": "view of white and brown painted building at daytime"
+      },
+      {
+        "path": "/media/cards/017.webp",
+        "sourceUrl": "https://unsplash.com/photos/quito-with-mountains-in-the-background-mhhkHxv8Nz0",
+        "photographerName": "Anton Lukin",
+        "photographerUrl": "https://unsplash.com/@antonlukin",
+        "alt": "Quito with mountains in the background"
+      },
+      {
+        "path": "/media/cards/018.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-city-with-mountains-in-the-background-KqOgN3hLsN4",
+        "photographerName": "Zeke Tucker",
+        "photographerUrl": "https://unsplash.com/@zeketucker",
+        "alt": "a city with mountains in the background"
+      }
+    ],
+    "imageUrl": "/media/cards/016.webp"
+  },
+  {
+    "id": "el-salvador",
+    "name": "El Salvador",
+    "country": "El Salvador",
+    "tagline": "A compact volcanic country of coffee hills, crater lakes, and pupusas",
+    "active": true,
+    "airfare": {
+      "nyc": 390,
+      "dc": 420,
+      "sfo": 500
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Dry season begins; warm days and clear volcano views.",
+    "coordinates": {
+      "longitude": -89.2182,
+      "latitude": 13.6929
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/019.webp",
+        "sourceUrl": "https://unsplash.com/photos/green-trees-on-mountain-under-blue-sky-during-daytime-WvNXV_X2mY8",
+        "photographerName": "Jennie Clavel",
+        "photographerUrl": "https://unsplash.com/@ohpeach_33",
+        "alt": "green trees on mountain under blue sky during daytime"
+      },
+      {
+        "path": "/media/cards/020.webp",
+        "sourceUrl": "https://unsplash.com/photos/aerial-view-of-trees-near-body-of-water-bK-SRSgPWz8",
+        "photographerName": "Oswaldo Martinez",
+        "photographerUrl": "https://unsplash.com/@oemartinez",
+        "alt": "aerial view of trees near body of water"
+      },
+      {
+        "path": "/media/cards/021.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-statue-of-a-man-on-a-horse-in-front-of-a-building-bQefbdSC4ko",
+        "photographerName": "Esaú Fuentes González",
+        "photographerUrl": "https://unsplash.com/@gonesau",
+        "alt": "a statue of a man on a horse in front of a building"
+      }
+    ],
+    "imageUrl": "/media/cards/019.webp"
+  },
+  {
+    "id": "guadalajara",
+    "name": "Guadalajara",
+    "country": "Mexico",
+    "tagline": "A grand western Mexican city of plazas, art, and regional cooking",
+    "active": true,
+    "airfare": {
+      "nyc": 430,
+      "dc": 460,
+      "sfo": 330
+    },
+    "travelFriction": 2,
+    "novemberWeather": "Dry and sunny, with warm afternoons and cool evenings.",
+    "coordinates": {
+      "longitude": -103.3496,
+      "latitude": 20.6597
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/022.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-mexican-flag-flying-on-top-of-a-building-yEg4JVCESv4",
+        "photographerName": "Alejandro Barba",
+        "photographerUrl": "https://unsplash.com/@albrb",
+        "alt": "a mexican flag flying on top of a building"
+      },
+      {
+        "path": "/media/cards/023.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-large-building-with-a-clock-on-the-top-of-it-8OYIE1QtHFs",
+        "photographerName": "Jimmy Woo",
+        "photographerUrl": "https://unsplash.com/@woomantsing",
+        "alt": "a large building with a clock on the top of it"
+      },
+      {
+        "path": "/media/cards/024.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-concrete-building-under-blue-sky-during-daytime-nNqxJCdsnmY",
+        "photographerName": "Daryl.parada",
+        "photographerUrl": "https://unsplash.com/@darylparada",
+        "alt": "brown concrete building under blue sky during daytime"
+      }
+    ],
+    "imageUrl": "/media/cards/022.webp"
+  },
+  {
+    "id": "bogota",
+    "name": "Bogotá",
+    "country": "Colombia",
+    "tagline": "A highland capital of museums, street art, and mountain views",
+    "active": true,
+    "airfare": {
+      "nyc": 410,
+      "dc": 440,
+      "sfo": 590
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Cool, often cloudy, with periodic rain.",
+    "coordinates": {
+      "longitude": -74.0721,
+      "latitude": 4.711
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/025.webp",
+        "sourceUrl": "https://unsplash.com/photos/yellow-blue-and-red-flag-P3PFi8THbUs",
+        "photographerName": "Flavia Carpio",
+        "photographerUrl": "https://unsplash.com/@flacaral",
+        "alt": "yellow, blue, and red flag"
+      },
+      {
+        "path": "/media/cards/026.webp",
+        "sourceUrl": "https://unsplash.com/photos/aerial-photo-of-buildings-lGe9uSnHcpI",
+        "photographerName": "Random Institute",
+        "photographerUrl": "https://unsplash.com/@randominstitute",
+        "alt": "aerial photo of buildings"
+      },
+      {
+        "path": "/media/cards/027.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-busy-city-street-filled-with-lots-of-traffic-TMMw8UHtmOQ",
+        "photographerName": "Jimmy Woo",
+        "photographerUrl": "https://unsplash.com/@woomantsing",
+        "alt": "a busy city street filled with lots of traffic"
+      }
+    ],
+    "imageUrl": "/media/cards/025.webp"
+  },
+  {
+    "id": "monterrey",
+    "name": "Monterrey",
+    "country": "Mexico",
+    "tagline": "A northern Mexican city enclosed by dramatic limestone mountains",
+    "active": true,
+    "airfare": {
+      "nyc": 390,
+      "dc": 420,
+      "sfo": 300
+    },
+    "travelFriction": 2,
+    "novemberWeather": "Dry, comfortable hiking weather; cooler nights.",
+    "coordinates": {
+      "longitude": -100.3161,
+      "latitude": 25.6866
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/028.webp",
+        "sourceUrl": "https://unsplash.com/photos/city-buildings-under-blue-sky-and-white-clouds-during-daytime-7ufpb3_iBbA",
+        "photographerName": "David Liceaga",
+        "photographerUrl": "https://unsplash.com/@liceagadavid",
+        "alt": "city buildings under blue sky and white clouds during daytime"
+      },
+      {
+        "path": "/media/cards/029.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-man-standing-on-top-of-a-mountain-next-to-a-lush-green-hillside-UaaSyFdDE7c",
+        "photographerName": "Brenda Alvarado Ruiz",
+        "photographerUrl": "https://unsplash.com/@brenda_ar",
+        "alt": "a man standing on top of a mountain next to a lush green hillside"
+      },
+      {
+        "path": "/media/cards/030.webp",
+        "sourceUrl": "https://unsplash.com/photos/an-aerial-view-of-a-city-with-mountains-in-the-background-ovmCoJVf0yg",
+        "photographerName": "Steven Fernandez",
+        "photographerUrl": "https://unsplash.com/@black0990",
+        "alt": "an aerial view of a city with mountains in the background"
+      }
+    ],
+    "imageUrl": "/media/cards/028.webp"
+  },
+  {
+    "id": "puebla-cholula",
+    "name": "Puebla + Cholula",
+    "country": "Mexico",
+    "tagline": "Colonial grandeur, ancient pyramids, and one of Mexico’s great food regions",
+    "active": true,
+    "airfare": {
+      "nyc": 430,
+      "dc": 450,
+      "sfo": 480
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Dry, sunny, and mild, with cool evenings at elevation.",
+    "coordinates": {
+      "longitude": -98.1979,
+      "latitude": 19.0414
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/031.webp",
+        "sourceUrl": "https://unsplash.com/photos/people-walking-on-sidewalk-near-white-concrete-building-during-daytime-GNZM0Vvpchw",
+        "photographerName": "Laurentiu Morariu",
+        "photographerUrl": "https://unsplash.com/@travelphotographer",
+        "alt": "people walking on sidewalk near white concrete building during daytime"
+      },
+      {
+        "path": "/media/cards/032.webp",
+        "sourceUrl": "https://unsplash.com/photos/people-walking-between-orange-concrete-buildings-9KnIH_dKmGE",
+        "photographerName": "Jezael Melgoza",
+        "photographerUrl": "https://unsplash.com/@jezar",
+        "alt": "people walking between orange concrete buildings"
+      },
+      {
+        "path": "/media/cards/033.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-man-walking-down-a-street-next-to-tall-buildings-92XOQbvqpdU",
+        "photographerName": "Roman Lopez",
+        "photographerUrl": "https://unsplash.com/@romanll",
+        "alt": "a man walking down a street next to tall buildings"
+      }
+    ],
+    "imageUrl": "/media/cards/031.webp"
+  },
+  {
+    "id": "granada-leon",
+    "name": "Granada + León",
+    "country": "Nicaragua",
+    "tagline": "Colonial cities and volcanic landscapes with an adventurous edge",
+    "active": true,
+    "airfare": {
+      "nyc": 480,
+      "dc": 510,
+      "sfo": 580
+    },
+    "travelFriction": 4,
+    "novemberWeather": "Dry season begins; hot lowland days and clear mornings.",
+    "coordinates": {
+      "longitude": -86.2514,
+      "latitude": 12.1364
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/034.webp",
+        "sourceUrl": "https://unsplash.com/photos/green-trees-near-body-of-water-during-daytime-L_0CcU5Bh5M",
+        "photographerName": "Marwan Abdalah",
+        "photographerUrl": "https://unsplash.com/@marwan_abdalah",
+        "alt": "green trees near body of water during daytime"
+      },
+      {
+        "path": "/media/cards/035.webp",
+        "sourceUrl": "https://unsplash.com/photos/cars-parked-on-side-of-road-during-daytime-nrMOWhyZ4cY",
+        "photographerName": "Tobias Tullius",
+        "photographerUrl": "https://unsplash.com/@tobiastu",
+        "alt": "cars parked on side of road during daytime"
+      },
+      {
+        "path": "/media/cards/036.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-boat-in-a-lake-zzCJCrf0_dY",
+        "photographerName": "Alvison Lucas Hunter Arnuero",
+        "photographerUrl": "https://unsplash.com/@alvisonhunter",
+        "alt": "a boat in a lake"
+      }
+    ],
+    "imageUrl": "/media/cards/034.webp"
+  },
+  {
+    "id": "guanajuato",
+    "name": "Guanajuato",
+    "country": "Mexico",
+    "tagline": "A colorful hillside city of mines, tunnels, and theatrical streets",
+    "active": true,
+    "airfare": {
+      "nyc": 440,
+      "dc": 470,
+      "sfo": 410
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Dry, pleasant walking weather with crisp nights.",
+    "coordinates": {
+      "longitude": -101.2574,
+      "latitude": 21.019
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/037.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-city-with-many-buildings-gDyHzsr-CNY",
+        "photographerName": "Roberto Puga",
+        "photographerUrl": "https://unsplash.com/@robertopuga",
+        "alt": "a city with many buildings"
+      },
+      {
+        "path": "/media/cards/038.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-concrete-building-under-blue-sky-during-daytime-H4VrfB98ddA",
+        "photographerName": "Gerardo Martin Fernandez Vallejo",
+        "photographerUrl": "https://unsplash.com/@gemafv85",
+        "alt": "brown concrete building under blue sky during daytime"
+      },
+      {
+        "path": "/media/cards/039.webp",
+        "sourceUrl": "https://unsplash.com/photos/empty-bricked-road-by-buildings-at-daytime-rbI9ec0ZX7c",
+        "photographerName": "Jorge Gardner",
+        "photographerUrl": "https://unsplash.com/@gardnerjorge",
+        "alt": "empty bricked road by buildings at daytime"
+      }
+    ],
+    "imageUrl": "/media/cards/037.webp"
+  },
+  {
+    "id": "copan-ruinas",
+    "name": "Copán Ruinas",
+    "country": "Honduras",
+    "tagline": "A jungle-edge Maya city surrounded by coffee country",
+    "active": true,
+    "airfare": {
+      "nyc": 540,
+      "dc": 560,
+      "sfo": 690
+    },
+    "travelFriction": 5,
+    "novemberWeather": "Warm days, cooler evenings, and decreasing rain.",
+    "coordinates": {
+      "longitude": -89.1428,
+      "latitude": 15.7679
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/040.webp",
+        "sourceUrl": "https://unsplash.com/photos/green-grass-field-with-brown-trees-RYsdeBElz6w",
+        "photographerName": "D-Fotografia Honduras",
+        "photographerUrl": "https://unsplash.com/@dcalizm",
+        "alt": "green grass field with brown trees"
+      },
+      {
+        "path": "/media/cards/041.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-colorful-sculpture-of-a-dragon-mKPcOFd5TDA",
+        "photographerName": "Alexander Schimmeck",
+        "photographerUrl": "https://unsplash.com/@alschim",
+        "alt": "a colorful sculpture of a dragon"
+      },
+      {
+        "path": "/media/cards/042.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-group-of-colorful-parrots-standing-next-to-each-other-yeNaHq9v6kU",
+        "photographerName": "Alexander Schimmeck",
+        "photographerUrl": "https://unsplash.com/@alschim",
+        "alt": "a group of colorful parrots standing next to each other"
+      }
+    ],
+    "imageUrl": "/media/cards/040.webp"
+  },
+  {
+    "id": "detroit",
+    "name": "Detroit",
+    "country": "United States",
+    "tagline": "A comeback city of industrial history, music, art, and serious food",
+    "active": true,
+    "airfare": {
+      "nyc": 180,
+      "dc": 190,
+      "sfo": 310
+    },
+    "travelFriction": 1,
+    "novemberWeather": "Cold and variable; ideal for museums, food, and indoor culture.",
+    "coordinates": {
+      "longitude": -83.0458,
+      "latitude": 42.3314
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/043.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-view-of-a-city-with-tall-buildings-DYkAeZ4EDU4",
+        "photographerName": "Laura Brain",
+        "photographerUrl": "https://unsplash.com/@laurabrain",
+        "alt": "a view of a city with tall buildings"
+      },
+      {
+        "path": "/media/cards/044.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-view-of-a-city-from-a-tall-building-s9uCgJ4KP8U",
+        "photographerName": "Laura Brain",
+        "photographerUrl": "https://unsplash.com/@laurabrain",
+        "alt": "a view of a city from a tall building"
+      },
+      {
+        "path": "/media/cards/045.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-train-on-a-train-track-in-a-city-yA1nYShOxik",
+        "photographerName": "Richard Hedrick",
+        "photographerUrl": "https://unsplash.com/@fortuitousfoto",
+        "alt": "a train on a train track in a city"
+      }
+    ],
+    "imageUrl": "/media/cards/043.webp"
+  },
+  {
+    "id": "quebec-city",
+    "name": "Québec City",
+    "country": "Canada",
+    "tagline": "A fortified French-speaking city with old-world streets and river views",
+    "active": true,
+    "airfare": {
+      "nyc": 310,
+      "dc": 360,
+      "sfo": 570
+    },
+    "travelFriction": 2,
+    "novemberWeather": "Cold, often wet or snowy, with short daylight.",
+    "coordinates": {
+      "longitude": -71.208,
+      "latitude": 46.8139
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/046.webp",
+        "sourceUrl": "https://unsplash.com/photos/an-aerial-view-of-a-large-building-with-a-clock-tower-tKhphNkxK00",
+        "photographerName": "Nathan Feyssat",
+        "photographerUrl": "https://unsplash.com/@nathan_feyssat",
+        "alt": "an aerial view of a large building with a clock tower"
+      },
+      {
+        "path": "/media/cards/047.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-and-white-concrete-building-near-green-trees-during-daytime-G3DZfDNciVQ",
+        "photographerName": "Livia Widjaja",
+        "photographerUrl": "https://unsplash.com/@livwdj",
+        "alt": "brown and white concrete building near green trees during daytime"
+      },
+      {
+        "path": "/media/cards/048.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-view-of-a-large-building-with-a-clock-tower-shaxh6xoH1k",
+        "photographerName": "Ziyao Xiong",
+        "photographerUrl": "https://unsplash.com/@superxcalvin",
+        "alt": "A view of a large building with a clock tower"
+      }
+    ],
+    "imageUrl": "/media/cards/046.webp"
+  },
+  {
+    "id": "banff",
+    "name": "Banff",
+    "country": "Canada",
+    "tagline": "An early-winter Rockies base of enormous scenery and hot springs",
+    "active": true,
+    "airfare": {
+      "nyc": 500,
+      "dc": 520,
+      "sfo": 360
+    },
+    "travelFriction": 4,
+    "novemberWeather": "Early winter: cold, snowy, and condition-dependent.",
+    "coordinates": {
+      "longitude": -115.5708,
+      "latitude": 51.1784
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/049.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-town-with-a-mountain-in-the-background-oh2A-uw66KE",
+        "photographerName": "Julian Terenzio",
+        "photographerUrl": "https://unsplash.com/@julianterenzio",
+        "alt": "a town with a mountain in the background"
+      },
+      {
+        "path": "/media/cards/050.webp",
+        "sourceUrl": "https://unsplash.com/photos/green-pine-trees-near-lake-during-daytime-CAFSnCvm_50",
+        "photographerName": "Dustin Bowdige",
+        "photographerUrl": "https://unsplash.com/@dustinbowdige",
+        "alt": "green pine trees near lake during daytime"
+      },
+      {
+        "path": "/media/cards/051.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-lake-surrounded-by-mountains-and-trees-under-a-cloudy-sky-o5G4WZ9xnMY",
+        "photographerName": "Rodrigo Sümmer",
+        "photographerUrl": "https://unsplash.com/@rodsimmer",
+        "alt": "a lake surrounded by mountains and trees under a cloudy sky"
+      }
+    ],
+    "imageUrl": "/media/cards/049.webp"
+  },
+  {
+    "id": "cleveland",
+    "name": "Cleveland",
+    "country": "United States",
+    "tagline": "A lakefront industrial city paired with a nearby national park",
+    "active": true,
+    "airfare": {
+      "nyc": 190,
+      "dc": 210,
+      "sfo": 330
+    },
+    "travelFriction": 1,
+    "novemberWeather": "Cold and potentially rainy; outdoor trails are still workable in layers.",
+    "coordinates": {
+      "longitude": -81.6944,
+      "latitude": 41.4993
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/052.webp",
+        "sourceUrl": "https://unsplash.com/photos/white-and-blue-concrete-building-under-blue-sky-during-daytime-4BqplixrUkM",
+        "photographerName": "DJ Johnson",
+        "photographerUrl": "https://unsplash.com/@dj_johns1",
+        "alt": "white and blue concrete building under blue sky during daytime"
+      },
+      {
+        "path": "/media/cards/053.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-and-white-concrete-bridge-vzjbwzBljIo",
+        "photographerName": "Leo_Visions",
+        "photographerUrl": "https://unsplash.com/@leo_visions_",
+        "alt": "brown and white concrete bridge"
+      },
+      {
+        "path": "/media/cards/054.webp",
+        "sourceUrl": "https://unsplash.com/photos/time-lapse-photography-of-cars-on-road-during-night-time-nd5sVKK66XI",
+        "photographerName": "Leo_Visions",
+        "photographerUrl": "https://unsplash.com/@leo_visions_",
+        "alt": "time lapse photography of cars on road during night time"
+      }
+    ],
+    "imageUrl": "/media/cards/052.webp"
+  },
+  {
+    "id": "sedona",
+    "name": "Sedona",
+    "country": "United States",
+    "tagline": "A red-rock hiking base with desert light and a comfortable town",
+    "active": true,
+    "airfare": {
+      "nyc": 360,
+      "dc": 380,
+      "sfo": 240
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Crisp, sunny hiking days and chilly nights.",
+    "coordinates": {
+      "longitude": -111.7609,
+      "latitude": 34.8697
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/055.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-rock-formation-under-blue-sky-during-daytime-YdzWGR7tvQk",
+        "photographerName": "Anthony Melone",
+        "photographerUrl": "https://unsplash.com/@anthony_melone",
+        "alt": "brown rock formation under blue sky during daytime"
+      },
+      {
+        "path": "/media/cards/056.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-mountain-under-blue-sky-DzICOX656f0",
+        "photographerName": "kayla phaneuf",
+        "photographerUrl": "https://unsplash.com/@kaylaphaneuf",
+        "alt": "brown mountain under blue sky"
+      },
+      {
+        "path": "/media/cards/057.webp",
+        "sourceUrl": "https://unsplash.com/photos/low-angle-photo-of-rock-formation-1wQbtsNa5K8",
+        "photographerName": "Tom Gainor",
+        "photographerUrl": "https://unsplash.com/@its_tgain",
+        "alt": "low angle photo of rock formation"
+      }
+    ],
+    "imageUrl": "/media/cards/055.webp"
+  },
+  {
+    "id": "moab",
+    "name": "Moab",
+    "country": "United States",
+    "tagline": "A desert gateway to arches, canyons, and otherworldly stone",
+    "active": true,
+    "airfare": {
+      "nyc": 430,
+      "dc": 450,
+      "sfo": 330
+    },
+    "travelFriction": 4,
+    "novemberWeather": "Cool, dry days; freezing nights and occasional snow are possible.",
+    "coordinates": {
+      "longitude": -109.5498,
+      "latitude": 38.5733
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/058.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-concrete-structure-7kLufxYoqWk",
+        "photographerName": "SoloTravelGoals",
+        "photographerUrl": "https://unsplash.com/@solotravelgoals",
+        "alt": "brown concrete structure"
+      },
+      {
+        "path": "/media/cards/059.webp",
+        "sourceUrl": "https://unsplash.com/photos/aerial-photography-of-mounitan-range-mGdrB6zZXzk",
+        "photographerName": "Nate Foong",
+        "photographerUrl": "https://unsplash.com/@hoehoeyay",
+        "alt": "aerial photography of mounitan range"
+      },
+      {
+        "path": "/media/cards/060.webp",
+        "sourceUrl": "https://unsplash.com/photos/photography-of-brown-mountain-range-during-daytime-oUgRCrZjBIU",
+        "photographerName": "Jake Nackos",
+        "photographerUrl": "https://unsplash.com/@jakenackos",
+        "alt": "photography of brown mountain range during daytime"
+      }
+    ],
+    "imageUrl": "/media/cards/058.webp"
+  },
+  {
+    "id": "chattanooga",
+    "name": "Chattanooga",
+    "country": "United States",
+    "tagline": "A compact river city set beneath ridges, caves, and Civil War history",
+    "active": true,
+    "airfare": {
+      "nyc": 250,
+      "dc": 230,
+      "sfo": 420
+    },
+    "travelFriction": 2,
+    "novemberWeather": "Cool, generally pleasant hiking weather; rain is possible.",
+    "coordinates": {
+      "longitude": -85.3097,
+      "latitude": 35.0456
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/061.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-bridge-over-a-body-of-water-with-buildings-in-the-background-m_XZ6d5XHDg",
+        "photographerName": "Sarah Swainson",
+        "photographerUrl": "https://unsplash.com/@smswainson",
+        "alt": "A bridge over a body of water with buildings in the background"
+      },
+      {
+        "path": "/media/cards/062.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-tall-building-with-writing-on-the-side-of-it-q9J3MPGh988",
+        "photographerName": "Cassidy Dickens",
+        "photographerUrl": "https://unsplash.com/@blueriverstudio",
+        "alt": "a tall building with writing on the side of it"
+      },
+      {
+        "path": "/media/cards/063.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-building-with-a-brick-wall-egNYmDRtAHQ",
+        "photographerName": "Mark Vision",
+        "photographerUrl": "https://unsplash.com/@imarkvision8",
+        "alt": "a building with a brick wall"
+      }
+    ],
+    "imageUrl": "/media/cards/061.webp"
+  },
+  {
+    "id": "zion-springdale",
+    "name": "Zion / Springdale",
+    "country": "United States",
+    "tagline": "A canyon-country base for iconic hikes and sandstone walls",
+    "active": true,
+    "airfare": {
+      "nyc": 300,
+      "dc": 320,
+      "sfo": 180
+    },
+    "travelFriction": 3,
+    "novemberWeather": "Cool, clear hiking conditions; water hikes depend on weather and flow.",
+    "coordinates": {
+      "longitude": -112.9986,
+      "latitude": 37.1889
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/064.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-mountain-range-with-snow-on-the-tops-R8EU0i-XNzI",
+        "photographerName": "Christopher Popovici",
+        "photographerUrl": "https://unsplash.com/@chrispop",
+        "alt": "a mountain range with snow on the tops"
+      },
+      {
+        "path": "/media/cards/065.webp",
+        "sourceUrl": "https://unsplash.com/photos/green-trees-near-river-under-cloudy-sky-during-daytime-Ss9HoD76jWk",
+        "photographerName": "Zane Bolen",
+        "photographerUrl": "https://unsplash.com/@zanetb",
+        "alt": "green trees near river under cloudy sky during daytime"
+      },
+      {
+        "path": "/media/cards/066.webp",
+        "sourceUrl": "https://unsplash.com/photos/blue-and-white-tote-bag-on-brown-sand-during-daytime-rjWkA8eRygo",
+        "photographerName": "Have Fun Do Good",
+        "photographerUrl": "https://unsplash.com/@havefundogood",
+        "alt": "blue and white tote bag on brown sand during daytime"
+      }
+    ],
+    "imageUrl": "/media/cards/064.webp"
+  },
+  {
+    "id": "el-paso-guadalupe-carlsbad",
+    "name": "El Paso → Guadalupe Mountains + Carlsbad Caverns",
+    "country": "United States",
+    "tagline": "A Chihuahuan Desert road trip from border-city food to high peaks and deep caverns",
+    "active": true,
+    "airfare": {
+      "nyc": 360,
+      "dc": 390,
+      "sfo": 270
+    },
+    "travelFriction": 4,
+    "novemberWeather": "Mild, dry days with cold nights and possible strong winds.",
+    "coordinates": {
+      "longitude": -106.485,
+      "latitude": 31.7619
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/067.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-rock-inside-cave-Wvas_uTO8wQ",
+        "photographerName": "Ksenia Kudelkina",
+        "photographerUrl": "https://unsplash.com/@kseny",
+        "alt": "brown rock inside cave"
+      },
+      {
+        "path": "/media/cards/068.webp",
+        "sourceUrl": "https://unsplash.com/photos/people-in-cave-during-night-time-boZMU4OZ6bE",
+        "photographerName": "DIRK TOERIEN",
+        "photographerUrl": "https://unsplash.com/@toerien",
+        "alt": "people in cave during night time"
+      },
+      {
+        "path": "/media/cards/069.webp",
+        "sourceUrl": "https://unsplash.com/photos/a-group-of-people-standing-in-a-cave-XwvkgB-rGRA",
+        "photographerName": "Phạm Mạnh",
+        "photographerUrl": "https://unsplash.com/@manhterry93",
+        "alt": "A group of people standing in a cave"
+      }
+    ],
+    "imageUrl": "/media/cards/067.webp"
+  },
+  {
+    "id": "palm-springs-joshua-tree-salton-sea",
+    "name": "Palm Springs → Joshua Tree + San Jacinto + Salton Sea",
+    "country": "United States",
+    "tagline": "A three-landscape desert trip from boulders to alpine forest to surreal inland sea",
+    "active": true,
+    "airfare": {
+      "nyc": 470,
+      "dc": 425,
+      "sfo": 240
+    },
+    "travelFriction": 2,
+    "novemberWeather": "Warm desert days, cool evenings, and much colder conditions at elevation.",
+    "coordinates": {
+      "longitude": -116.5453,
+      "latitude": 33.8303
+    },
+    "gallery": [
+      {
+        "path": "/media/cards/070.webp",
+        "sourceUrl": "https://unsplash.com/photos/green-trees-on-brown-field-under-blue-sky-during-daytime-4F8412P2GYc",
+        "photographerName": "Gretchen Spencer",
+        "photographerUrl": "https://unsplash.com/@gretchspencer",
+        "alt": "green trees on brown field under blue sky during daytime"
+      },
+      {
+        "path": "/media/cards/071.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-grass-field-under-white-sky-during-daytime-Ojh2iirFbtc",
+        "photographerName": "Ben Karpinski",
+        "photographerUrl": "https://unsplash.com/@benkarpinski",
+        "alt": "brown grass field under white sky during daytime"
+      },
+      {
+        "path": "/media/cards/072.webp",
+        "sourceUrl": "https://unsplash.com/photos/brown-and-green-trees-on-brown-rocky-mountain-under-blue-sky-during-daytime-uFNfT-nVKFs",
+        "photographerName": "Neal E. Johnson",
+        "photographerUrl": "https://unsplash.com/@neal_johnson",
+        "alt": "brown and green trees on brown rocky mountain under blue sky during daytime"
+      }
+    ],
+    "imageUrl": "/media/cards/070.webp"
+  }
 ]

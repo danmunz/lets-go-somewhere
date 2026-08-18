@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { comparisonSchema, toSafeActivity } from '@lgs/shared';
+import { comparisonSchema, toAtlasDestination, toSafeActivity } from '@lgs/shared';
 import { activities, addComparison, destinations, getComparisons, isRevealOpen, openReveal, ROSTER, setPending, takePending, type RosterUser } from './store.js';
 import { isComplete, rankUser, selectNextPair } from './ranking.js';
 import { authenticate } from './auth.js';
@@ -8,7 +8,7 @@ export const app = new Hono<{ Variables: { user: RosterUser } }>();
 app.get('/health', (context) => context.json({ ok: true }));
 app.use('*', async (context, next) => {
   const user = await authenticate(context.req.header('Authorization'), context.req.header('X-Demo-User'));
-  if (!user) return context.json({ error: 'Use an approved local roster identity.' }, 401);
+  if (!user) return context.json({ error: 'Sign in with an approved roster account.' }, 401);
   context.set('user', user);
   await next();
 });
@@ -37,6 +37,11 @@ app.get('/v1/profile', (context) => {
   if (!isComplete(activities, comparisons)) return context.json({ error: 'Finish the preference game first.' }, 409);
   const { attributeScores } = rankUser(destinations, activities, comparisons);
   return context.json({ attributes: attributeScores });
+});
+app.get('/v1/atlas', (context) => {
+  const user = context.get('user') as RosterUser, comparisons = getComparisons(user);
+  if (!isComplete(activities, comparisons)) return context.json({ error: 'Finish the preference game first.' }, 409);
+  return context.json({ destinations: destinations.map(toAtlasDestination) });
 });
 app.get('/v1/group-status', (context) => context.json({ revealOpen: isRevealOpen(), members: ROSTER.map((user) => ({ user, complete: isComplete(activities, getComparisons(user)) })) }));
 app.post('/v1/reveal', (context) => {

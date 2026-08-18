@@ -856,7 +856,7 @@ Example:
 - preference score;
 - expand/detail action.
 
-Thumbnails are post-MVP; V1 has no activity or destination imagery.
+Historical V1 note: thumbnails were post-MVP. Current comparisons may use opaque destination photography as an intentionally accepted soft cue, with no identifying metadata.
 
 ### Primary emphasis
 
@@ -1115,7 +1115,7 @@ P11
 P12 Waiting for Group
 ```
 
-Do not show destination names, rankings, destination details, or sharing until all five roster members finish or Dan ends the study. After the gate opens, P11 can link to P13 Group Reveal.
+Before the group gate, do not show destination rankings, destination details tied to any participant’s responses, or sharing. After finishing, a participant may browse an unranked destination atlas with names, general trip context, map placement, and credited editorial photography. During comparisons, destination photography is allowed as an intentional soft cue, but destination names, countries, flags, map UI, ranking signals, and photo-credit metadata remain hidden. After the gate opens, P11 can link to P13 Group Reveal.
 
 If complete:
 

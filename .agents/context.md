@@ -12,6 +12,6 @@
 
 ## Key guardrails
 
-- Destination blindness is the central product requirement until the result reveal.
+- Destination blindness is the central product requirement during comparisons, with one accepted tradeoff: destination photography may be used as a soft visual cue. Names, countries, flags, airport codes, maps, scores, ranks, and photo-credit metadata remain hidden while playing. Once a participant completes the game, they may browse an unranked named destination atlas with general context, real map placement, and credited photography; personal and group outcomes remain embargoed until the result reveal.
 - The ranking engine belongs in `backend/`; shared contracts belong in `shared/`.
 - `assets/` contains supplied traveler artwork approved only for roster, progress, waiting, and celebratory UI. Never use it in destination-blind activity cards; the logo and all visual tokens live in `design-system/`.

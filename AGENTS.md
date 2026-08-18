@@ -4,7 +4,7 @@ These standards apply to every contributor working on **Let's Go Somewhere**.
 
 ## Product boundary
 
-This is a destination-blind preference game, not a destination-ranking survey. Before the reveal, do not expose destination names, countries, flags, airport codes, airfare, maps, or overt destination labels. Authentic cultural and environmental detail is allowed: the product reduces destination-brand bias rather than guaranteeing geographic anonymity.
+This is a destination-blind preference game, not a destination-ranking survey. Before the reveal, do not expose destination names, countries, flags, airport codes, airfare, maps, or overt destination labels. Destination photography is an explicitly accepted soft geographic cue in comparison cards; it must be presented without credits, location metadata, map UI, scores, ranks, or destination identifiers. Authentic cultural and environmental detail is allowed: the product reduces destination-brand bias rather than guaranteeing geographic anonymity.
 
 When documents appear to conflict, use this precedence order:
 

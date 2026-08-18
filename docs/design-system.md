@@ -7,7 +7,7 @@ The visual source of truth is [`../design-system/README.md`](../design-system/RE
 - Import `design-system/base.css` once at the frontend entry point; use `design-system/components.css` for shared component contracts.
 - Use the supplied logo from `design-system/assets/logo.png`. Traveler illustrations remain in `assets/images/`.
 - Fonts are bundled in `design-system/assets/fonts/` and loaded locally through `@font-face`; do not add a Google Fonts request.
-- Activity comparisons must remain visually symmetric and destination-blind. V1 has no activity photography or destination imagery.
+- Activity comparisons must remain visually symmetric. They may use destination photography as an intentionally accepted soft location cue, but never destination names, flags, airport codes, map UI, score/rank signals, or photo credit metadata. After a participant completes the game, the unranked destination atlas may use names, general context, real map placement, and credited photography, but must not imply anyone's score, ranking, or choice history before the group reveal.
 - Respect `prefers-reduced-motion`; never convey essential state through motion alone.
 - Use semantic tokens rather than literal colors, pixels, or one-off shadows in application code.
 

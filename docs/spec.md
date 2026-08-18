@@ -597,7 +597,7 @@ The primary screen is extremely simple.
 
 Hike into the mountains, spend the night on a ridge, and watch a neighboring volcano erupt after dark.
 
-No image in V1.
+Historical V1 note: no image. Current comparisons may use opaque destination photography as an intentionally accepted soft cue, without names or geographic metadata.
 
 **PICK THIS**
 
@@ -609,7 +609,7 @@ No image in V1.
 
 Walk through old mining tunnels and underground roads before emerging into plazas and hillside neighborhoods.
 
-No image in V1.
+Historical V1 note: no image. Current comparisons may use opaque destination photography as an intentionally accepted soft cue, without names or geographic metadata.
 
 **PICK THIS**
 
@@ -631,10 +631,8 @@ A photograph may immediately reveal:
 
 Options:
 
-### V1
-No images.
-
-This keeps the experiment clean.
+### Historical V1
+No images. The current product intentionally accepts non-iconic destination photography as a soft cue, while holding back all explicit destination metadata and credit information until the atlas.
 
 ### V2
 Use carefully selected atmospheric images.
@@ -799,7 +797,7 @@ This builds anticipation before revealing where those preferences lead.
 
 # 30. Group Reveal Gate
 
-After a participant finishes, show their attribute profile only. Named destinations, destination details, and sharing remain embargoed until all five roster members have finished or Dan explicitly ends the study.
+After a participant finishes, show an unranked destination atlas. The atlas may show every candidate destination’s name, general trip context, real map placement, and credited editorial photography, but must not expose personal or group scores, ranks, activity-response evidence, or another participant’s choices. Named results, destination details tied to a participant’s preferences, and sharing remain embargoed until all five roster members have finished or Dan explicitly ends the study.
 
 # 31. Destination Reveal
 

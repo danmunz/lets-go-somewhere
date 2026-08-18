@@ -2,9 +2,9 @@
 
 ## Screens
 
-- Landing: a short destination-blind promise, 28–35 choice expectation, and local development identity selector.
-- Comparison: an approximate progress bar and two equal-weight full-card buttons. Cards use no image, location, map, flag, airport code, airfare, or destination label.
-- Profile: category signals are shown after completion, but named destinations remain hidden.
+- Landing: a short visual explanation of the destination-blind game and a clear time expectation, followed by character selection before Google sign-in.
+- Comparison: an approximate progress bar with encouraging milestone copy and two equal-weight full-card buttons. Cards may use destination photography as an intentionally accepted soft cue, but never a location, map, flag, airport code, airfare, destination label, score/rank signal, or photo credit.
+- Profile: category signals lead into an unranked destination atlas; ranks and response evidence remain hidden until the group gate.
 - Waiting: roster completion status and a clear reveal embargo message. Character art is intentionally not used in activity cards.
 
 ## Responsive layout
