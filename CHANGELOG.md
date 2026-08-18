@@ -19,6 +19,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - An unreleased one-trip journey: destination-free profile, atlas-to-waiting flow, snapshot-backed personal and group results, immutable post-reveal decisions, explicit state recovery, and hardened atlas/media fallbacks.
 - A local Firebase Auth/Firestore emulator configuration, transactional pending-pair submission, seed-version binding, and immutable reveal snapshots.
 - An offline, regularized preference-model candidate with posterior uncertainty, information-gain selection, confidence-aware stopping, deterministic fixtures, and a fail-closed promotion report.
+- A repeatable Auth/Firestore Emulator transaction suite that verifies atomic concurrent submissions and stale-offer protection against the real repository adapter.
 
 ### Changed
 
@@ -28,3 +29,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Tightened the final reveal so it opens only after the whole five-person roster finishes; it exposes each participant's top three rather than raw choices.
 - Reconciled deployment, delivery, implementation, and review documents with the shipped Firebase/Cloud Run/Firestore release; documented the remaining one-trip completion gaps separately from platform work that is out of scope.
 - Marked the advanced-model candidate as unreleased: its first synthetic 200-seed promotion evaluation did not meet the predeclared evidence gate, so production remains on the existing verified ranking until recalibration succeeds.
+- Moved the isolated Firestore Emulator to port 8081 to avoid the local service that occupies 8080, and made the emulator test runner architecture-explicit on Apple Silicon.

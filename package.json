@@ -8,7 +8,7 @@
     "dev": "npm run dev -w backend",
     "test": "npm run build -w shared && LGS_TEST_MODE=demo vitest run",
     "emulators:start": "firebase emulators:start --project lgs-emulator-test --only auth,firestore",
-    "test:emulator": "firebase emulators:exec --project lgs-emulator-test --only auth,firestore \"LGS_TEST_MODE=emulator vitest run backend/tests/emulator-config.test.ts\"",
+    "test:emulator": "firebase emulators:exec --project lgs-emulator-test --only auth,firestore \"LGS_TEST_MODE=emulator arch -arm64 $npm_node_execpath ./node_modules/vitest/vitest.mjs run backend/tests/emulator-config.test.ts backend/tests/emulator-store.test.ts\"",
     "typecheck": "tsc -b shared backend frontend",
     "validate:seed": "npm run build -w shared && tsx scripts/validate-seed.ts",
     "evaluate:model": "tsx scripts/evaluate-model.ts"

@@ -28,7 +28,7 @@ The local build now includes the destination-free profile, completion-only waiti
 These are product gaps, not documentation changes to make the requirements disappear.
 
 1. **Model promotion:** both the original `bt-hierarchical-laplace-v1` candidate and the compact `bt-hierarchical-laplace-v2-compact` candidate have failed closed. The v2 candidate converged on all 15,000 fits and achieved 94.20% aggregate 90% interval coverage, but produced 0 stable-top-five stops and did not certify the adaptive information-gain policy or comparison redaction in the evaluator. It has not replaced the deterministic production ranking path; see [model evaluation](model-evaluation.md) and ADR 0003. The next valid step is a deterministic full-policy replay, not threshold weakening.
-2. **Rehearsal:** Firestore Emulator configuration and local configuration tests exist, and the operator procedure is drafted in [one-trip-runbook.md](one-trip-runbook.md), but this machine lacks the Java JDK required to run the Firestore Emulator. Install it, run the emulator transaction suite and the five-identity browser rehearsal, then record the evidence.
+2. **Rehearsal:** The isolated Auth/Firestore Emulator now runs on this machine and verifies configuration plus actual concurrent/stale transaction behavior. The remaining rehearsal is the five-identity browser flow, then recording its evidence under the selected promoted model.
 3. **Release verification:** complete the visual/manual quality gate, independent post-fix review, Cloud Run/Firebase deployment, preflight export/reset rehearsal, and production smoke test only after the preceding gates pass.
 
 ## Required one-trip inference work
