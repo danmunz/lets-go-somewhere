@@ -3,6 +3,7 @@ import { modelConfig, type ModelConfig } from './config.js';
 import { utilityFromParameters } from './features.js';
 import type { FitSuccess } from './fit.js';
 import { credibleInterval, drawPosteriorParameters } from './posterior.js';
+import { createPrng } from './prng.js';
 
 export const GROUP_POLARIZATION_PENALTY = 0.25;
 
@@ -148,10 +149,26 @@ export function destinationUtilitiesForParameters(fit: FitSuccess, parameters: r
 export function drawDestinationUtilities(
   fit: FitSuccess,
   seed: string | number,
-  config: Pick<ModelConfig, 'posteriorDrawCount'> = modelConfig,
+  config: Pick<ModelConfig, 'posteriorDrawCount' | 'activityResidualPriorSd'> = modelConfig,
 ): DestinationDraw[] {
-  return drawPosteriorParameters(fit, config.posteriorDrawCount, seed)
-    .map((parameters) => destinationUtilitiesForParameters(fit, parameters));
+  const latentResiduals = createPrng(`${seed}:unseen-activity-residual`);
+  const unseenByDestination = new Map<string, string[]>();
+  for (const activity of fit.design.activities) {
+    if (!fit.design.residualActivityIndexById.has(activity.id)) {
+      const items = unseenByDestination.get(activity.destinationId) ?? [];
+      items.push(activity.id);
+      unseenByDestination.set(activity.destinationId, items);
+    }
+  }
+  const portfolioSizes = new Map(fit.design.destinationIds.map((id) => [id, fit.design.activities.filter((activity) => activity.destinationId === id).length]));
+  return drawPosteriorParameters(fit, config.posteriorDrawCount, seed).map((parameters) => {
+    const utilities: Record<string, number> = { ...destinationUtilitiesForParameters(fit, parameters) };
+    for (const [destinationId, unseenIds] of unseenByDestination) {
+      const residual = unseenIds.reduce((sum) => sum + latentResiduals.normal() * config.activityResidualPriorSd, 0);
+      utilities[destinationId] = utilities[destinationId]! + residual / portfolioSizes.get(destinationId)!;
+    }
+    return utilities;
+  });
 }
 
 export function individualConfidenceLabel(
@@ -218,7 +235,7 @@ export function analyzeDestinationDraws(draws: readonly DestinationDraw[]): Indi
 export function analyzeIndividualDestinationPosterior(
   fit: FitSuccess,
   seed: string | number,
-  config: Pick<ModelConfig, 'posteriorDrawCount'> = modelConfig,
+  config: Pick<ModelConfig, 'posteriorDrawCount' | 'activityResidualPriorSd'> = modelConfig,
 ): IndividualDestinationAnalysis {
   return analyzeDestinationDraws(drawDestinationUtilities(fit, seed, config));
 }
@@ -343,7 +360,7 @@ export function aggregateGroupDestinationDraws(userDraws: readonly UserDestinati
 export function analyzeGroupDestinationPosterior(
   users: readonly UserFit[],
   snapshotSeed: string | number,
-  config: Pick<ModelConfig, 'posteriorDrawCount'> = modelConfig,
+  config: Pick<ModelConfig, 'posteriorDrawCount' | 'activityResidualPriorSd'> = modelConfig,
 ): GroupDestinationAnalysis {
   if (users.length === 0 || new Set(users.map((entry) => entry.user)).size !== users.length) {
     throw new AggregateError('invalid-user-input', 'Group posterior analysis requires uniquely named fits.');

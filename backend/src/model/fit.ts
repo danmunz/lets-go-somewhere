@@ -59,7 +59,7 @@ export function priorPrecisions(design: DesignMatrix, config: ModelConfig = mode
   return [
     ...Array.from({ length: ATTRIBUTE_KEYS.length }, () => 1 / config.betaPriorSd ** 2),
     ...Array.from({ length: design.destinationIds.length }, () => 1 / config.destinationPriorSd ** 2),
-    ...Array.from({ length: design.activityIds.length }, () => 1 / config.activityResidualPriorSd ** 2),
+    ...Array.from({ length: design.residualActivityIds.length }, () => 1 / config.activityResidualPriorSd ** 2),
   ];
 }
 
@@ -143,7 +143,11 @@ export function fitHierarchicalBradleyTerry(
   let design: DesignMatrix;
   let prepared: PreparedComparison[];
   try {
-    design = createDesignMatrix(activities);
+    // A 24–40 choice round cannot identify a separate residual for all 120
+    // cards. Retain explicit residuals for seen activities and marginalize the
+    // exchangeable unseen residuals in the posterior portfolio calculation.
+    const observedActivityIds = comparisons.flatMap((comparison) => [comparison.activityA, comparison.activityB]);
+    design = createDesignMatrix(activities, observedActivityIds);
     prepared = prepareComparisons(design, comparisons);
   } catch (error) {
     return {

@@ -45,6 +45,14 @@ describe('hierarchical Bradley–Terry MAP fitting', () => {
     expect(priors.at(-1)).toBeCloseTo(1 / modelConfig.activityResidualPriorSd ** 2);
   });
 
+  it('does not create weakly identified residual coefficients for unseen cards', () => {
+    const fit = fitHierarchicalBradleyTerry(activities, [{ activityA: 'high', activityB: 'low', winner: 'high' }]);
+    expect(fit.ok).toBe(true);
+    if (!fit.ok) return;
+    expect(fit.design.residualActivityIds).toEqual(['high', 'low']);
+    expect(fit.parameters).toHaveLength(8 + fit.design.destinationIds.length + 2);
+  });
+
   it('returns typed safe failures for malformed input and an exhausted iteration budget', () => {
     const malformed = fitHierarchicalBradleyTerry(activities, [{ activityA: 'high', activityB: 'unknown', winner: 'high' }]);
     expect(malformed).toMatchObject({ ok: false, code: 'invalid-input' });

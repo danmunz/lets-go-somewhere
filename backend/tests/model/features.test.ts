@@ -53,6 +53,13 @@ describe('model feature design', () => {
     expect(prepareComparisons(design, [{ activityA: 'alpha', activityB: 'bravo', winner: 'bravo' }])[0]!.target).toBe(0);
   });
 
+  it('uses explicit residual coefficients only for encountered activities', () => {
+    const compact = createDesignMatrix(activities, ['alpha', 'charlie', 'alpha']);
+    expect(compact.residualActivityIds).toEqual(['alpha', 'charlie']);
+    expect(compact.parameterCount).toBe(8 + 2 + 2);
+    expect(utilityDesignRow(compact, 'bravo').slice(10)).toEqual([0, 0]);
+  });
+
   it('rejects duplicate or unknown activity input', () => {
     expect(() => createDesignMatrix([...activities, activities[0]!])).toThrow(FeatureError);
     const design = createDesignMatrix(activities);

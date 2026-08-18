@@ -2,6 +2,8 @@
 
 Revised with the Scrum Team on 2026-08-18. This is a plan to make one fixed five-person trip decision excellent and trustworthy. It is not a platform roadmap, and there is no assumed later V2 release to catch work that matters to this group.
 
+Current checkpoint: the participant journey, durable persistence, snapshot-backed reveal, and local UI are implemented and committed as `91dc81c`. The advanced model work is present offline but has not passed the fixed simulation gate; the hosted app therefore remains a V1 beta on the deterministic foundation. The remaining roadmap is release validation and model promotion work, not a request to build a future platform.
+
 ## Sprint 0 — Documentation and release truth
 
 **Status: complete.** The reconciliation commit records the production Firebase/Cloud Run/Firestore setup, the accepted comparison-photography and post-completion-atlas tradeoff, the group-ranking rule, and the implementation gaps that remain.

@@ -15,13 +15,10 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Activity, Comparison, Destination } from '@lgs/shared';
 import { activitySchema, destinationSchema } from '@lgs/shared';
-import { aggregateGroupDestinationDraws, analyzeDestinationDraws, rankDestinationDraw } from '../backend/src/model/aggregate.js';
+import { aggregateGroupDestinationDraws, analyzeDestinationDraws, drawDestinationUtilities, rankDestinationDraw } from '../backend/src/model/aggregate.js';
 import { replayBaselineRanking, replayBaselineShouldStop } from '../backend/src/model/baseline.js';
 import { modelConfig } from '../backend/src/model/config.js';
-import { utilityDesignRow } from '../backend/src/model/features.js';
 import { fitHierarchicalBradleyTerry } from '../backend/src/model/fit.js';
-import { dot } from '../backend/src/model/linear-algebra.js';
-import { drawPosteriorParameters } from '../backend/src/model/posterior.js';
 import { createSeedVersion } from '../backend/src/model/snapshot.js';
 import { evaluateStopping } from '../backend/src/model/stopping.js';
 import { groupRankings, normalizeDestinationScores, selectNextPair } from '../backend/src/ranking.js';
@@ -44,7 +41,7 @@ const reportPath = resolve(root, 'docs/model-evaluation-results.json');
  * candidate can be promoted. The resulting mismatch is a deliberate hard
  * failure recorded in the report, not a hidden approximation.
  */
-export const EVALUATION_POSTERIOR_DRAW_COUNT = 32;
+export const EVALUATION_POSTERIOR_DRAW_COUNT = 512;
 
 type Rate = Readonly<{ successes: number; total: number; value: number | null }>;
 type IndividualMetrics = Readonly<{
@@ -144,28 +141,14 @@ function loadSeed(): { destinations: Destination[]; activities: Activity[]; seed
  * alter priors, or change the candidate model; it merely removes repeated row
  * allocation from a 7,000-fixture release gate.
  */
-function evaluationDestinationDirections(fit: Extract<ReturnType<typeof fitHierarchicalBradleyTerry>, { ok: true }>): ReadonlyMap<string, readonly number[]> {
-  const directions = new Map<string, number[]>();
-  for (const destinationId of fit.design.destinationIds) {
-    const portfolio = fit.design.activities.filter((activity) => activity.destinationId === destinationId);
-    const direction = Array.from({ length: fit.parameters.length }, () => 0);
-    for (const activity of portfolio) {
-      const row = utilityDesignRow(fit.design, activity.id);
-      for (let index = 0; index < direction.length; index += 1) direction[index]! += row[index]! / portfolio.length;
-    }
-    directions.set(destinationId, direction);
-  }
-  return directions;
-}
-
 function analyzeEvaluationPosterior(
   fit: Extract<ReturnType<typeof fitHierarchicalBradleyTerry>, { ok: true }>,
   seed: string,
 ) {
-  const directions = evaluationDestinationDirections(fit);
-  const draws = drawPosteriorParameters(fit, EVALUATION_POSTERIOR_DRAW_COUNT, seed).map((parameters) =>
-    Object.fromEntries([...directions.entries()].map(([destinationId, direction]) => [destinationId, dot(direction, parameters)])));
-  return analyzeDestinationDraws(draws);
+  return analyzeDestinationDraws(drawDestinationUtilities(fit, seed, {
+    posteriorDrawCount: EVALUATION_POSTERIOR_DRAW_COUNT,
+    activityResidualPriorSd: modelConfig.activityResidualPriorSd,
+  }));
 }
 
 /** The legacy chooser depends only on exposure, so this schedule is stable. */

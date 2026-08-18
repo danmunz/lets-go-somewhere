@@ -5,11 +5,19 @@ import { createVector, type Vector } from './linear-algebra.js';
 export type DesignMatrix = Readonly<{
   activities: readonly Activity[];
   activityIds: readonly string[];
+  /**
+   * Only activities that have actually appeared in this person's round receive
+   * an explicit residual coefficient. Unseen activities remain exchangeable
+   * draws from the same zero-mean residual distribution (aggregate.ts adds
+   * that uncertainty when a destination portfolio is summarized).
+   */
+  residualActivityIds: readonly string[];
   destinationIds: readonly string[];
   attributeMeans: Readonly<Record<AttributeKey, number>>;
   attributeScales: Readonly<Record<AttributeKey, number>>;
   featureByActivityId: ReadonlyMap<string, readonly number[]>;
   activityIndexById: ReadonlyMap<string, number>;
+  residualActivityIndexById: ReadonlyMap<string, number>;
   destinationIndexById: ReadonlyMap<string, number>;
   parameterNames: readonly string[];
   parameterCount: number;
@@ -39,7 +47,7 @@ function standardization(activities: readonly Activity[], key: AttributeKey) {
 }
 
 /** Creates a canonical, centered/scaled eight-attribute model design. */
-export function createDesignMatrix(inputActivities: readonly Activity[]): DesignMatrix {
+export function createDesignMatrix(inputActivities: readonly Activity[], residualInputIds: readonly string[] = inputActivities.map((activity) => activity.id)): DesignMatrix {
   if (inputActivities.length === 0) throw new FeatureError('invalid-comparison', 'A model requires at least one activity.');
   const activities = sortedCopy(inputActivities);
   const activityIds = activities.map((activity) => activity.id);
@@ -49,6 +57,11 @@ export function createDesignMatrix(inputActivities: readonly Activity[]): Design
   const attributeMeans = Object.fromEntries(ATTRIBUTE_KEYS.map((key) => [key, stats[key].mean])) as Record<AttributeKey, number>;
   const attributeScales = Object.fromEntries(ATTRIBUTE_KEYS.map((key) => [key, stats[key].scale])) as Record<AttributeKey, number>;
   const activityIndexById = new Map(activityIds.map((id, index) => [id, index]));
+  const residualActivityIds = [...new Set(residualInputIds)].sort((left, right) => left.localeCompare(right));
+  if (residualActivityIds.some((id) => !activityIndexById.has(id))) {
+    throw new FeatureError('unknown-activity', 'Residual activity IDs must belong to the activity portfolio.');
+  }
+  const residualActivityIndexById = new Map(residualActivityIds.map((id, index) => [id, index]));
   const destinationIndexById = new Map(destinationIds.map((id, index) => [id, index]));
   const featureByActivityId = new Map(activities.map((activity) => [
     activity.id,
@@ -57,16 +70,18 @@ export function createDesignMatrix(inputActivities: readonly Activity[]): Design
   const parameterNames = [
     ...MODEL_PARAMETER_ORDER,
     ...destinationIds.map((id) => `destination:${id}`),
-    ...activityIds.map((id) => `activity:${id}`),
+    ...residualActivityIds.map((id) => `activity:${id}`),
   ];
   return {
     activities,
     activityIds,
+    residualActivityIds,
     destinationIds,
     attributeMeans,
     attributeScales,
     featureByActivityId,
     activityIndexById,
+    residualActivityIndexById,
     destinationIndexById,
     parameterNames,
     parameterCount: parameterNames.length,
@@ -87,10 +102,10 @@ export function utilityDesignRow(design: DesignMatrix, activityId: string): numb
   const features = activityFeature(design, activityId);
   for (let index = 0; index < ATTRIBUTE_KEYS.length; index += 1) row[index] = features[index]!;
   const destinationIndex = design.destinationIndexById.get(activity.destinationId);
-  const activityIndex = design.activityIndexById.get(activityId);
-  if (destinationIndex === undefined || activityIndex === undefined) throw new FeatureError('unknown-activity', `Missing model index for ${activityId}.`);
+  if (destinationIndex === undefined) throw new FeatureError('unknown-activity', `Missing model index for ${activityId}.`);
   row[ATTRIBUTE_KEYS.length + destinationIndex] = 1;
-  row[ATTRIBUTE_KEYS.length + design.destinationIds.length + activityIndex] = 1;
+  const residualIndex = design.residualActivityIndexById.get(activityId);
+  if (residualIndex !== undefined) row[ATTRIBUTE_KEYS.length + design.destinationIds.length + residualIndex] = 1;
   return row;
 }
 

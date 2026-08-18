@@ -19,7 +19,7 @@ V1 has one participant role: an approved member of the fixed five-person roster.
 
 ## Current implementation note
 
-The shipped V3/V4 path is **welcome → choose character → Google OAuth → comparisons → completion-gated named atlas → group reveal**. The atlas is unranked and contains no personal or group outcome data. The standalone profile, waiting roster, personal-results, detailed rationale, and final gut-check screens described below remain V1 completion work; they are not silently treated as shipped. See [implementation status](implementation-status.md).
+The shipped V3/V4 path is **welcome → choose character → Google OAuth → comparisons → completion-gated named atlas → group reveal**. The local one-trip checkpoint additionally implements the profile, waiting roster, personal-results, detailed rationale, and final gut-check surfaces described below. Those additions are committed but remain unreleased until the model and rehearsal gates pass; see [implementation status](implementation-status.md).
 
 The broader product has two primary roles:
 
@@ -1130,7 +1130,7 @@ P13 Group Reveal
 
 # 17. Screen P12 — Waiting for Group
 
-**Implementation status:** `/v1/group-status` provides completion-only roster data, but this dedicated waiting lobby is not yet implemented. It is a V1 completion task.
+**Implementation status:** `/v1/group-status` provides completion-only roster data and the dedicated waiting lobby is implemented in the local one-trip checkpoint. It remains unreleased pending the model, emulator/E2E, and final quality gates.
 
 ## Purpose
 

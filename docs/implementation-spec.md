@@ -1,5 +1,7 @@
 # V1 implementation specification
 
+**Reconciliation note (2026-08-18):** the local one-trip checkpoint now implements the profile, waiting, snapshot-backed results, immutable final decision, transactional persistence, seed-version binding, and emulator configuration described by the completion work below. This document remains the target contract for release; production still runs the deterministic foundation until the advanced-model and rehearsal gates pass. See [implementation status](implementation-status.md) and [the content-management guide](content-management.md).
+
 ## Scope
 
 Deliver a runnable TypeScript monorepo for the fixed 2026 five-person trip. It must preserve destination blindness until the group reveal gate, keep ranking authoritative in the backend, derive results only from the eight canonical activity attributes, and use the checked-in seed content.
@@ -24,4 +26,4 @@ Deliver a runnable TypeScript monorepo for the fixed 2026 five-person trip. It m
 
 The Firebase project, Google sign-in, approved roster mapping, Cloud Run API, Firebase Hosting, and Firestore-backed comparison persistence are implemented and deployed. The local adapter remains available only for development and deterministic tests.
 
-Acceptance criteria 1, 2, 4, and 5 are shipped for the current model; criterion 3 is partially shipped: the game reaches a completion-gated atlas and embargoed group reveal, but the dedicated preference-profile and waiting-status screens remain completion work. The advanced inference, uncertainty, and information-gain upgrade is also required before the actual group run. See [implementation status](implementation-status.md) for the release boundary.
+Acceptance criteria 1, 2, 3, 4, and 5 are implemented in the local one-trip checkpoint. The advanced inference, uncertainty, and information-gain upgrade is also required before the actual group run; its current candidates remain fail-closed after OT-19 evaluation. See [implementation status](implementation-status.md) for the release boundary.

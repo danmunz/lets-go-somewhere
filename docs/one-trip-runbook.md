@@ -1,0 +1,61 @@
+# One-trip operator runbook
+
+**Status:** drafted, not yet rehearsed. The emulator and five-person browser rehearsal require a local Java JDK and remain release gates. This document contains procedures, not evidence that they have passed.
+
+## Before touching the real trip
+
+1. Confirm the intended commit, seed digest, model decision, and deployment identifiers in [implementation status](implementation-status.md).
+2. Run `npm run validate:seed`, `npm test`, `npm run typecheck`, and `npm run build`.
+3. Confirm that the advanced model ADR is **PROMOTED**. If ADR 0003 says **DO NOT PROMOTE**, stop: the hosted app is not ready for the real one-shot decision.
+4. Use only approved Google accounts from the private deployment configuration. Never put roster emails, tokens, service-account JSON, or `ROSTER_EMAILS` values in this repository.
+5. Record the exact seed digest and deployed commit in the private trip notes, not in source control.
+
+## Local emulator rehearsal
+
+Install a JDK 11+ and verify `java -version`, then run:
+
+```sh
+npm run emulators:start
+# in another terminal
+npm run test:emulator
+```
+
+The emulator uses the isolated project ID `lgs-emulator-test`, Auth on port 9099, Firestore on port 8080, and the Emulator UI on port 4000. The test must exercise identity mapping, restart persistence, atomic duplicate/stale submission, pending expiry, completion gates, Dan/all-five reveal, snapshot stability, immutable final decision, and the no-baseline production assertion. Do not point these commands at the production project.
+
+## Browser rehearsal
+
+Use five isolated Auth Emulator identities mapped to Dan, John, Matt, Peter, and James. Do not automate real Google OAuth or use a real roster account. Verify:
+
+- character/account mismatch is clear and recoverable;
+- refresh during a round resumes the current unexpired pair;
+- stale and duplicate submissions do not append twice;
+- progress is honest at 24–40 and the selected model is the promoted version;
+- completion reaches profile, atlas, and completion-only waiting states;
+- map failure leaves the named destination list/gallery usable;
+- Dan can open the reveal only after all five are complete;
+- personal/group results use the same immutable snapshot ID;
+- final decision accepts a finalist or `need-more-research` once and rejects mutation afterward;
+- keyboard focus, reduced motion, desktop, mobile, photo fallback, and destination-blind comparison redaction all remain correct.
+
+Capture screenshots outside the repository and record the browser, viewport, commit, seed digest, and pass/fail notes in the private rehearsal record.
+
+## Deploying a verified release
+
+Only after model promotion, emulator/E2E, visual QA, and independent review pass:
+
+```sh
+npm run validate:seed
+npm test
+npm run typecheck
+npm run build
+gcloud run deploy lgs-api --region us-east4
+firebase deploy --only hosting --project lets-go-somewhere-3549f
+```
+
+Use the repository's existing deployment configuration and keep secrets in the configured service environment. Smoke-test sign-in, one comparison, resume, completion-gated atlas access, and reveal authorization. Do not expose or log tokens or roster configuration.
+
+## Reset and recovery
+
+Before anyone starts, export or otherwise preserve the isolated preflight state, verify that no roster member has comparisons, and reset only the named one-trip Firestore documents. Verify empty group status afterward. Never reset a live trip to fix content, rerun a model, or recover a user without an explicit group decision. A seed-version mismatch is intentionally fail-closed: restore the original checked-in seed rather than mutating the live journey.
+
+After reveal, snapshots and final decisions are immutable. Do not delete or rewrite them as a content operation. For an incident, preserve the snapshot ID, seed digest, model version, request timestamp, and safe error code, then stop and investigate using the deployment/run logs.

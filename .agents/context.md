@@ -17,3 +17,10 @@
 - Group results are revealed only after all five fixed roster members finish and Dan opens the gate. The ranking is the mean of individually normalized destination scores minus a 0.25 standard-deviation polarization penalty. The social reveal shows only each member's top three, never activity-by-activity choices.
 - `seed/activity-media.json` is the private credit catalog for opaque comparison-card paths. Comparison responses contain no destination, coordinate, score, rank, or credit field; destination names, maps, galleries, and credits are exposed only in the completion-gated atlas and post-gate reveal.
 - `assets/` contains supplied traveler artwork approved only for roster, progress, waiting, and celebratory UI. Never use it in destination-blind activity cards; the logo and all visual tokens live in `design-system/`.
+
+## 2026-08-18 one-trip checkpoint
+
+- Commit `91dc81c` contains the local profile, waiting lobby, snapshot-backed personal/group results, immutable final decisions, seed-version sealing, emulator configuration, and hardened frontend recovery/fallbacks. It is not yet a production release.
+- The advanced model candidates remain offline-only. The compact candidate (`bt-hierarchical-laplace-v2-compact`) completed 15,000 fixed-schedule fits with 512 draws and 94.20% aggregate interval coverage, but had zero stable-top-five stops and did not certify the adaptive information-gain policy or payload redaction. Keep production on `elo-coverage-v1` until a full policy replay passes.
+- The operator procedure is drafted in `docs/one-trip-runbook.md`; the Firestore emulator and five-identity rehearsal still require a local JDK and recorded evidence.
+- Content editors should use `docs/content-management.md`; there is no live content-editing UI for this fixed trip.

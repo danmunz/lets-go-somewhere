@@ -1,6 +1,6 @@
 # V1 baseline implementation review — historical
 
-This was the original local implementation review. Its former Firebase/Auth/Firestore deployment blocker is resolved and the document is retained as a baseline rather than a statement of current release status.
+This was the original local implementation review. Its former Firebase/Auth/Firestore deployment blocker is resolved and the document is retained as a baseline rather than a statement of current release status. The current one-trip code review is [one-trip-code-review.md](one-trip-code-review.md); its three must-fix findings are resolved, while model promotion and authenticated rehearsal remain open.
 
 ## Resolved during review
 

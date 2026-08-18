@@ -4,7 +4,7 @@
 `elo-coverage-v1`; `bt-hierarchical-laplace-v1` and `information-gain-v1` are
 offline-only.
 
-## Completed run
+## Completed run: initial v1 candidate
 
 - Command: `npm run evaluate:model`
 - Node: `v22.20.0`
@@ -51,3 +51,43 @@ Hard failures:
 The candidate therefore cannot affect comparison selection, completion,
 persisted snapshots, individual results, group results, or reveal copy. See
 [ADR 0003](adr/0003-one-trip-ranking-model.md).
+
+## v2 compact calibration attempt — still not promoted
+
+The v1 failure revealed a structural mismatch: it allocated one residual
+coefficient to every one of the 120 seeded activities even though a round
+contains only 24–40 comparisons. The replacement candidate is
+`bt-hierarchical-laplace-v2-compact`. It retains the same three effect levels:
+eight standardized attribute effects, destination random effects, and explicit
+activity residual effects for every activity a traveler has encountered. It
+marginalizes the remaining exchangeable, zero-mean activity residuals into
+portfolio posterior draws instead of estimating weakly identified coefficients
+that have no observations.
+
+Its tighter synthetic-only priors are beta/destination/activity SD
+`0.80 / 0.15 / 0.08`; Newton uses 48 iterations, `1e-6` tolerance, and a
+scale-aware roundoff check. The latter accepts only an objective loss within 64
+machine epsilons of the current objective; it does not accept a material
+non-ascent step.
+
+The preceding one-seed smoke evaluation was followed by the full fixed matrix:
+7 scenarios × 200 seeds × 5 budgets, **15,000 fits** and **512 posterior draws
+per fit**. The compact model recorded **0 fit failures**, **339,119 / 360,000
+(94.20%)** aggregate 90%-interval containment, **2,339 / 15,000 (15.59%)**
+exact top-five recovery, **0 / 15,000** stable-top-five stops, and **0 / 8,000**
+false-clear classifications. The full machine-readable v2 result is the
+current [`model-evaluation-results.json`](model-evaluation-results.json).
+
+It remains a **do-not-promote** result. Although the aggregate coverage falls
+inside the 85–95% band, the gate is per fixture/budget: vivid residual and
+indifferent rows remain over-wide (97.88–99.67%), while fifth/sixth boundary
+rows after question 24 are under-wide (82.44–83.83%). The frozen
+`elo-coverage-v1` schedule still misses the two-appearances-per-destination
+guard at question 24, yields no stable stops, and cannot certify the intended
+information-gain policy or HTTP payload redaction. The smallest valid next
+change is therefore not a threshold adjustment or further prior tuning: add a
+deterministic full-policy replay that issues each next comparison through the
+information-gain selector, verifies its coverage contract, and evaluates the
+same posterior/draw path used for results. Only then is it meaningful to
+calibrate any remaining fixture-specific interval mismatch. The production
+ranking remains `elo-coverage-v1`.

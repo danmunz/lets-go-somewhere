@@ -4,6 +4,8 @@
 **Scope:** All remaining work in Sprints 1–3 of [the one-trip roadmap](roadmap.md).  
 **Release bar:** This is the required implementation for the one real five-person trip decision. It is not a pilot, product platform, or V2 staging plan.
 
+**Progress reconciliation (2026-08-18):** OT-01 through OT-18 foundations and the review fixes are implemented in the local checkpoint committed as `91dc81c`. OT-19 has been exercised with both the original and compact hierarchical candidates; both evaluations are explicitly **FAIL — DO NOT PROMOTE**. The target names below describe the required model contract, not a claim that production has switched. Emulator/E2E rehearsal, the runbook, visual release QA, and deployment remain open.
+
 ## 1. Outcome and non-negotiable boundaries
 
 Let’s Go Somewhere must take each fixed-roster traveler from their last blind comparison through a credible individual recognition beat, an unranked atlas and social waiting state, a group verdict, and one final, recorded group decision. Before the real run, the existing deterministic Elo/coverage implementation must be replaced as the production default with a regularized hierarchical Bradley–Terry model, calibrated uncertainty, information-gain pair selection, and confidence-aware bounded stopping.

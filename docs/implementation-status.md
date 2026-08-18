@@ -1,6 +1,6 @@
 # Implementation status
 
-Last reconciled: 2026-08-18.
+Last reconciled: 2026-08-18 (one-trip implementation checkpoint).
 
 This is the operational status companion to the product specification. It records what is shipped without weakening the product requirements in [spec.md](spec.md) or the intended journey in [ux.md](ux.md).
 
@@ -21,19 +21,19 @@ The current reveal exposes group top five and each traveler's top three, never r
 
 ## Implemented but unreleased one-trip work
 
-The local build now includes the destination-free profile, completion-only waiting lobby, snapshot-backed personal and group result views, qualitative result explanations, group-finalist matrix, and one immutable post-reveal final decision. It also adds versioned comparison persistence, atomic pending-pair claims, seed binding, immutable reveal snapshots, and explicit Firebase Emulator configuration. These changes remain unreleased while the model and rehearsal gates below are open.
+The local build now includes the destination-free profile, completion-only waiting lobby, snapshot-backed personal and group result views, qualitative result explanations, group-finalist matrix, and one immutable post-reveal final decision. It also adds versioned comparison persistence, atomic pending-pair claims, seed binding, immutable reveal snapshots, and explicit Firebase Emulator configuration. The integrated checkpoint is committed in `91dc81c`; these changes remain unreleased while the model and rehearsal gates below are open.
 
 ## Remaining one-trip release gates
 
 These are product gaps, not documentation changes to make the requirements disappear.
 
-1. **Model promotion:** the first `bt-hierarchical-laplace-v1` evaluation failed closed. It has not replaced the deterministic production ranking path; see [model evaluation](model-evaluation.md) and ADR 0003. Calibration must pass the fixed synthetic gate before promotion.
-2. **Rehearsal:** Firestore Emulator configuration and local configuration tests exist, but this machine lacks the Java JDK required to run the Firestore Emulator. Install it, run the emulator transaction suite and the five-identity browser rehearsal, then record the evidence in the one-trip runbook.
+1. **Model promotion:** both the original `bt-hierarchical-laplace-v1` candidate and the compact `bt-hierarchical-laplace-v2-compact` candidate have failed closed. The v2 candidate converged on all 15,000 fits and achieved 94.20% aggregate 90% interval coverage, but produced 0 stable-top-five stops and did not certify the adaptive information-gain policy or comparison redaction in the evaluator. It has not replaced the deterministic production ranking path; see [model evaluation](model-evaluation.md) and ADR 0003. The next valid step is a deterministic full-policy replay, not threshold weakening.
+2. **Rehearsal:** Firestore Emulator configuration and local configuration tests exist, and the operator procedure is drafted in [one-trip-runbook.md](one-trip-runbook.md), but this machine lacks the Java JDK required to run the Firestore Emulator. Install it, run the emulator transaction suite and the five-identity browser rehearsal, then record the evidence.
 3. **Release verification:** complete the visual/manual quality gate, independent post-fix review, Cloud Run/Firebase deployment, preflight export/reset rehearsal, and production smoke test only after the preceding gates pass.
 
 ## Required one-trip inference work
 
-The current deterministic Elo-style model, coverage heuristic, and 24–40 stopping rule are a shipped foundation, not the final model for the friends' actual one-shot decision. Before that run, implement hierarchical or regularized Bradley–Terry inference, credible uncertainty intervals, information-gain pair selection, a confidence-aware bounded stopping rule, versioned result snapshots, and deterministic simulation/replay validation. This work remains in scope precisely because the group will not be asked to repeat the exercise. See the [one-trip delivery roadmap](roadmap.md).
+The current deterministic Elo-style model, coverage heuristic, and 24–40 stopping rule are a shipped development foundation, not the final model for the friends' actual one-shot decision. The hierarchical/regularized Bradley–Terry implementation, posterior intervals, information-gain selector, confidence-aware stopping logic, and deterministic evaluator now exist offline, but promotion is blocked by the documented evidence failures. This work remains in scope precisely because the group will not be asked to repeat the exercise. See the [one-trip delivery roadmap](roadmap.md).
 
 ## Explicitly out of scope
 

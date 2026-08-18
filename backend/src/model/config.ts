@@ -7,7 +7,7 @@
  * value change that can alter a result requires a corresponding model version.
  */
 export const BASELINE_MODEL_VERSION = 'elo-coverage-v1' as const;
-export const MODEL_VERSION = 'bt-hierarchical-laplace-v1' as const;
+export const MODEL_VERSION = 'bt-hierarchical-laplace-v2-compact' as const;
 export const SELECTOR_VERSION = 'information-gain-v1' as const;
 export const SNAPSHOT_SCHEMA_VERSION = 1 as const;
 
@@ -24,11 +24,14 @@ export const MODEL_PARAMETER_ORDER = [
 
 export const modelConfig = {
   modelVersion: MODEL_VERSION,
-  betaPriorSd: 1.25,
-  destinationPriorSd: 0.45,
-  activityResidualPriorSd: 0.2,
-  maxNewtonIterations: 16,
-  convergenceTolerance: 1e-7,
+  // Synthetic-only calibration candidates use stronger structured shrinkage:
+  // sparse 24–40 answer rounds identify broad attribute preferences much more
+  // reliably than card-specific or destination-specific deviations.
+  betaPriorSd: 0.8,
+  destinationPriorSd: 0.15,
+  activityResidualPriorSd: 0.08,
+  maxNewtonIterations: 48,
+  convergenceTolerance: 1e-6,
   posteriorDrawCount: 512,
   credibleInterval: 0.9,
   /** A single, documented numerical recovery attempt for Cholesky factorization. */

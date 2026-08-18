@@ -1,6 +1,6 @@
 # One-trip implementation code review
 
-**Review scope:** uncommitted one-trip implementation against `docs/one-trip-implementation-spec.md`, `docs/one-trip-tasks.md`, and the destination-blind boundary.  
+**Review scope:** the one-trip implementation checkpoint against `docs/one-trip-implementation-spec.md`, `docs/one-trip-tasks.md`, and the destination-blind boundary. The reviewed changes are committed in `91dc81c`.
 **Reviewed:** 2026-08-18  
 **Original verdict:** **Not release-ready.** The findings below were the must-fix correctness and authentication issues found in this review. They were resolved and regression-tested in the same change set on 2026-08-18. The separately documented advanced-model promotion failure and unrun emulator rehearsal remain release gates.
 

@@ -6,7 +6,7 @@ The V1 use case is one fixed five-person trip in November 2026 (Dan, John, Matt,
 
 ## Status
 
-The app is a TypeScript workspace with a destination-blind React flow, a backend-owned deterministic ranking engine, activity-specific editorial media, Firestore-backed roster persistence, Google authentication, seed validation, tests, and CI checks. The candidate atlas becomes available after a player finishes; personal and group rankings stay sealed until the full group reveal.
+The app is a TypeScript workspace with a destination-blind React flow, activity-specific editorial media, Firestore-backed roster persistence, Google authentication, seed validation, tests, and CI checks. The local one-trip checkpoint also includes profile, waiting, snapshot-backed results, immutable final decisions, and emulator configuration. The production deployment remains on the verified deterministic ranking foundation while the required uncertainty-aware model and authenticated rehearsal gates are completed; personal and group rankings stay sealed until the full group reveal.
 
 Production preview: <https://lets-go-somewhere-3549f.web.app>. For shipped scope and the remaining one-trip release boundary, see [implementation status](docs/implementation-status.md).
 
@@ -30,6 +30,8 @@ Production preview: <https://lets-go-somewhere-3549f.web.app>. For shipped scope
 - [Documentation index](docs/README.md)
 - [Design system](docs/design-system.md)
 - [Implementation status](docs/implementation-status.md)
+- [Content management guide](docs/content-management.md)
+- [Model evaluation report](docs/model-evaluation.md)
 
 ## Seed data
 

@@ -1,6 +1,8 @@
 # Let's Go Somewhere — Architecture Overview
 
-This document describes the architecture for **Let's Go Somewhere**, separating the implemented V1 foundation from the longer-term target design.
+This document describes the architecture for **Let's Go Somewhere**, separating the implemented V1 foundation, the committed but unreleased one-trip journey checkpoint, and the remaining release gates.
+
+**Current checkpoint (2026-08-18):** the local source includes the profile, completion-only waiting lobby, snapshot-backed personal/group results, immutable final decisions, seed-version sealing, and emulator configuration described by the one-trip specification. The checkpoint is committed as `91dc81c`. Production still uses `elo-coverage-v1`; the advanced hierarchical candidate remains offline-only because its OT-19 evaluation is explicitly fail-closed in [model-evaluation.md](model-evaluation.md). Do not infer production promotion from the presence of the model modules or additive DTOs.
 
 The application presents users with repeated destination-blind, pairwise activity choices such as:
 
@@ -724,7 +726,7 @@ GET  /v1/final-decision
 POST /v1/final-decision
 ```
 
-`/v1/profile`, `/v1/group-status`, and `/v1/results/me` are implemented backend contracts whose dedicated frontend payoff surfaces remain V1 completion work. Comparison responses expose only activity ID, title, description, and opaque local card image path. Atlas and result routes are completion/reveal gated as appropriate.
+`/v1/profile`, `/v1/group-status`, and `/v1/results/me` are implemented backend contracts with local frontend payoff surfaces in the one-trip checkpoint. Comparison responses expose only activity ID, title, description, and opaque local card image path. Atlas and result routes are completion/reveal gated as appropriate. These surfaces are not yet a production release claim until the model, emulator/E2E, visual QA, and deployment gates pass.
 
 `POST /v1/reveal` creates (or returns) the one immutable result snapshot. `GET /v1/results/group` reads that stored snapshot rather than recalculating live comparisons; it exposes only post-reveal finalists, qualitative insight copy, member top threes, ranks on those finalists, and recorded discussion stances. `POST /v1/final-decision` accepts one snapshot-finalist ID or `need-more-research` and is create-once: repeat submissions return `409` with the existing public decision. `GET /v1/final-decision` returns the caller’s decision plus the post-reveal roster summary. Neither endpoint exposes raw comparisons, posterior covariance, or activity-by-activity votes.
 
