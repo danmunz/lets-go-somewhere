@@ -91,3 +91,19 @@ information-gain selector, verifies its coverage contract, and evaluates the
 same posterior/draw path used for results. Only then is it meaningful to
 calibrate any remaining fixture-specific interval mismatch. The production
 ranking remains `elo-coverage-v1`.
+
+## Adaptive-policy audit command
+
+`npm run audit:model-policy` refits and selects every comparison from the
+candidate information-gain policy rather than replaying the frozen baseline
+schedule. It defaults to the full 200-seed fixture set and checks determinism,
+pair uniqueness, cross-destination pairing, and the two-appearances-per-
+destination rule at question 24. For a bounded smoke run, use:
+
+```sh
+LGS_MODEL_POLICY_SEEDS=10000 LGS_MODEL_POLICY_SCENARIOS=clear-attribute-preference LGS_MODEL_POLICY_MAX=24 npm run audit:model-policy
+```
+
+The command is a diagnostic prerequisite, not a promotion mechanism. Its
+results must still be paired with calibrated posterior recovery and comparison
+payload-redaction checks before ADR 0003 can change.

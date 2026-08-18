@@ -52,10 +52,11 @@ describe('information-gain pair selection', () => {
     for (const [first, second] of candidates) {
       expect(first.destinationId).not.toBe(second.destinationId);
       expect([first.id, second.id].sort().join(':')).not.toBe('alpha-one:bravo-one');
-      // Every pair must satisfy the safety obligation by touching a portfolio
-      // with fewer than two appearances. alpha-one is also prohibited from a
-      // third showing before that coverage is complete.
-      expect([first.destinationId, second.destinationId].some((destinationId) => undercovered.has(destinationId))).toBe(true);
+      // When two undercovered portfolios can still be paired, both endpoints
+      // must help coverage. That keeps the 24-question checkpoint attainable
+      // instead of spending a scarce early slot on alpha again.
+      expect(undercovered.has(first.destinationId)).toBe(true);
+      expect(undercovered.has(second.destinationId)).toBe(true);
       expect(first.id).not.toBe('alpha-one');
       expect(second.id).not.toBe('alpha-one');
     }

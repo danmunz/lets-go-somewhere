@@ -142,6 +142,17 @@ function baseEligiblePairs(
       candidates.push(sortedPair(first, second));
     }
   }
+  // With 24 destinations and 24 early comparisons, choosing two undercovered
+  // destinations whenever that option exists is what makes the documented
+  // two-appearances-per-destination checkpoint achievable. The original
+  // one-undercovered-endpoint guard was safe but could spend a scarce early
+  // slot on a destination that had already met coverage.
+  if (needsCoverage) {
+    const dualCoverage = candidates.filter(([first, second]) =>
+      exposure.destination.get(first.destinationId)! < MIN_DESTINATION_APPEARANCES
+      && exposure.destination.get(second.destinationId)! < MIN_DESTINATION_APPEARANCES);
+    if (dualCoverage.length > 0) return dualCoverage.sort((left, right) => canonicalPairId(left[0].id, left[1].id).localeCompare(canonicalPairId(right[0].id, right[1].id)));
+  }
   return candidates.sort((left, right) => canonicalPairId(left[0].id, left[1].id).localeCompare(canonicalPairId(right[0].id, right[1].id)));
 }
 

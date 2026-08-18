@@ -20,6 +20,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - A local Firebase Auth/Firestore emulator configuration, transactional pending-pair submission, seed-version binding, and immutable reveal snapshots.
 - An offline, regularized preference-model candidate with posterior uncertainty, information-gain selection, confidence-aware stopping, deterministic fixtures, and a fail-closed promotion report.
 - A repeatable Auth/Firestore Emulator transaction suite that verifies atomic concurrent submissions and stale-offer protection against the real repository adapter.
+- A deterministic adaptive-policy audit runner that exercises information-gain selection on generated trajectories instead of only a frozen baseline schedule.
 
 ### Changed
 
