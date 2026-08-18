@@ -967,3 +967,6 @@
    with their silhouettes. */
 .character-shell--spin .traveler-stage:before{display:none}
 .character-shell--spin .traveler>.traveler-check{position:absolute!important;top:16px;right:12%;width:32px!important;height:32px!important;margin:0!important;padding:0!important;border:2px solid color-mix(in srgb,var(--color-white) 34%,transparent)!important;border-radius:50%;background:var(--surface-base)!important;box-shadow:none!important;opacity:0!important;transform:scale(.65)!important}.character-shell--spin .traveler--selected>.traveler-check{border-color:var(--accent-primary)!important;background:var(--accent-primary)!important;color:var(--color-night)!important;opacity:1!important;transform:scale(1)!important}
+
+/* The active traveler is the in-game companion, not a utility-size chip. */
+.game-topbar .turn-meta .avatar-art{width:150px;height:150px}
