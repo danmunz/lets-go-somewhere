@@ -23,4 +23,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Aligned documentation precedence, design-system references, and seed/schema examples for implementation.
 - Updated the reveal embargo: completed participants may explore named candidate destinations and general trip context, while every personal and group outcome remains hidden until the group reveal.
 - Tightened the final reveal so it opens only after the whole five-person roster finishes; it exposes each participant's top three rather than raw choices.
-- Reconciled deployment, delivery, implementation, and review documents with the shipped Firebase/Cloud Run/Firestore release; documented the remaining V1 completion gaps separately from the V2 roadmap.
+- Reconciled deployment, delivery, implementation, and review documents with the shipped Firebase/Cloud Run/Firestore release; documented the remaining one-trip completion gaps separately from platform work that is out of scope.

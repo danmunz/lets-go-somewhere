@@ -326,7 +326,7 @@ This lets the final recommendation explain itself.
 
 V1 uses every card in a destination portfolio equally, with unobserved cards shrunk toward the population baseline. Do not overweight a destination’s strongest card: the result should reflect its bundle of experiences, not one unusually vivid activity.
 
-The full hierarchical model remains a V2 research option after simulation and calibration show that it improves top-five stability.
+Before the fixed roster uses the app for its one-shot decision, the portfolio scoring model must graduate to the hierarchical or regularized model with uncertainty and information-gain selection defined in the [one-trip roadmap](roadmap.md). Simulation and calibration must demonstrate improved top-five stability before it becomes the production default.
 
 ---
 
@@ -1168,8 +1168,8 @@ The MVP needs:
 - 5–8 activities per destination
 - Destination-blind activity comparisons
 - Activity attribute tags
-- Adaptive pair selection
-- Basic Bradley–Terry/Elo-like activity scoring
+- Information-gain-driven adaptive pair selection with coverage and fatigue safeguards
+- Hierarchical or regularized Bradley–Terry activity scoring with calibrated uncertainty
 - Destination aggregation
 - 5 named users
 - Individual top-five result set
@@ -1182,22 +1182,16 @@ That alone is enough to make the concept work.
 
 ---
 
-# 46. V2
+# 46. Explicitly Out of Scope for This Trip
 
-Activity-specific editorial photography and restrained selection/loading/reveal motion were deliberately shipped in V3/V4. They are no longer V2-only work; explicit geographic metadata and ranking signals remain protected during play.
+Activity-specific editorial photography and restrained selection/loading/reveal motion were deliberately shipped in V3/V4. Hierarchical preference modeling, uncertainty intervals, and information-gain selection are required before this fixed group uses the app; they are not deferred feature work.
 
-Add:
+The following are intentionally excluded because this is a one-trip experience, not a product platform:
 
-- Hierarchical preference modeling
-- Confidence intervals
-- Better adaptive information-gain calculations
-- Practical-vs-pure preference rankings
-- Automatic airfare refresh
-- Group awards
-- Shareable result pages
-- Organizer dashboard
-- Comparison-history visualization
-- Interactive explanation of why each destination ranked where it did
+- practical-versus-pure preference rankings and automatic airfare refresh;
+- shareable result pages and comparison-history visualizations;
+- organizer dashboard, invitations, content-editing UI, and multi-trip management;
+- generalized group awards or platform analytics beyond the evidence needed for the group’s decision.
 
 ---
 

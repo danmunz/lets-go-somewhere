@@ -368,16 +368,15 @@ without rewriting the frontend or data layer.
 - select useful next comparisons;
 - determine when enough evidence exists to stop.
 
-#### V2 responsibilities
+#### Required one-trip inference responsibilities
 
-Potential additions:
+Before the actual group run, add:
 
 - confidence intervals;
 - hierarchical models;
 - Bayesian inference;
 - explicit destination and activity latent effects;
 - uncertainty-driven information gain;
-- practical-travel weighting;
 - model versioning.
 
 ---
@@ -867,7 +866,7 @@ User experience-category preferences
 
 ---
 
-### Future hierarchical model
+### Required one-trip inference upgrade
 
 Conceptually:
 
@@ -891,13 +890,15 @@ exp(U(A))
 (exp(U(A)) + exp(U(B)))
 ```
 
-This model can improve ranking quality without changing the rest of the application.
+This model is required before the fixed roster makes its one-shot trip decision. It should retain a versioned deterministic baseline for replay, but production selection and results must use calibrated uncertainty rather than raw Elo-style scores alone.
 
 ---
 
 ## 9. Adaptive Comparison Selection
 
 The system should not sample random pairs indefinitely.
+
+The current coverage heuristic is a deployed foundation. Before the actual group run, it must be replaced with the information-gain policy and confidence-aware bounded stopping contract in [the one-trip roadmap](roadmap.md).
 
 For every candidate pair, calculate an approximate information value.
 
@@ -1036,9 +1037,9 @@ Airfare data should be treated as externally sourced and time-sensitive.
 
 ---
 
-### Future AI services
+### Explicitly out-of-scope AI services
 
-Potential V2 use cases:
+These are not needed for the fixed trip:
 
 - generate activity descriptions;
 - normalize activity tone;
@@ -1291,7 +1292,7 @@ Seed files can remain useful for fixtures and development environments.
 
 Activity comparisons may include an opaque local destination-photo asset as an intentionally accepted soft visual cue. The comparison-safe payload must exclude destination IDs, names, countries, coordinates, ranks, scores, gallery data, and photo-credit metadata. Coordinates and credited galleries are atlas-only fields, available after completion.
 
-### V2
+### Out of scope for this trip
 
 If organizers can create or upload their own activities:
 
@@ -1401,7 +1402,7 @@ Add infrastructure only when a demonstrated requirement justifies it.
 
 ---
 
-## 21. Future Considerations / Roadmap
+## 21. One-trip completion boundary
 
 ### V1
 
@@ -1416,24 +1417,20 @@ Add infrastructure only when a demonstrated requirement justifies it.
 - gated individual top-five results
 - group rankings
 
-### V2
+### Required before the actual trip
 
-Potential additions after the fixed-roster V1 completion work:
+- hierarchical or regularized preference model;
+- calibrated uncertainty intervals;
+- information-gain comparison selection and a confidence-aware bounded stopping rule;
+- versioned result snapshots, deterministic simulations, Firestore-emulator, and five-person E2E rehearsal.
 
-- hierarchical preference model;
-- confidence intervals;
-- more rigorous information-gain comparison selection;
-- dynamic airfare data;
-- practical-trip ranking;
-- shareable result pages;
-- improved organizer dashboard;
-- multiple simultaneous trips per user;
-- richer group analytics;
-- AI-generated result explanations;
-- automated activity-card authoring;
-- scheduled flight-price updates.
+### Explicitly out of scope
 
-### Possible later extraction
+- multiple trips, organizer workflows, invitations, and content-editing UI;
+- live airfare or travel-time integration and a second practical ranking;
+- public sharing, exports, and generalized analytics.
+
+### Optional later extraction
 
 If ranking becomes computationally sophisticated:
 

@@ -28,11 +28,13 @@ These are product gaps, not documentation changes to make the requirements disap
 3. **Reveal explanation and final discussion:** the verdict gives a useful short list and top threes, but not yet the full “why this ranked” explanation or post-reveal final gut-check input specified by the journey.
 4. **Production confidence:** the current test suite covers ranking and API behavior in the local adapter. Add Firestore-emulator and authenticated multi-roster end-to-end coverage before relying on the app for the actual trip decision.
 
-## Deliberate V2 backlog
+## Required one-trip inference work
 
-Not yet built: hierarchical modeling, confidence intervals, stronger information-gain selection, practical-versus-pure ranking, fresh airfare integration, self-serve trip administration, multi-trip support, sharing, comparison-history visualization, and richer explanation/analytics tooling. The proposed sequencing is in the [delivery roadmap](roadmap.md).
+The current deterministic Elo-style model, coverage heuristic, and 24–40 stopping rule are a shipped foundation, not the final model for the friends' actual one-shot decision. Before that run, implement hierarchical or regularized Bradley–Terry inference, credible uncertainty intervals, information-gain pair selection, a confidence-aware bounded stopping rule, versioned result snapshots, and deterministic simulation/replay validation. This work remains in scope precisely because the group will not be asked to repeat the exercise. See the [one-trip delivery roadmap](roadmap.md).
 
-Editorial activity imagery and restrained motion were pulled forward from the original V2 concept. They are shipped product decisions, not evidence that the V2 scoring and administration roadmap is complete.
+## Explicitly out of scope
+
+Multi-trip administration, organizer roles, invitations, content-editing UI, live airfare/travel-time providers, practical ranking, public sharing/export, comparison-history products, and platform-scale operational tooling are not needed for this fixed trip. Editorial activity imagery and restrained motion are already shipped.
 
 ## Release checks
 

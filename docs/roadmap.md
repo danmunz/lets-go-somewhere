@@ -1,94 +1,61 @@
-# Delivery roadmap
+# One-trip delivery roadmap
 
-Proposed by the Scrum Team on 2026-08-18. This roadmap is sequenced from the deployed V1 beta; it is not a commitment to build every V2 item before the five-person trip runs.
+Revised with the Scrum Team on 2026-08-18. This is a plan to make one fixed five-person trip decision excellent and trustworthy. It is not a platform roadmap, and there is no assumed later V2 release to catch work that matters to this group.
 
 ## Sprint 0 — Documentation and release truth
 
-**Goal:** make the written contract match the live product without papering over gaps.
+**Status: complete.** The reconciliation commit records the production Firebase/Cloud Run/Firestore setup, the accepted comparison-photography and post-completion-atlas tradeoff, the group-ranking rule, and the implementation gaps that remain.
 
-- Reconcile README, deployment, delivery, review, implementation, architecture, product, and UX documents.
-- Add release, rollback, and reset guidance without committing identities or credentials.
-- Record the comparison-photo and atlas-before-group-reveal decisions as accepted product tradeoffs.
+## Sprint 1 — Complete the human story
 
-**Done when:** no document describes deployed packages as future, production persistence as in-memory, Google authentication as unconfigured, or photos/maps as V2-only. This sprint is complete with the reconciliation commit that accompanies this document.
-
-## Sprint 1 — Individual payoff
-
-**Goal:** complete the participant's personal reveal story before the social result.
+**Goal:** make the journey feel complete from a person's final choice through the group's final call.
 
 | Task | Work | Acceptance criteria |
 | --- | --- | --- |
-| V1-01 | Design and build the destination-free preference-profile screen from `/v1/profile`. | A completed participant sees a clear, evidence-grounded profile before the atlas. |
-| V1-02 | Define the post-gate individual-result contract from `/v1/results/me`. | Top five and explanation primitives are never available before the reveal gate. |
-| V1-03 | Build a personal top-five/results surface and re-entry from atlas/verdict. | A user can understand their own result without seeing another person's raw choices. |
-| V1-04 | Add deterministic explanation primitives: strong attributes, supporting activities, and close calls. | UI language does not overstate model confidence or fabricate rationale. |
+| ONE-01 | Build the destination-free preference-profile beat from `/v1/profile`. | A completed traveler sees an evidence-grounded description of their tastes before entering the atlas. |
+| ONE-02 | Build the five-character waiting lobby from `/v1/group-status`; use polling and explicit refresh, not realtime infrastructure. | It conveys completion-only roster state without leaking preferences. |
+| ONE-03 | Build personal post-gate results and concise explanation primitives from `/v1/results/me`. | A traveler can understand their own top results without seeing anyone else's raw choices. |
+| ONE-04 | Enrich the verdict with a consensus/polarization key, finalist context, and a safe group-finalist rank view. | The social result explains what agreement and a close call mean, including under reduced motion. |
+| ONE-05 | Add one immutable post-reveal group decision: choose a finalist or `need-more-research`. | It never alters the blind ranking, exposes no activity-by-activity choices, and gives the group a clear next conversation. |
 
-V1-01 can run in parallel with V1-02. V1-03 depends on V1-02; V1-04 informs V1-03.
+Existing seeded weather, travel effort, and any available rough logistics appear only as labelled finalist context. There is no separate practical score or live airfare integration.
 
-## Sprint 2 — Waiting and shared decision
+## Sprint 2 — Make the inference worthy of one use
 
-**Goal:** turn the reveal gate into a useful, privacy-safe social moment.
+**Goal:** replace the provisional heuristic with a validated, uncertainty-aware preference model before the friends play for real.
 
 | Task | Work | Acceptance criteria |
 | --- | --- | --- |
-| V1-05 | Build the five-character waiting lobby on `/v1/group-status`. | Completion-only status updates without leaking partial preferences. |
-| V1-06 | Persist an immutable post-reveal gut check: a finalist or `need-more-research`. | It never changes the blind ranking and is unavailable before reveal. |
-| V1-07 | Build finalists/gut-check UI. | Submitted choices are visible only after the gate. |
-| V1-08 | Enrich the verdict with a consensus/polarization legend and group-finalist rank view. | The social result remains understandable with reduced motion. |
-| V1-09 | Show seeded weather, travel effort, and available approximate logistics beside revealed finalists. | No practical composite score is implied or fed back into ranking. |
+| MODEL-01 | Write the model ADR, fixed evaluation rubric, and versioned result snapshot contract. | Every result records the seed and ranking-model version needed for reproducibility. |
+| MODEL-02 | Implement a hierarchical or regularized Bradley–Terry model with activity, destination, and attribute effects. | Individual and group results use calibrated posterior preference estimates rather than only raw Elo-style scores. |
+| MODEL-03 | Calculate uncertainty/credible intervals for destination outcomes and the group-finalist boundary. | The API and UI can distinguish a clear favorite from a genuinely close call without pretending to know more than the data supports. |
+| MODEL-04 | Replace the coverage-only pair selector with an information-gain policy that balances uncertainty, destination coverage, diversity, and fatigue. | Later questions are measurably diagnostic, not merely unobserved. |
+| MODEL-05 | Replace the fixed heuristic stopping rule with a confidence-aware, bounded rule. | The round still has humane safeguards, but ends when the finalist boundary is stable rather than at an arbitrary exposure count. |
+| MODEL-06 | Run deterministic replay/simulation tests over representative synthetic preference profiles. | The upgraded model must improve finalist stability at equal or fewer choices; retain the current model as a reproducible baseline, not the production default. |
 
-V1-05 and V1-06 may run in parallel. V1-07 depends on V1-06; V1-08 and V1-09 depend on Sprint 1 result contracts.
+The user experience remains legible: the progress counter remains bounded, the app can ask a few additional discriminating questions when needed, and post-reveal language may say “clear favorite” or “close call.” It must not expose raw posterior math or turn the game into a statistics lesson.
 
-## Sprint 3 — V1.1 reliability, accessibility, and operations
+## Sprint 3 — Rehearse and safeguard the actual trip
 
-**Goal:** make a real five-person run repeatable and observable.
+**Goal:** prove this single run survives ordinary failures and is usable by every friend.
 
-- Firestore-emulator coverage for roster mapping, persistence across restart, pending-pair atomicity, duplicate/stale submissions, group aggregation, and reveal authorization.
-- Authenticated browser E2E flow across five test identities: resume, 24/28/40 thresholds, atlas gate, waiting, organizer reveal, results, and gut check.
-- Automated media/redaction/pin tests: 120 activity assets, 24 three-photo galleries, credits/alts, safe comparison payloads, map/list synchronization.
-- Structured logs, health checks, error alerting, backup/export policy, rollback procedure, and a low-risk test-study reset runbook.
-- Accessibility/performance review for focus order, live regions, map fallback, image fallback, visual regression, mobile layout, and WebGL/bundle budgets.
+- Firestore-emulator coverage for roster mapping, persistence across restart, pending-pair atomicity, duplicate/stale submissions, advanced-model result calculation, and reveal authorization.
+- Authenticated browser E2E rehearsal across five test identities: resume, dynamic stopping, atlas gate, waiting lobby, organizer reveal, personal results, and final gut check.
+- Automated redaction/media/map checks: 120 activity assets, 24 three-photo galleries, credits/alts, safe comparison payloads, and map/list synchronization.
+- One concise operator runbook: deploy, smoke test, export the Firestore state, recover from a failed test run, and perform a controlled reset before any participant starts.
+- Focus, keyboard, mobile, reduced-motion, map-fallback, and image-fallback review. Address the existing bundle/WebGL risks only where they affect this one run.
 
-## Sprint 4 — V1.1 ranking calibration
+## Explicitly out of scope
 
-**Goal:** validate the current stopping rule before adding model complexity.
+The following are consciously not being deferred to a product roadmap; they are unnecessary for this trip:
 
-- Add versioned study/result snapshots and privacy-reviewed aggregate event metrics.
-- Build deterministic replay/simulation fixtures to compare the existing coverage heuristic with a stable-top-five rule.
-- Change the stopping rule only if simulations demonstrate material instability; retain the current model as the default until that threshold is met.
-- Review card wording, media correspondence, recognition bias, and exposure distribution after a pilot.
+- multiple trips, self-serve organizers, invitations, roles, content-editing UI, audits, and a generalized admin dashboard;
+- live airfare/travel-time providers, caching, or a second practical ranking;
+- sharing/export products, comparison-history visualizations, and public result pages;
+- monitoring/alerting or operational infrastructure beyond the small, documented one-trip runbook.
 
-## Sprint 5 — V2 preference model and explainability
+## Finish line
 
-**Goal:** add validated uncertainty-aware ranking only after Sprint 4.
+`Sprint 1 → Sprint 2 → Sprint 3 → play the real trip`
 
-- Model ADR and offline evaluation rubric with the V1 model kept behind a version flag.
-- Hierarchical or regularized Bradley–Terry prototype with destination uncertainty/confidence intervals.
-- Information-gain pair selector balancing uncertainty, coverage, diversity, fatigue, and fairness.
-- Explanation renderer tied strictly to recorded model evidence.
-
-**Gate:** simulations must show improvement at equal or fewer choices; V1 results remain reproducible.
-
-## Sprint 6 — V2 practical decision layer and sharing
-
-**Goal:** help the group decide after blind discovery without mutating the pure-preference result.
-
-- Dates/origins/practical-data contract; cached airfare/travel-time provider with source, timestamp, and failure states.
-- Separate practical lens and finalist head-to-head; never silently merge it with pure preference.
-- Post-gate destination detail, itinerary research links, and consent-aware sharing/export.
-
-## Sprint 7 — V2 multi-trip organizer platform
-
-**Goal:** generalize safely beyond one fixed study.
-
-- Immutable study snapshot, groups/roles, authorization, and migration plan.
-- Organizer content/media curation, validation preview, invitations, and no-edit-after-first-response guard.
-- Trip dashboard, audit log, completion metrics, archival/export, multi-trip selector, rules/index/load testing.
-
-This is a product/security rewrite, not a small feature. It must follow a successful fixed-roster pilot.
-
-## Critical path and recommendation
-
-`Sprint 0 → Sprint 1 → Sprint 2 → Sprint 3 → pilot → Sprint 4 → V2 model/practical/admin work`
-
-Call the current deployment **V1.0 beta**. Call V1 complete after Sprints 1–3; do not begin V2 modeling or multi-trip administration before the intended five-person flow has been exercised end to end.
+The current deployment remains a **V1 beta**. It is ready for the actual one-shot decision only when all three sprints pass: a complete emotional/social flow, uncertainty-aware and information-gain-driven ranking, and a five-person rehearsal with recovery guidance.

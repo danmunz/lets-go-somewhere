@@ -8,7 +8,7 @@ Deliver a runnable TypeScript monorepo for the fixed 2026 five-person trip. It m
 
 - React/Vite is the presentation layer; Hono is the local HTTP API.
 - `shared` owns Zod schemas and public presentation-safe contracts.
-- `backend` owns deterministic V1 Elo-style activity scoring, equal-weight destination aggregation, attributes, pair selection, and stopping rules.
+- `backend` owns ranking, destination aggregation, attributes, pair selection, and stopping rules. The shipped deterministic Elo-style foundation is to be upgraded to the uncertainty-aware model in the one-trip roadmap before the actual group run.
 - The checked-in seed data is loaded by the backend only. Comparison payloads omit destination metadata.
 - Local development uses an explicitly non-production `X-Demo-User` roster adapter. Production requests verify Firebase ID tokens and match their verified email against the `ROSTER_EMAILS` deployment variable.
 
@@ -24,4 +24,4 @@ Deliver a runnable TypeScript monorepo for the fixed 2026 five-person trip. It m
 
 The Firebase project, Google sign-in, approved roster mapping, Cloud Run API, Firebase Hosting, and Firestore-backed comparison persistence are implemented and deployed. The local adapter remains available only for development and deterministic tests.
 
-Acceptance criteria 1, 2, 4, and 5 are shipped. Criterion 3 is partially shipped: the game reaches a completion-gated atlas and embargoed group reveal, but the dedicated preference-profile and waiting-status screens remain V1 completion work. See [implementation status](implementation-status.md) for the current release boundary.
+Acceptance criteria 1, 2, 4, and 5 are shipped for the current model; criterion 3 is partially shipped: the game reaches a completion-gated atlas and embargoed group reveal, but the dedicated preference-profile and waiting-status screens remain completion work. The advanced inference, uncertainty, and information-gain upgrade is also required before the actual group run. See [implementation status](implementation-status.md) for the release boundary.

@@ -1333,7 +1333,7 @@ Which destination activities appealed to the group most.
 
 # 20. Screen P15 — Head-to-Head Finalist Comparison
 
-Potential V1.5 / V2 screen.
+Explicitly out of scope for this one-trip build. The final gut check is the required decision action.
 
 ## Purpose
 
@@ -1726,7 +1726,7 @@ Potential warnings:
 
 > Portfolio heavily overrepresents "food"
 
-These could be V2.
+These are out of scope for this one-trip build.
 
 ## Primary CTA
 
@@ -1967,7 +1967,7 @@ To change it:
 
 This eliminates substantial complexity.
 
-V2 can support incremental destination additions.
+Incremental destination additions are out of scope for this fixed study.
 
 ---
 
@@ -2061,7 +2061,7 @@ Settings
 | P12 | Waiting for Group | Yes | Handle incomplete group |
 | P13 | Group Reveal | Yes | Group ranking/payoff |
 | P14 | Group Destination Detail | Recommended | Explain group result |
-| P15 | Finalist Comparison | V1.5/V2 | Support actual booking decision |
+| P15 | Finalist Comparison | Out of scope | The final gut check handles the required group decision action. |
 | P16 | Resume | Yes | Continue incomplete session |
 
 **MVP participant screens: approximately 13–14.**
