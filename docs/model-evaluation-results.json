@@ -1,0 +1,2651 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-18T18:25:18.848Z",
+  "deterministicInputs": {
+    "seedSchedule": {
+      "first": 10000,
+      "last": 10199,
+      "count": 200
+    },
+    "budgets": [
+      24,
+      28,
+      32,
+      36,
+      40
+    ],
+    "seedVersion": "e6ab43b564dcab83eb94a7a1cb6184e7ce72d2b293e53daf557f3fa18fb6a39f"
+  },
+  "configuration": {
+    "modelVersion": "bt-hierarchical-laplace-v1",
+    "betaPriorSd": 1.25,
+    "destinationPriorSd": 0.45,
+    "activityResidualPriorSd": 0.2,
+    "maxNewtonIterations": 16,
+    "convergenceTolerance": 1e-7,
+    "posteriorDrawCount": 512,
+    "credibleInterval": 0.9,
+    "covarianceJitter": 1e-9,
+    "evaluationPosteriorDrawCount": 32
+  },
+  "comparisonPolicy": "frozen-elo-coverage-v1-replay-schedule",
+  "guardrails": {
+    "uniquePairs": true,
+    "crossDestinationPairs": true,
+    "destinationCoverageAt24": false,
+    "deterministicSchedule": true,
+    "candidateSelectorPolicyCertified": false,
+    "comparisonPayloadRedactionAuditedByThisRunner": false
+  },
+  "rows": [
+    {
+      "scenario": "clear-attribute-preference",
+      "budget": 24,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 92,
+          "total": 200,
+          "value": 0.46
+        },
+        "rankOneCorrect": {
+          "successes": 8,
+          "total": 200,
+          "value": 0.04
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 19,
+          "total": 189,
+          "value": 0.10052910052910052
+        },
+        "fifthSixthCorrect": {
+          "successes": 121,
+          "total": 189,
+          "value": 0.6402116402116402
+        },
+        "rankOneCorrect": {
+          "successes": 75,
+          "total": 189,
+          "value": 0.3968253968253968
+        },
+        "intervalCoverage": {
+          "successes": 4460,
+          "total": 4536,
+          "value": 0.9832451499118166
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 189,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 189,
+          "value": 0
+        },
+        "fitFailures": 11
+      }
+    },
+    {
+      "scenario": "clear-attribute-preference",
+      "budget": 28,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 35,
+          "total": 200,
+          "value": 0.175
+        },
+        "rankOneCorrect": {
+          "successes": 17,
+          "total": 200,
+          "value": 0.085
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 22,
+          "total": 185,
+          "value": 0.11891891891891893
+        },
+        "fifthSixthCorrect": {
+          "successes": 137,
+          "total": 185,
+          "value": 0.7405405405405405
+        },
+        "rankOneCorrect": {
+          "successes": 67,
+          "total": 185,
+          "value": 0.3621621621621622
+        },
+        "intervalCoverage": {
+          "successes": 4335,
+          "total": 4440,
+          "value": 0.9763513513513513
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 185,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 185,
+          "value": 0
+        },
+        "fitFailures": 15
+      }
+    },
+    {
+      "scenario": "clear-attribute-preference",
+      "budget": 32,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 35,
+          "total": 200,
+          "value": 0.175
+        },
+        "rankOneCorrect": {
+          "successes": 17,
+          "total": 200,
+          "value": 0.085
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 16,
+          "total": 184,
+          "value": 0.08695652173913043
+        },
+        "fifthSixthCorrect": {
+          "successes": 127,
+          "total": 184,
+          "value": 0.6902173913043478
+        },
+        "rankOneCorrect": {
+          "successes": 64,
+          "total": 184,
+          "value": 0.34782608695652173
+        },
+        "intervalCoverage": {
+          "successes": 4269,
+          "total": 4416,
+          "value": 0.9667119565217391
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 184,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 184,
+          "value": 0
+        },
+        "fitFailures": 16
+      }
+    },
+    {
+      "scenario": "clear-attribute-preference",
+      "budget": 36,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 35,
+          "total": 200,
+          "value": 0.175
+        },
+        "rankOneCorrect": {
+          "successes": 18,
+          "total": 200,
+          "value": 0.09
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 18,
+          "total": 184,
+          "value": 0.09782608695652174
+        },
+        "fifthSixthCorrect": {
+          "successes": 131,
+          "total": 184,
+          "value": 0.7119565217391305
+        },
+        "rankOneCorrect": {
+          "successes": 69,
+          "total": 184,
+          "value": 0.375
+        },
+        "intervalCoverage": {
+          "successes": 4287,
+          "total": 4416,
+          "value": 0.9707880434782609
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 184,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 184,
+          "value": 0
+        },
+        "fitFailures": 16
+      }
+    },
+    {
+      "scenario": "clear-attribute-preference",
+      "budget": 40,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 102,
+          "total": 200,
+          "value": 0.51
+        },
+        "rankOneCorrect": {
+          "successes": 23,
+          "total": 200,
+          "value": 0.115
+        },
+        "stableAtBudget": {
+          "successes": 200,
+          "total": 200,
+          "value": 1
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 19,
+          "total": 186,
+          "value": 0.10215053763440861
+        },
+        "fifthSixthCorrect": {
+          "successes": 123,
+          "total": 186,
+          "value": 0.6612903225806451
+        },
+        "rankOneCorrect": {
+          "successes": 69,
+          "total": 186,
+          "value": 0.3709677419354839
+        },
+        "intervalCoverage": {
+          "successes": 4270,
+          "total": 4464,
+          "value": 0.9565412186379928
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 186,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 186,
+          "value": 0
+        },
+        "fitFailures": 14
+      }
+    },
+    {
+      "scenario": "vivid-activity-residual",
+      "budget": 24,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 1,
+          "total": 200,
+          "value": 0.005
+        },
+        "fifthSixthCorrect": {
+          "successes": 38,
+          "total": 200,
+          "value": 0.19
+        },
+        "rankOneCorrect": {
+          "successes": 110,
+          "total": 200,
+          "value": 0.55
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 14,
+          "total": 183,
+          "value": 0.07650273224043716
+        },
+        "fifthSixthCorrect": {
+          "successes": 74,
+          "total": 183,
+          "value": 0.40437158469945356
+        },
+        "rankOneCorrect": {
+          "successes": 72,
+          "total": 183,
+          "value": 0.39344262295081966
+        },
+        "intervalCoverage": {
+          "successes": 4358,
+          "total": 4392,
+          "value": 0.9922586520947176
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 183,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 183,
+          "value": 0
+        },
+        "fitFailures": 17
+      }
+    },
+    {
+      "scenario": "vivid-activity-residual",
+      "budget": 28,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 67,
+          "total": 200,
+          "value": 0.335
+        },
+        "rankOneCorrect": {
+          "successes": 76,
+          "total": 200,
+          "value": 0.38
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 18,
+          "total": 188,
+          "value": 0.09574468085106383
+        },
+        "fifthSixthCorrect": {
+          "successes": 86,
+          "total": 188,
+          "value": 0.4574468085106383
+        },
+        "rankOneCorrect": {
+          "successes": 90,
+          "total": 188,
+          "value": 0.4787234042553192
+        },
+        "intervalCoverage": {
+          "successes": 4477,
+          "total": 4512,
+          "value": 0.9922429078014184
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "fitFailures": 12
+      }
+    },
+    {
+      "scenario": "vivid-activity-residual",
+      "budget": 32,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 41,
+          "total": 200,
+          "value": 0.205
+        },
+        "rankOneCorrect": {
+          "successes": 74,
+          "total": 200,
+          "value": 0.37
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 19,
+          "total": 188,
+          "value": 0.10106382978723404
+        },
+        "fifthSixthCorrect": {
+          "successes": 65,
+          "total": 188,
+          "value": 0.34574468085106386
+        },
+        "rankOneCorrect": {
+          "successes": 72,
+          "total": 188,
+          "value": 0.3829787234042553
+        },
+        "intervalCoverage": {
+          "successes": 4450,
+          "total": 4512,
+          "value": 0.9862588652482269
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "fitFailures": 12
+      }
+    },
+    {
+      "scenario": "vivid-activity-residual",
+      "budget": 36,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 1,
+          "total": 200,
+          "value": 0.005
+        },
+        "fifthSixthCorrect": {
+          "successes": 73,
+          "total": 200,
+          "value": 0.365
+        },
+        "rankOneCorrect": {
+          "successes": 74,
+          "total": 200,
+          "value": 0.37
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 15,
+          "total": 190,
+          "value": 0.07894736842105263
+        },
+        "fifthSixthCorrect": {
+          "successes": 73,
+          "total": 190,
+          "value": 0.38421052631578945
+        },
+        "rankOneCorrect": {
+          "successes": 64,
+          "total": 190,
+          "value": 0.3368421052631579
+        },
+        "intervalCoverage": {
+          "successes": 4479,
+          "total": 4560,
+          "value": 0.9822368421052632
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "fitFailures": 10
+      }
+    },
+    {
+      "scenario": "vivid-activity-residual",
+      "budget": 40,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 1,
+          "total": 200,
+          "value": 0.005
+        },
+        "fifthSixthCorrect": {
+          "successes": 73,
+          "total": 200,
+          "value": 0.365
+        },
+        "rankOneCorrect": {
+          "successes": 115,
+          "total": 200,
+          "value": 0.575
+        },
+        "stableAtBudget": {
+          "successes": 200,
+          "total": 200,
+          "value": 1
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 16,
+          "total": 188,
+          "value": 0.0851063829787234
+        },
+        "fifthSixthCorrect": {
+          "successes": 77,
+          "total": 188,
+          "value": 0.4095744680851064
+        },
+        "rankOneCorrect": {
+          "successes": 69,
+          "total": 188,
+          "value": 0.3670212765957447
+        },
+        "intervalCoverage": {
+          "successes": 4410,
+          "total": 4512,
+          "value": 0.9773936170212766
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "fitFailures": 12
+      }
+    },
+    {
+      "scenario": "fifth-sixth-boundary",
+      "budget": 24,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 144,
+          "total": 200,
+          "value": 0.72
+        },
+        "rankOneCorrect": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 191,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 109,
+          "total": 191,
+          "value": 0.5706806282722513
+        },
+        "rankOneCorrect": {
+          "successes": 6,
+          "total": 191,
+          "value": 0.031413612565445025
+        },
+        "intervalCoverage": {
+          "successes": 4196,
+          "total": 4584,
+          "value": 0.9153577661431065
+        },
+        "clearShape": {
+          "successes": 191,
+          "total": 191,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 191,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 191,
+          "value": 0
+        },
+        "fitFailures": 9
+      }
+    },
+    {
+      "scenario": "fifth-sixth-boundary",
+      "budget": 28,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 145,
+          "total": 200,
+          "value": 0.725
+        },
+        "rankOneCorrect": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 1,
+          "total": 189,
+          "value": 0.005291005291005291
+        },
+        "fifthSixthCorrect": {
+          "successes": 108,
+          "total": 189,
+          "value": 0.5714285714285714
+        },
+        "rankOneCorrect": {
+          "successes": 10,
+          "total": 189,
+          "value": 0.05291005291005291
+        },
+        "intervalCoverage": {
+          "successes": 4122,
+          "total": 4536,
+          "value": 0.9087301587301587
+        },
+        "clearShape": {
+          "successes": 189,
+          "total": 189,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 189,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 189,
+          "value": 0
+        },
+        "fitFailures": 11
+      }
+    },
+    {
+      "scenario": "fifth-sixth-boundary",
+      "budget": 32,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 148,
+          "total": 200,
+          "value": 0.74
+        },
+        "rankOneCorrect": {
+          "successes": 13,
+          "total": 200,
+          "value": 0.065
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 1,
+          "total": 183,
+          "value": 0.00546448087431694
+        },
+        "fifthSixthCorrect": {
+          "successes": 112,
+          "total": 183,
+          "value": 0.6120218579234973
+        },
+        "rankOneCorrect": {
+          "successes": 13,
+          "total": 183,
+          "value": 0.07103825136612021
+        },
+        "intervalCoverage": {
+          "successes": 3977,
+          "total": 4392,
+          "value": 0.9055100182149363
+        },
+        "clearShape": {
+          "successes": 183,
+          "total": 183,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 183,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 183,
+          "value": 0
+        },
+        "fitFailures": 17
+      }
+    },
+    {
+      "scenario": "fifth-sixth-boundary",
+      "budget": 36,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 149,
+          "total": 200,
+          "value": 0.745
+        },
+        "rankOneCorrect": {
+          "successes": 17,
+          "total": 200,
+          "value": 0.085
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 1,
+          "total": 187,
+          "value": 0.0053475935828877
+        },
+        "fifthSixthCorrect": {
+          "successes": 116,
+          "total": 187,
+          "value": 0.6203208556149733
+        },
+        "rankOneCorrect": {
+          "successes": 13,
+          "total": 187,
+          "value": 0.06951871657754011
+        },
+        "intervalCoverage": {
+          "successes": 4006,
+          "total": 4488,
+          "value": 0.892602495543672
+        },
+        "clearShape": {
+          "successes": 187,
+          "total": 187,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 187,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 187,
+          "value": 0
+        },
+        "fitFailures": 13
+      }
+    },
+    {
+      "scenario": "fifth-sixth-boundary",
+      "budget": 40,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 149,
+          "total": 200,
+          "value": 0.745
+        },
+        "rankOneCorrect": {
+          "successes": 8,
+          "total": 200,
+          "value": 0.04
+        },
+        "stableAtBudget": {
+          "successes": 200,
+          "total": 200,
+          "value": 1
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 114,
+          "total": 190,
+          "value": 0.6
+        },
+        "rankOneCorrect": {
+          "successes": 14,
+          "total": 190,
+          "value": 0.07368421052631578
+        },
+        "intervalCoverage": {
+          "successes": 4065,
+          "total": 4560,
+          "value": 0.8914473684210527
+        },
+        "clearShape": {
+          "successes": 190,
+          "total": 190,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "fitFailures": 10
+      }
+    },
+    {
+      "scenario": "indifferent-traveler",
+      "budget": 24,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 95,
+          "total": 200,
+          "value": 0.475
+        },
+        "rankOneCorrect": {
+          "successes": 9,
+          "total": 200,
+          "value": 0.045
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 84,
+          "total": 190,
+          "value": 0.4421052631578947
+        },
+        "rankOneCorrect": {
+          "successes": 9,
+          "total": 190,
+          "value": 0.04736842105263158
+        },
+        "intervalCoverage": {
+          "successes": 4450,
+          "total": 4560,
+          "value": 0.9758771929824561
+        },
+        "clearShape": {
+          "successes": 190,
+          "total": 190,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "fitFailures": 10
+      }
+    },
+    {
+      "scenario": "indifferent-traveler",
+      "budget": 28,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 94,
+          "total": 200,
+          "value": 0.47
+        },
+        "rankOneCorrect": {
+          "successes": 7,
+          "total": 200,
+          "value": 0.035
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 183,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 82,
+          "total": 183,
+          "value": 0.44808743169398907
+        },
+        "rankOneCorrect": {
+          "successes": 4,
+          "total": 183,
+          "value": 0.02185792349726776
+        },
+        "intervalCoverage": {
+          "successes": 4257,
+          "total": 4392,
+          "value": 0.9692622950819673
+        },
+        "clearShape": {
+          "successes": 183,
+          "total": 183,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 183,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 183,
+          "value": 0
+        },
+        "fitFailures": 17
+      }
+    },
+    {
+      "scenario": "indifferent-traveler",
+      "budget": 32,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 95,
+          "total": 200,
+          "value": 0.475
+        },
+        "rankOneCorrect": {
+          "successes": 8,
+          "total": 200,
+          "value": 0.04
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 87,
+          "total": 188,
+          "value": 0.4627659574468085
+        },
+        "rankOneCorrect": {
+          "successes": 6,
+          "total": 188,
+          "value": 0.031914893617021274
+        },
+        "intervalCoverage": {
+          "successes": 4359,
+          "total": 4512,
+          "value": 0.9660904255319149
+        },
+        "clearShape": {
+          "successes": 188,
+          "total": 188,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "fitFailures": 12
+      }
+    },
+    {
+      "scenario": "indifferent-traveler",
+      "budget": 36,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 96,
+          "total": 200,
+          "value": 0.48
+        },
+        "rankOneCorrect": {
+          "successes": 7,
+          "total": 200,
+          "value": 0.035
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 180,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 88,
+          "total": 180,
+          "value": 0.4888888888888889
+        },
+        "rankOneCorrect": {
+          "successes": 8,
+          "total": 180,
+          "value": 0.044444444444444446
+        },
+        "intervalCoverage": {
+          "successes": 4153,
+          "total": 4320,
+          "value": 0.9613425925925926
+        },
+        "clearShape": {
+          "successes": 180,
+          "total": 180,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 180,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 180,
+          "value": 0
+        },
+        "fitFailures": 20
+      }
+    },
+    {
+      "scenario": "indifferent-traveler",
+      "budget": 40,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 98,
+          "total": 200,
+          "value": 0.49
+        },
+        "rankOneCorrect": {
+          "successes": 8,
+          "total": 200,
+          "value": 0.04
+        },
+        "stableAtBudget": {
+          "successes": 200,
+          "total": 200,
+          "value": 1
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 180,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 88,
+          "total": 180,
+          "value": 0.4888888888888889
+        },
+        "rankOneCorrect": {
+          "successes": 8,
+          "total": 180,
+          "value": 0.044444444444444446
+        },
+        "intervalCoverage": {
+          "successes": 4111,
+          "total": 4320,
+          "value": 0.9516203703703704
+        },
+        "clearShape": {
+          "successes": 180,
+          "total": 180,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 180,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 180,
+          "value": 0
+        },
+        "fitFailures": 20
+      }
+    },
+    {
+      "scenario": "consensus-group",
+      "budget": 24,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 499,
+          "total": 1000,
+          "value": 0.499
+        },
+        "rankOneCorrect": {
+          "successes": 35,
+          "total": 1000,
+          "value": 0.035
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 81,
+          "total": 940,
+          "value": 0.08617021276595745
+        },
+        "fifthSixthCorrect": {
+          "successes": 531,
+          "total": 940,
+          "value": 0.5648936170212766
+        },
+        "rankOneCorrect": {
+          "successes": 348,
+          "total": 940,
+          "value": 0.3702127659574468
+        },
+        "intervalCoverage": {
+          "successes": 22118,
+          "total": 22560,
+          "value": 0.9804078014184398
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 940,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 940,
+          "value": 0
+        },
+        "fitFailures": 60
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 6,
+            "total": 200,
+            "value": 0.03
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 82,
+            "total": 145,
+            "value": 0.5655172413793104
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 145,
+            "value": 0
+          }
+        }
+      }
+    },
+    {
+      "scenario": "consensus-group",
+      "budget": 28,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 341,
+          "total": 1000,
+          "value": 0.341
+        },
+        "rankOneCorrect": {
+          "successes": 107,
+          "total": 1000,
+          "value": 0.107
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 66,
+          "total": 929,
+          "value": 0.07104413347685684
+        },
+        "fifthSixthCorrect": {
+          "successes": 547,
+          "total": 929,
+          "value": 0.5888051668460711
+        },
+        "rankOneCorrect": {
+          "successes": 315,
+          "total": 929,
+          "value": 0.33907427341227125
+        },
+        "intervalCoverage": {
+          "successes": 21658,
+          "total": 22296,
+          "value": 0.9713850017940437
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 929,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 929,
+          "value": 0
+        },
+        "fitFailures": 71
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 9,
+            "total": 200,
+            "value": 0.045
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 59,
+            "total": 136,
+            "value": 0.4338235294117647
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 136,
+            "value": 0
+          }
+        }
+      }
+    },
+    {
+      "scenario": "consensus-group",
+      "budget": 32,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 341,
+          "total": 1000,
+          "value": 0.341
+        },
+        "rankOneCorrect": {
+          "successes": 119,
+          "total": 1000,
+          "value": 0.119
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 69,
+          "total": 933,
+          "value": 0.07395498392282958
+        },
+        "fifthSixthCorrect": {
+          "successes": 541,
+          "total": 933,
+          "value": 0.579849946409432
+        },
+        "rankOneCorrect": {
+          "successes": 326,
+          "total": 933,
+          "value": 0.34941050375133975
+        },
+        "intervalCoverage": {
+          "successes": 21588,
+          "total": 22392,
+          "value": 0.9640943193997856
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 933,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 933,
+          "value": 0
+        },
+        "fitFailures": 67
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 8,
+            "total": 200,
+            "value": 0.04
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 63,
+            "total": 139,
+            "value": 0.45323741007194246
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 139,
+            "value": 0
+          }
+        }
+      }
+    },
+    {
+      "scenario": "consensus-group",
+      "budget": 36,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 341,
+          "total": 1000,
+          "value": 0.341
+        },
+        "rankOneCorrect": {
+          "successes": 84,
+          "total": 1000,
+          "value": 0.084
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 76,
+          "total": 927,
+          "value": 0.08198489751887811
+        },
+        "fifthSixthCorrect": {
+          "successes": 578,
+          "total": 927,
+          "value": 0.6235167206040992
+        },
+        "rankOneCorrect": {
+          "successes": 373,
+          "total": 927,
+          "value": 0.4023732470334412
+        },
+        "intervalCoverage": {
+          "successes": 21391,
+          "total": 22248,
+          "value": 0.9614796835670623
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 927,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 927,
+          "value": 0
+        },
+        "fitFailures": 73
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 18,
+            "total": 200,
+            "value": 0.09
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 75,
+            "total": 138,
+            "value": 0.5434782608695652
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 138,
+            "value": 0
+          }
+        }
+      }
+    },
+    {
+      "scenario": "consensus-group",
+      "budget": 40,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 509,
+          "total": 1000,
+          "value": 0.509
+        },
+        "rankOneCorrect": {
+          "successes": 109,
+          "total": 1000,
+          "value": 0.109
+        },
+        "stableAtBudget": {
+          "successes": 1000,
+          "total": 1000,
+          "value": 1
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 69,
+          "total": 933,
+          "value": 0.07395498392282958
+        },
+        "fifthSixthCorrect": {
+          "successes": 562,
+          "total": 933,
+          "value": 0.602357984994641
+        },
+        "rankOneCorrect": {
+          "successes": 378,
+          "total": 933,
+          "value": 0.40514469453376206
+        },
+        "intervalCoverage": {
+          "successes": 21315,
+          "total": 22392,
+          "value": 0.9519024651661308
+        },
+        "clearShape": {
+          "successes": 0,
+          "total": 933,
+          "value": 0
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 0,
+          "value": null
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 933,
+          "value": 0
+        },
+        "fitFailures": 67
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 20,
+            "total": 200,
+            "value": 0.1
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 90,
+            "total": 143,
+            "value": 0.6293706293706294
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 143,
+            "value": 0
+          }
+        }
+      }
+    },
+    {
+      "scenario": "polarizing-group",
+      "budget": 24,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 479,
+          "total": 1000,
+          "value": 0.479
+        },
+        "rankOneCorrect": {
+          "successes": 245,
+          "total": 1000,
+          "value": 0.245
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 79,
+          "total": 927,
+          "value": 0.08522114347357065
+        },
+        "fifthSixthCorrect": {
+          "successes": 532,
+          "total": 927,
+          "value": 0.5738942826321467
+        },
+        "rankOneCorrect": {
+          "successes": 259,
+          "total": 927,
+          "value": 0.27939590075512405
+        },
+        "intervalCoverage": {
+          "successes": 21896,
+          "total": 22248,
+          "value": 0.9841783531103919
+        },
+        "clearShape": {
+          "successes": 927,
+          "total": 927,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 927,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 927,
+          "value": 0
+        },
+        "fitFailures": 73
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 20,
+            "total": 200,
+            "value": 0.1
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 10,
+            "total": 135,
+            "value": 0.07407407407407407
+          },
+          "consensusCorrect": {
+            "successes": 135,
+            "total": 135,
+            "value": 1
+          }
+        }
+      }
+    },
+    {
+      "scenario": "polarizing-group",
+      "budget": 28,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 372,
+          "total": 1000,
+          "value": 0.372
+        },
+        "rankOneCorrect": {
+          "successes": 262,
+          "total": 1000,
+          "value": 0.262
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 66,
+          "total": 944,
+          "value": 0.06991525423728813
+        },
+        "fifthSixthCorrect": {
+          "successes": 539,
+          "total": 944,
+          "value": 0.5709745762711864
+        },
+        "rankOneCorrect": {
+          "successes": 236,
+          "total": 944,
+          "value": 0.25
+        },
+        "intervalCoverage": {
+          "successes": 22154,
+          "total": 22656,
+          "value": 0.9778425141242938
+        },
+        "clearShape": {
+          "successes": 944,
+          "total": 944,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 944,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 944,
+          "value": 0
+        },
+        "fitFailures": 56
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 19,
+            "total": 200,
+            "value": 0.095
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 10,
+            "total": 149,
+            "value": 0.06711409395973154
+          },
+          "consensusCorrect": {
+            "successes": 149,
+            "total": 149,
+            "value": 1
+          }
+        }
+      }
+    },
+    {
+      "scenario": "polarizing-group",
+      "budget": 32,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 3,
+          "total": 1000,
+          "value": 0.003
+        },
+        "fifthSixthCorrect": {
+          "successes": 384,
+          "total": 1000,
+          "value": 0.384
+        },
+        "rankOneCorrect": {
+          "successes": 293,
+          "total": 1000,
+          "value": 0.293
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 86,
+          "total": 931,
+          "value": 0.09237379162191192
+        },
+        "fifthSixthCorrect": {
+          "successes": 565,
+          "total": 931,
+          "value": 0.60687432867884
+        },
+        "rankOneCorrect": {
+          "successes": 253,
+          "total": 931,
+          "value": 0.27175080558539205
+        },
+        "intervalCoverage": {
+          "successes": 21824,
+          "total": 22344,
+          "value": 0.9767275331185106
+        },
+        "clearShape": {
+          "successes": 931,
+          "total": 931,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 931,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 931,
+          "value": 0
+        },
+        "fitFailures": 69
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 58,
+            "total": 200,
+            "value": 0.29
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 15,
+            "total": 139,
+            "value": 0.1079136690647482
+          },
+          "consensusCorrect": {
+            "successes": 139,
+            "total": 139,
+            "value": 1
+          }
+        }
+      }
+    },
+    {
+      "scenario": "polarizing-group",
+      "budget": 36,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 2,
+          "total": 1000,
+          "value": 0.002
+        },
+        "fifthSixthCorrect": {
+          "successes": 455,
+          "total": 1000,
+          "value": 0.455
+        },
+        "rankOneCorrect": {
+          "successes": 230,
+          "total": 1000,
+          "value": 0.23
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 1000,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 85,
+          "total": 939,
+          "value": 0.09052183173588925
+        },
+        "fifthSixthCorrect": {
+          "successes": 549,
+          "total": 939,
+          "value": 0.5846645367412141
+        },
+        "rankOneCorrect": {
+          "successes": 263,
+          "total": 939,
+          "value": 0.28008519701810436
+        },
+        "intervalCoverage": {
+          "successes": 21901,
+          "total": 22536,
+          "value": 0.9718228611998581
+        },
+        "clearShape": {
+          "successes": 939,
+          "total": 939,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 939,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 939,
+          "value": 0
+        },
+        "fitFailures": 61
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 52,
+            "total": 200,
+            "value": 0.26
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 13,
+            "total": 146,
+            "value": 0.08904109589041095
+          },
+          "consensusCorrect": {
+            "successes": 146,
+            "total": 146,
+            "value": 1
+          }
+        }
+      }
+    },
+    {
+      "scenario": "polarizing-group",
+      "budget": 40,
+      "observations": 1000,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 2,
+          "total": 1000,
+          "value": 0.002
+        },
+        "fifthSixthCorrect": {
+          "successes": 458,
+          "total": 1000,
+          "value": 0.458
+        },
+        "rankOneCorrect": {
+          "successes": 240,
+          "total": 1000,
+          "value": 0.24
+        },
+        "stableAtBudget": {
+          "successes": 1000,
+          "total": 1000,
+          "value": 1
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 68,
+          "total": 938,
+          "value": 0.07249466950959488
+        },
+        "fifthSixthCorrect": {
+          "successes": 546,
+          "total": 938,
+          "value": 0.582089552238806
+        },
+        "rankOneCorrect": {
+          "successes": 255,
+          "total": 938,
+          "value": 0.27185501066098083
+        },
+        "intervalCoverage": {
+          "successes": 21706,
+          "total": 22512,
+          "value": 0.9641968727789624
+        },
+        "clearShape": {
+          "successes": 938,
+          "total": 938,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 938,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 938,
+          "value": 0
+        },
+        "fitFailures": 62
+      },
+      "group": {
+        "baseline": {
+          "winnerCorrect": {
+            "successes": 48,
+            "total": 200,
+            "value": 0.24
+          },
+          "consensusCorrect": {
+            "successes": 0,
+            "total": 200,
+            "value": 0
+          }
+        },
+        "candidate": {
+          "winnerCorrect": {
+            "successes": 11,
+            "total": 146,
+            "value": 0.07534246575342465
+          },
+          "consensusCorrect": {
+            "successes": 146,
+            "total": 146,
+            "value": 1
+          }
+        }
+      }
+    },
+    {
+      "scenario": "noisy-replay",
+      "budget": 24,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 102,
+          "total": 200,
+          "value": 0.51
+        },
+        "rankOneCorrect": {
+          "successes": 14,
+          "total": 200,
+          "value": 0.07
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 17,
+          "total": 185,
+          "value": 0.0918918918918919
+        },
+        "fifthSixthCorrect": {
+          "successes": 98,
+          "total": 185,
+          "value": 0.5297297297297298
+        },
+        "rankOneCorrect": {
+          "successes": 65,
+          "total": 185,
+          "value": 0.35135135135135137
+        },
+        "intervalCoverage": {
+          "successes": 4366,
+          "total": 4440,
+          "value": 0.9833333333333333
+        },
+        "clearShape": {
+          "successes": 185,
+          "total": 185,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 185,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 185,
+          "value": 0
+        },
+        "fitFailures": 15
+      }
+    },
+    {
+      "scenario": "noisy-replay",
+      "budget": 28,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 96,
+          "total": 200,
+          "value": 0.48
+        },
+        "rankOneCorrect": {
+          "successes": 24,
+          "total": 200,
+          "value": 0.12
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 17,
+          "total": 190,
+          "value": 0.08947368421052632
+        },
+        "fifthSixthCorrect": {
+          "successes": 110,
+          "total": 190,
+          "value": 0.5789473684210527
+        },
+        "rankOneCorrect": {
+          "successes": 58,
+          "total": 190,
+          "value": 0.30526315789473685
+        },
+        "intervalCoverage": {
+          "successes": 4446,
+          "total": 4560,
+          "value": 0.975
+        },
+        "clearShape": {
+          "successes": 190,
+          "total": 190,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 190,
+          "value": 0
+        },
+        "fitFailures": 10
+      }
+    },
+    {
+      "scenario": "noisy-replay",
+      "budget": 32,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 95,
+          "total": 200,
+          "value": 0.475
+        },
+        "rankOneCorrect": {
+          "successes": 26,
+          "total": 200,
+          "value": 0.13
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 16,
+          "total": 187,
+          "value": 0.0855614973262032
+        },
+        "fifthSixthCorrect": {
+          "successes": 104,
+          "total": 187,
+          "value": 0.5561497326203209
+        },
+        "rankOneCorrect": {
+          "successes": 56,
+          "total": 187,
+          "value": 0.2994652406417112
+        },
+        "intervalCoverage": {
+          "successes": 4327,
+          "total": 4488,
+          "value": 0.964126559714795
+        },
+        "clearShape": {
+          "successes": 187,
+          "total": 187,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 187,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 187,
+          "value": 0
+        },
+        "fitFailures": 13
+      }
+    },
+    {
+      "scenario": "noisy-replay",
+      "budget": 36,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 95,
+          "total": 200,
+          "value": 0.475
+        },
+        "rankOneCorrect": {
+          "successes": 24,
+          "total": 200,
+          "value": 0.12
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 18,
+          "total": 191,
+          "value": 0.09424083769633508
+        },
+        "fifthSixthCorrect": {
+          "successes": 105,
+          "total": 191,
+          "value": 0.5497382198952879
+        },
+        "rankOneCorrect": {
+          "successes": 59,
+          "total": 191,
+          "value": 0.3089005235602094
+        },
+        "intervalCoverage": {
+          "successes": 4405,
+          "total": 4584,
+          "value": 0.9609511343804538
+        },
+        "clearShape": {
+          "successes": 191,
+          "total": 191,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 191,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 191,
+          "value": 0
+        },
+        "fitFailures": 9
+      }
+    },
+    {
+      "scenario": "noisy-replay",
+      "budget": 40,
+      "observations": 200,
+      "baseline": {
+        "topFiveExact": {
+          "successes": 0,
+          "total": 200,
+          "value": 0
+        },
+        "fifthSixthCorrect": {
+          "successes": 102,
+          "total": 200,
+          "value": 0.51
+        },
+        "rankOneCorrect": {
+          "successes": 28,
+          "total": 200,
+          "value": 0.14
+        },
+        "stableAtBudget": {
+          "successes": 200,
+          "total": 200,
+          "value": 1
+        }
+      },
+      "candidate": {
+        "topFiveExact": {
+          "successes": 21,
+          "total": 188,
+          "value": 0.11170212765957446
+        },
+        "fifthSixthCorrect": {
+          "successes": 113,
+          "total": 188,
+          "value": 0.601063829787234
+        },
+        "rankOneCorrect": {
+          "successes": 64,
+          "total": 188,
+          "value": 0.3404255319148936
+        },
+        "intervalCoverage": {
+          "successes": 4328,
+          "total": 4512,
+          "value": 0.9592198581560284
+        },
+        "clearShape": {
+          "successes": 188,
+          "total": 188,
+          "value": 1
+        },
+        "falseClear": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "stableAtBudget": {
+          "successes": 0,
+          "total": 188,
+          "value": 0
+        },
+        "fitFailures": 12
+      }
+    }
+  ],
+  "promotion": {
+    "decision": "do-not-promote",
+    "failures": [
+      "comparison-payload-redaction-not-a-responsibility-of-model-evaluator",
+      "evaluation-draw-count-32-does-not-match-production-512",
+      "fit-failures:clear-attribute-preference:24:11",
+      "fit-failures:clear-attribute-preference:28:15",
+      "fit-failures:clear-attribute-preference:32:16",
+      "fit-failures:clear-attribute-preference:36:16",
+      "fit-failures:clear-attribute-preference:40:14",
+      "fit-failures:consensus-group:24:60",
+      "fit-failures:consensus-group:28:71",
+      "fit-failures:consensus-group:32:67",
+      "fit-failures:consensus-group:36:73",
+      "fit-failures:consensus-group:40:67",
+      "fit-failures:fifth-sixth-boundary:24:9",
+      "fit-failures:fifth-sixth-boundary:28:11",
+      "fit-failures:fifth-sixth-boundary:32:17",
+      "fit-failures:fifth-sixth-boundary:36:13",
+      "fit-failures:fifth-sixth-boundary:40:10",
+      "fit-failures:indifferent-traveler:24:10",
+      "fit-failures:indifferent-traveler:28:17",
+      "fit-failures:indifferent-traveler:32:12",
+      "fit-failures:indifferent-traveler:36:20",
+      "fit-failures:indifferent-traveler:40:20",
+      "fit-failures:noisy-replay:24:15",
+      "fit-failures:noisy-replay:28:10",
+      "fit-failures:noisy-replay:32:13",
+      "fit-failures:noisy-replay:36:9",
+      "fit-failures:noisy-replay:40:12",
+      "fit-failures:polarizing-group:24:73",
+      "fit-failures:polarizing-group:28:56",
+      "fit-failures:polarizing-group:32:69",
+      "fit-failures:polarizing-group:36:61",
+      "fit-failures:polarizing-group:40:62",
+      "fit-failures:vivid-activity-residual:24:17",
+      "fit-failures:vivid-activity-residual:28:12",
+      "fit-failures:vivid-activity-residual:32:12",
+      "fit-failures:vivid-activity-residual:36:10",
+      "fit-failures:vivid-activity-residual:40:12",
+      "information-gain-policy-not-certified-on-full-200-seed-replay",
+      "interval-coverage-outside-85-95:clear-attribute-preference:24",
+      "interval-coverage-outside-85-95:clear-attribute-preference:28",
+      "interval-coverage-outside-85-95:clear-attribute-preference:32",
+      "interval-coverage-outside-85-95:clear-attribute-preference:36",
+      "interval-coverage-outside-85-95:clear-attribute-preference:40",
+      "interval-coverage-outside-85-95:consensus-group:24",
+      "interval-coverage-outside-85-95:consensus-group:28",
+      "interval-coverage-outside-85-95:consensus-group:32",
+      "interval-coverage-outside-85-95:consensus-group:36",
+      "interval-coverage-outside-85-95:consensus-group:40",
+      "interval-coverage-outside-85-95:indifferent-traveler:24",
+      "interval-coverage-outside-85-95:indifferent-traveler:28",
+      "interval-coverage-outside-85-95:indifferent-traveler:32",
+      "interval-coverage-outside-85-95:indifferent-traveler:36",
+      "interval-coverage-outside-85-95:indifferent-traveler:40",
+      "interval-coverage-outside-85-95:noisy-replay:24",
+      "interval-coverage-outside-85-95:noisy-replay:28",
+      "interval-coverage-outside-85-95:noisy-replay:32",
+      "interval-coverage-outside-85-95:noisy-replay:36",
+      "interval-coverage-outside-85-95:noisy-replay:40",
+      "interval-coverage-outside-85-95:polarizing-group:24",
+      "interval-coverage-outside-85-95:polarizing-group:28",
+      "interval-coverage-outside-85-95:polarizing-group:32",
+      "interval-coverage-outside-85-95:polarizing-group:36",
+      "interval-coverage-outside-85-95:polarizing-group:40",
+      "interval-coverage-outside-85-95:vivid-activity-residual:24",
+      "interval-coverage-outside-85-95:vivid-activity-residual:28",
+      "interval-coverage-outside-85-95:vivid-activity-residual:32",
+      "interval-coverage-outside-85-95:vivid-activity-residual:36",
+      "interval-coverage-outside-85-95:vivid-activity-residual:40",
+      "one-or-more-guardrails-failed"
+    ]
+  }
+}

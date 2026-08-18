@@ -26,6 +26,12 @@ The deployed V1 foundation is intentionally smaller than the aspirational tree b
 
 The current frontend uses the Firebase Web SDK, MapLibre, NumberFlow, Paper Shaders, and local CSS. It does not use React Router, Tailwind, or Framer Motion. GitHub Actions runs quality checks; it is not the production deployment mechanism.
 
+### One-trip shared contract boundary
+
+`shared/src/index.ts` owns the runtime Zod schemas and inferred types for the one-trip API boundary: destination-blind comparison DTOs, roster/progress/completion state, profile and group-status data, post-reveal results, immutable snapshot summaries, final decisions, and typed API errors. Route handlers remain responsible for intentionally constructing and validating those DTOs; the shared comparison serializer is strict so destination, credit, score, rank, and model fields cannot be introduced through an object spread. These contracts are additive while the current deployed routes retain their legacy DTOs; no unfinished UI is implied by their presence.
+
+The one-trip repository persists the first opened reveal in `lgsV4ResultSnapshots/{snapshotId}` and records that ID in `lgsV4State/reveal` atomically. It validates only the summary snapshot contract—never raw model covariance—and later reads return that stored document rather than recomputing it. Each `lgsV4FinalDecisions/{rosterUser}` document is a create-once, snapshot-bound discussion stance; repeat writes return the existing state as a conflict. These repository capabilities are present before their API promotion and do not by themselves expose results.
+
 ---
 
 ## 1. Project Structure
@@ -714,9 +720,13 @@ GET  /v1/group-status
 POST /v1/reveal
 GET  /v1/results/me
 GET  /v1/results/group
+GET  /v1/final-decision
+POST /v1/final-decision
 ```
 
 `/v1/profile`, `/v1/group-status`, and `/v1/results/me` are implemented backend contracts whose dedicated frontend payoff surfaces remain V1 completion work. Comparison responses expose only activity ID, title, description, and opaque local card image path. Atlas and result routes are completion/reveal gated as appropriate.
+
+`POST /v1/reveal` creates (or returns) the one immutable result snapshot. `GET /v1/results/group` reads that stored snapshot rather than recalculating live comparisons; it exposes only post-reveal finalists, qualitative insight copy, member top threes, ranks on those finalists, and recorded discussion stances. `POST /v1/final-decision` accepts one snapshot-finalist ID or `need-more-research` and is create-once: repeat submissions return `409` with the existing public decision. `GET /v1/final-decision` returns the caller’s decision plus the post-reveal roster summary. Neither endpoint exposes raw comparisons, posterior covariance, or activity-by-activity votes.
 
 ### Target multi-group API surface
 

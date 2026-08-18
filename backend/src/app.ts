@@ -1,8 +1,38 @@
-import { Hono } from 'hono';
-import { comparisonSchema, toAtlasDestination, toSafeActivity } from '@lgs/shared';
-import { activities, addComparison, destinations, getAllComparisons, getComparisons, isRevealOpen, openReveal, ROSTER, setPending, takePending, type RosterUser } from './store.js';
-import { groupRankings, isComplete, normalizeDestinationScores, rankUser, selectNextPair } from './ranking.js';
+import { Hono, type Context } from 'hono';
+import { comparisonSchema, finalDecisionRequestSchema, nextComparisonResponseSchema, toAtlasDestination, toSafeActivity } from '@lgs/shared';
+import {
+  activities,
+  assertRevealSnapshotSeedVersionCompatible,
+  assertSeedVersionCompatible,
+  claimPendingAndAppendComparison,
+  createFinalDecision,
+  createOrGetRevealSnapshot,
+  destinations,
+  getAllComparisons,
+  getAllFinalDecisions,
+  getComparisons,
+  getFinalDecision,
+  getRevealSnapshot,
+  getStoredUserState,
+  isRevealOpen,
+  ROSTER,
+  setPending,
+  StoreConflictError,
+  StoreDataError,
+  SeedVersionMismatchError,
+  type RosterUser,
+} from './store.js';
+import { isComplete, rankUser, selectNextPair } from './ranking.js';
 import { authenticate } from './auth.js';
+import {
+  buildBaselineRevealSnapshot,
+  buildFinalDecisionResponse,
+  buildGroupResultsResponse,
+  buildGroupStatusResponse,
+  buildPersonalResultsResponse,
+  buildProfileResponse,
+  withRevealState,
+} from './dto/one-trip.js';
 
 export const app = new Hono<{ Variables: { user: RosterUser } }>();
 app.get('/health', (context) => context.json({ ok: true }));
@@ -12,14 +42,51 @@ app.use('*', async (context, next) => {
   context.set('user', user);
   await next();
 });
+const seedVersionMismatchResponse = (context: Context) =>
+  context.json({ code: 'seed-version-mismatch', error: 'This trip’s content changed. Ask the organizer to restore the original version.' }, 503);
+app.use('/v1/*', async (context, next) => {
+  try {
+    await assertSeedVersionCompatible(context.get('user'));
+    await next();
+  } catch (error) {
+    if (error instanceof SeedVersionMismatchError) return seedVersionMismatchResponse(context);
+    throw error;
+  }
+});
 app.get('/v1/session', (context) => context.json({ user: context.get('user'), roster: ROSTER }));
 app.get('/v1/comparison/next', async (context) => {
   const user = context.get('user') as RosterUser, comparisons = await getComparisons(user);
-  if (isComplete(activities, comparisons)) return context.json({ complete: true });
+  if (isComplete(activities, comparisons)) {
+    return context.json(nextComparisonResponseSchema.parse({
+      complete: true,
+      completion: {
+        complete: true,
+        reason: comparisons.length >= 40 ? 'maximum-reached' : 'stable-top-five',
+        confidenceLabel: 'close-call',
+      },
+    }));
+  }
   const pair = selectNextPair(activities, comparisons);
-  if (!pair) return context.json({ complete: true });
+  if (!pair) {
+    return context.json(nextComparisonResponseSchema.parse({
+      complete: true,
+      completion: { complete: true, reason: 'portfolio-exhausted', confidenceLabel: 'close-call' },
+    }));
+  }
   await setPending(user, [pair[0].id, pair[1].id]);
-  return context.json({ complete: false, progress: { comparisons: comparisons.length, minimum: 24, maximum: 40, estimatedCompletion: Math.min(1, comparisons.length / 24) }, activityA: toSafeActivity(pair[0]), activityB: toSafeActivity(pair[1]) });
+  const phase = comparisons.length < 8 ? 'explore' : comparisons.length < 24 ? 'discriminate' : 'checking-boundary';
+  return context.json(nextComparisonResponseSchema.parse({
+    complete: false,
+    progress: {
+      comparisons: comparisons.length,
+      minimum: 24,
+      maximum: 40,
+      estimatedCompletion: Math.min(1, comparisons.length / 24),
+      phase,
+    },
+    activityA: toSafeActivity(pair[0]),
+    activityB: toSafeActivity(pair[1]),
+  }));
 });
 app.post('/v1/comparisons', async (context) => {
   const user = context.get('user') as RosterUser;
@@ -27,49 +94,104 @@ app.post('/v1/comparisons', async (context) => {
   try { body = await context.req.json(); } catch { return context.json({ error: 'Comparison body must be JSON.' }, 400); }
   const parsed = comparisonSchema.safeParse(body);
   if (!parsed.success) return context.json({ error: 'Invalid comparison.', details: parsed.error.flatten() }, 400);
-  const pending = await takePending(user);
-  if (!pending || ![...pending].every((id) => [parsed.data.activityA, parsed.data.activityB].includes(id))) return context.json({ error: 'That comparison was not offered.' }, 409);
-  await addComparison(user, parsed.data);
+  const state = await getStoredUserState(user);
+  if (isComplete(activities, state.comparisons)) return context.json({ code: 'conflict', error: 'This round is already complete.' }, 409);
+  try {
+    // The store transaction rechecks this revision and the exact offered pair,
+    // so a stale tab can never clear another tab's pending comparison.
+    await claimPendingAndAppendComparison(user, { ...parsed.data, revision: state.revision });
+  } catch (error) {
+    if (error instanceof StoreConflictError) return context.json({ code: 'conflict', error: error.message }, 409);
+    throw error;
+  }
   return context.json({ accepted: true });
 });
 app.get('/v1/profile', async (context) => {
   const user = context.get('user') as RosterUser, comparisons = await getComparisons(user);
-  if (!isComplete(activities, comparisons)) return context.json({ error: 'Finish the preference game first.' }, 409);
-  const { attributeScores } = rankUser(destinations, activities, comparisons);
-  return context.json({ attributes: attributeScores });
+  if (!isComplete(activities, comparisons)) return context.json({ code: 'completion-required', error: 'Finish the preference game first.' }, 409);
+  return context.json(buildProfileResponse(rankUser(destinations, activities, comparisons)));
 });
 app.get('/v1/atlas', async (context) => {
   const user = context.get('user') as RosterUser, comparisons = await getComparisons(user);
   if (!isComplete(activities, comparisons)) return context.json({ error: 'Finish the preference game first.' }, 409);
   return context.json({ destinations: destinations.map(toAtlasDestination) });
 });
-app.get('/v1/group-status', async (context) => context.json({ revealOpen: await isRevealOpen(), members: (await Promise.all(ROSTER.map(async (user) => ({ user, complete: isComplete(activities, await getComparisons(user)) })))) }));
+app.get('/v1/group-status', async (context) => {
+  const members = await Promise.all(ROSTER.map(async (user) => {
+    const state = await getStoredUserState(user);
+    return {
+      user,
+      complete: isComplete(activities, state.comparisons),
+      ...(state.updatedAt ? { updatedAt: state.updatedAt } : {}),
+      ...(state.completedAt ? { completedAt: state.completedAt } : {}),
+    };
+  }));
+  return context.json(withRevealState(buildGroupStatusResponse(members), await isRevealOpen()));
+});
 app.post('/v1/reveal', async (context) => {
   const user = context.get('user') as RosterUser;
   if (user !== 'dan') return context.json({ error: 'Only the trip organizer can open the reveal.' }, 403);
+  await Promise.all(ROSTER.map((member) => assertSeedVersionCompatible(member)));
   if (!isComplete(activities, await getComparisons(user))) return context.json({ error: 'Finish your preference game before opening the reveal.' }, 409);
   const all = await getAllComparisons();
   if (!ROSTER.every((member) => isComplete(activities, all[member]))) return context.json({ error: 'Wait for the whole crew to finish before opening the reveal.' }, 409);
-  await openReveal();
-  return context.json({ revealOpen: true });
+  const snapshot = await createOrGetRevealSnapshot(buildBaselineRevealSnapshot(
+    ROSTER.map((member) => ({ user: member, comparisons: all[member] })),
+    destinations,
+    activities,
+  ));
+  return context.json({ revealOpen: true, snapshotId: snapshot.snapshotId });
 });
 app.get('/v1/results/me', async (context) => {
   const user = context.get('user') as RosterUser, comparisons = await getComparisons(user);
-  if (!isComplete(activities, comparisons)) return context.json({ error: 'Finish the preference game first.' }, 409);
-  if (!await isRevealOpen()) return context.json({ error: 'The group reveal is still closed.' }, 423);
-  const ranking = rankUser(destinations, activities, comparisons);
-  const results = destinations.map((destination) => ({ ...destination, preferenceScore: ranking.destinationScores[destination.id] })).sort((a, b) => b.preferenceScore - a.preferenceScore).slice(0, 5);
-  return context.json({ results });
+  if (!isComplete(activities, comparisons)) return context.json({ code: 'completion-required', error: 'Finish the preference game first.' }, 409);
+  if (!await isRevealOpen()) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
+  const snapshot = await getRevealSnapshot();
+  if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
+  assertRevealSnapshotSeedVersionCompatible(snapshot);
+  return context.json(buildPersonalResultsResponse(user, snapshot, destinations));
 });
 app.get('/v1/results/group', async (context) => {
-  if (!await isRevealOpen()) return context.json({ error: 'The group reveal is still closed.' }, 423);
-  const all = await getAllComparisons();
-  if (!ROSTER.every((user) => isComplete(activities, all[user]))) return context.json({ error: 'The whole crew has not finished yet.' }, 423);
-  const individual = ROSTER.map((user) => ({ user, ranking: rankUser(destinations, activities, all[user]) }));
-  const group = groupRankings(destinations, individual.map(({ ranking }) => normalizeDestinationScores(ranking.destinationScores)));
-  const destination = (id: string) => destinations.find((item) => item.id === id)!;
-  return context.json({
-    group: group.slice(0, 5).map((item, index) => ({ rank: index + 1, ...item, name: destination(item.id).name, country: destination(item.id).country, imageUrl: destination(item.id).gallery[0].path })),
-    members: individual.map(({ user, ranking }) => ({ user, topThree: Object.entries(ranking.destinationScores).sort(([, a], [, b]) => b - a).slice(0, 3).map(([id, score], index) => ({ rank: index + 1, id, name: destination(id).name, country: destination(id).country, imageUrl: destination(id).gallery[0].path, preferenceScore: score })) }))
-  });
+  const snapshot = await getRevealSnapshot();
+  if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
+  assertRevealSnapshotSeedVersionCompatible(snapshot);
+  return context.json(buildGroupResultsResponse(snapshot, destinations, await getAllFinalDecisions()));
+});
+
+app.get('/v1/final-decision', async (context) => {
+  const snapshot = await getRevealSnapshot();
+  if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
+  const user = context.get('user') as RosterUser;
+  return context.json(buildFinalDecisionResponse(await getFinalDecision(user), await getAllFinalDecisions()));
+});
+
+app.post('/v1/final-decision', async (context) => {
+  let body: unknown;
+  try { body = await context.req.json(); } catch { return context.json({ code: 'invalid-request', error: 'Final decision body must be JSON.' }, 400); }
+  const parsed = finalDecisionRequestSchema.safeParse(body);
+  if (!parsed.success) return context.json({ code: 'invalid-request', error: 'Choose a finalist or need-more-research.' }, 400);
+  const user = context.get('user') as RosterUser;
+  try {
+    const decision = await createFinalDecision(user, parsed.data.choice);
+    return context.json(buildFinalDecisionResponse(decision, await getAllFinalDecisions()), 201);
+  } catch (error) {
+    if (error instanceof StoreConflictError) {
+      if (error.code === 'reveal-snapshot-missing') {
+        return context.json({ code: 'reveal-locked', error: error.message }, 423);
+      }
+      if (error.code === 'final-decision-exists' && error.existingDecision) {
+        return context.json({
+          code: 'conflict',
+          error: error.message,
+          decision: {
+            user: error.existingDecision.user,
+            choice: error.existingDecision.choice,
+            createdAt: error.existingDecision.createdAt,
+          },
+        }, 409);
+      }
+    }
+    if (error instanceof StoreDataError) return context.json({ code: 'invalid-request', error: error.message }, 400);
+    throw error;
+  }
 });

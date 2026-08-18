@@ -1,6 +1,283 @@
 #root {
   min-height: 100vh;
 }
+
+/* One-trip route/component scaffold (OT-13). These classes are deliberately
+   inert until OT-18 composes the new screens into the existing app shell. */
+.one-trip-screen {
+  width: min(100% - 48px, var(--content-max));
+  margin: 0 auto;
+  padding: var(--space-16) 0;
+}
+.one-trip-screen h1,
+.completed-transition h1 {
+  margin: var(--space-4) 0;
+  font-size: clamp(46px, 5vw, 74px);
+}
+.one-trip-actions,
+.final-decision-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+.app-state-notice,
+.completed-transition,
+.verdict-explainer,
+.crew-read-matrix,
+.personal-result-card,
+.profile-tile,
+.crew-roster li,
+.final-decision-dialog {
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+}
+.app-state-notice,
+.completed-transition,
+.verdict-explainer,
+.crew-read-matrix,
+.final-decision-dialog {
+  padding: var(--space-6);
+}
+.app-state-notice h2,
+.verdict-explainer h2,
+.crew-read-matrix h2,
+.final-decision-dialog h2 {
+  margin: 0 0 var(--space-3);
+  font-size: clamp(30px, 3vw, 46px);
+}
+.app-state-notice p,
+.completed-transition p,
+.verdict-explainer p,
+.travel-effort-key,
+.profile-tile,
+.crew-roster,
+.personal-result-card,
+.final-decision-dialog p,
+.crew-read-matrix table {
+  font-size: 20px;
+}
+.app-state-notice--error { border-color: var(--accent-warn); }
+.app-state-notice--sealed { border-color: var(--accent-primary); }
+.profile-tiles,
+.crew-roster {
+  display: grid;
+  margin: var(--space-8) 0;
+  padding: 0;
+  gap: var(--space-4);
+  list-style: none;
+}
+.profile-tiles { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.profile-tile,
+.crew-roster li { display: grid; gap: var(--space-2); padding: var(--space-5); }
+.profile-tile--strong { border-color: var(--accent-primary); }
+.profile-tile--present { border-color: var(--color-trail-blue); }
+.profile-tile--open { border-color: var(--accent-success); }
+.crew-roster li { grid-template-columns: 1fr auto; align-items: center; }
+.crew-roster .is-complete { border-color: var(--accent-success); }
+.crew-read-matrix { overflow-x: auto; }
+.crew-read-matrix table { width: 100%; min-width: 720px; border-collapse: collapse; }
+.crew-read-matrix th,
+.crew-read-matrix td { padding: var(--space-3); border-bottom: 1px solid var(--border-default); text-align: left; }
+.personal-result-card { display: grid; gap: var(--space-3); margin: var(--space-6) 0; padding: var(--space-5); }
+.personal-result-card img { width: 100%; max-height: 280px; border-radius: var(--radius-md); object-fit: cover; }
+.personal-result-card h2 { margin: 0; font-size: clamp(30px, 3vw, 46px); }
+.final-decision-dialog { color: var(--text-primary); max-width: min(100% - 32px, 620px); }
+.final-decision-dialog::backdrop { background: rgba(27, 23, 20, .72); }
+.screen-reader-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.profile-screen,
+.waiting-screen {
+  max-width: 1200px;
+}
+.profile-screen__intro,
+.waiting-screen__intro {
+  max-width: 820px;
+}
+.profile-screen__intro h1,
+.waiting-screen__intro h1 {
+  max-width: 800px;
+  line-height: .95;
+}
+.profile-screen__confidence,
+.waiting-screen__updated {
+  color: var(--text-secondary);
+  font-size: 20px;
+  line-height: 1.45;
+}
+.profile-tiles {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 44px;
+}
+.profile-tile {
+  position: relative;
+  min-height: 196px;
+  overflow: hidden;
+  align-content: start;
+  padding: 26px;
+}
+.profile-tile > * { position: relative; z-index: 1; }
+.profile-tile__state {
+  margin: 0;
+  color: var(--accent-primary);
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.profile-tile strong { font-size: 24px; line-height: 1.2; }
+.profile-tile span { color: var(--text-secondary); font-size: 20px; line-height: 1.4; }
+.profile-tile i {
+  position: absolute;
+  right: -22px;
+  bottom: -36px;
+  z-index: 0;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  opacity: .22;
+}
+.profile-tile--accent-0 { border-color: var(--accent-primary); }
+.profile-tile--accent-0 i { background: var(--accent-primary); }
+.profile-tile--accent-1 { border-color: var(--color-trail-blue); }
+.profile-tile--accent-1 .profile-tile__state { color: var(--color-trail-blue); }
+.profile-tile--accent-1 i { background: var(--color-trail-blue); }
+.profile-tile--accent-2 { border-color: var(--color-terra); }
+.profile-tile--accent-2 .profile-tile__state { color: var(--color-terra-light); }
+.profile-tile--accent-2 i { background: var(--color-terra); }
+.profile-tile--accent-3 { border-color: var(--color-olive); }
+.profile-tile--accent-3 .profile-tile__state { color: var(--color-olive-light); }
+.profile-tile--accent-3 i { background: var(--color-olive); }
+.waiting-screen__intro { margin-bottom: 32px; }
+.crew-roster {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(10px, 1.8vw, 22px);
+  margin: 0;
+}
+.crew-roster__member {
+  position: relative;
+  display: grid !important;
+  min-height: 306px;
+  align-content: end;
+  justify-items: center;
+  padding: 18px 12px !important;
+  background: color-mix(in srgb, var(--surface-card) 92%, var(--color-night)) !important;
+  text-align: center;
+}
+.crew-roster__figure {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 196px;
+  place-items: end center;
+}
+.crew-roster__figure i {
+  position: absolute;
+  bottom: 2px;
+  width: 76%;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, .74), transparent 70%);
+  filter: blur(2px);
+}
+.crew-roster__figure img {
+  position: relative;
+  height: 212px;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 12px rgba(0, 0, 0, .45));
+}
+.crew-roster__member.is-incomplete .crew-roster__figure img { filter: grayscale(.74) brightness(.7) drop-shadow(0 12px 10px rgba(0, 0, 0, .32)); opacity: .74; }
+.crew-roster__nameplate {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.crew-roster__nameplate strong { font-family: var(--font-display); font-size: 29px; font-weight: 400; text-transform: uppercase; }
+.crew-roster__you {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 2px 8px;
+  border: 1px solid var(--accent-primary);
+  border-radius: 999px;
+  color: var(--accent-primary);
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+}
+.crew-roster__member p {
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 3px 0 0;
+  color: var(--text-secondary);
+  font-size: 20px;
+}
+.crew-roster__state-icon {
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  font-size: 20px;
+}
+.crew-roster__member.is-complete { border-color: var(--color-olive) !important; }
+.crew-roster__member.is-complete .crew-roster__state-icon { border-color: var(--color-olive); background: var(--color-olive); color: var(--color-night); }
+.waiting-screen__error {
+  max-width: 720px;
+  margin: 24px 0 0;
+  padding: 16px;
+  border: 2px solid var(--color-terra);
+  border-radius: var(--radius-md);
+  color: var(--color-terra-light);
+  font-size: 20px;
+  line-height: 1.4;
+}
+@media (max-width: 1023px) {
+  .crew-roster { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 639px) {
+  .one-trip-screen { width: min(100% - 32px, var(--content-max)); padding: var(--space-8) 0; }
+  .app-state-notice p,
+  .completed-transition p,
+  .verdict-explainer p,
+  .travel-effort-key,
+  .profile-tile,
+  .crew-roster,
+  .personal-result-card,
+  .final-decision-dialog p,
+  .crew-read-matrix table { font-size: 18px; }
+  .profile-tiles { grid-template-columns: 1fr; margin-top: 28px; }
+  .profile-screen__confidence,
+  .waiting-screen__updated,
+  .profile-tile__state,
+  .profile-tile span,
+  .crew-roster__you,
+  .crew-roster__member p,
+  .waiting-screen__error { font-size: 18px; }
+  .profile-tile strong { font-size: 22px; }
+  .crew-roster { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .crew-roster__member { min-height: 270px; }
+  .crew-roster__figure { min-height: 166px; }
+  .crew-roster__figure img { height: 180px; }
+  .crew-roster__nameplate strong { font-size: 26px; }
+}
 .lgs-button {
   font-size: 20px;
 }
@@ -970,3 +1247,38 @@
 
 /* The active traveler is the in-game companion, not a utility-size chip. */
 .game-topbar .turn-meta .avatar-art{width:150px;height:150px}
+
+/* OT-16: the post-gate payoff is a readable travel scene, not a dashboard. */
+.verdict-screen{min-height:100vh;background:var(--surface-base)}
+.verdict-screen__hero{position:relative;display:grid;min-height:680px;overflow:hidden;isolation:isolate;background:var(--color-night)}
+.verdict-screen__hero:after{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(27,23,20,.97) 0%,rgba(27,23,20,.76) 48%,rgba(27,23,20,.18) 100%);content:""}
+.verdict-screen__hero-image{position:absolute;inset:0;z-index:-2;filter:saturate(.85) contrast(1.05)}
+.verdict-screen__hero-copy{display:grid;align-content:end;max-width:920px;padding:clamp(38px,8vw,128px);padding-right:clamp(38px,16vw,220px)}
+.verdict-screen__hero-copy h1{max-width:760px;margin:16px 0;font:400 clamp(56px,7.4vw,116px)/.88 var(--font-display);text-transform:uppercase}
+.verdict-screen__hero-copy h1 em{color:var(--accent-primary);font-style:normal}
+.verdict-screen__hero-copy>p:not(.eyebrow){max-width:640px;margin:0;color:var(--text-secondary);font-size:24px;line-height:1.42}
+.verdict-screen__hero-actions{display:flex;flex-wrap:wrap;gap:16px;margin-top:34px}
+.verdict-screen__content{width:min(100% - 48px,1280px);margin:0 auto;padding:72px 0 108px}
+.verdict-screen .verdict-explainer{max-width:780px;border-color:color-mix(in srgb,var(--accent-primary) 60%,var(--border-default));background:linear-gradient(125deg,color-mix(in srgb,var(--color-amber) 14%,var(--surface-card)),var(--surface-card))}
+.verdict-insights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:28px 0 72px;padding:0;list-style:none}
+.verdict-insights li{display:grid;gap:8px;min-height:126px;padding:22px;border:2px solid var(--border-default);border-top-color:var(--color-trail-blue);background:var(--surface-card)}
+.verdict-insights strong{color:var(--color-trail-blue);font-size:22px}.verdict-insights span{color:var(--text-secondary);font-size:20px;line-height:1.35}
+.verdict-finalists{margin:0 0 76px}.verdict-finalists>div:first-child{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:24px}.verdict-finalists h2,.verdict-roster h2,.final-decision-panel h2,.finalist-matrix h2{margin:8px 0 0;font:400 clamp(38px,4.2vw,64px)/.9 var(--font-display);text-transform:uppercase}
+.verdict-finalists__list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.verdict-finalists__list>button{position:relative;display:grid;min-height:312px;overflow:hidden;padding:18px;border:2px solid var(--border-default);background:var(--surface-card);color:var(--text-primary);text-align:left;transition:transform 180ms var(--ease-smooth),border-color 180ms var(--ease-smooth),filter 180ms var(--ease-smooth)}
+.verdict-finalists__list>button:hover,.verdict-finalists__list>button:focus-visible,.verdict-finalists__list>button.is-active{border-color:var(--accent-primary);filter:saturate(1.16);transform:translateY(-4px)}
+.verdict-finalists__list .media-image{position:absolute;inset:0;z-index:0;filter:brightness(.52) saturate(.72);transition:filter 180ms var(--ease-smooth),transform 220ms var(--ease-smooth)}.verdict-finalists__list>button:hover .media-image,.verdict-finalists__list>button:focus-visible .media-image,.verdict-finalists__list>button.is-active .media-image{filter:brightness(.7) saturate(1.08);transform:scale(1.04)}
+.verdict-finalists__list span,.verdict-finalists__list strong,.verdict-finalists__list small{position:relative;z-index:1}.verdict-finalists__list span{font:400 34px/1 var(--font-display);color:var(--accent-primary)}.verdict-finalists__list strong{align-self:end;margin-top:auto;font:400 34px/.9 var(--font-display);text-transform:uppercase}.verdict-finalists__list small{margin-top:8px;color:var(--color-white);font-size:20px;line-height:1.2}
+.finalist-matrix{margin:0 0 76px;padding:28px;border:2px solid var(--border-default);background:var(--surface-card)}.finalist-matrix__heading{display:flex;gap:30px;align-items:end;justify-content:space-between;margin-bottom:24px}.finalist-matrix__heading>p{max-width:500px;margin:0;color:var(--text-secondary);font-size:20px;line-height:1.4}.finalist-matrix__scroll{overflow-x:auto}.finalist-matrix table{width:100%;min-width:780px;border-collapse:collapse}.finalist-matrix caption{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}.finalist-matrix th,.finalist-matrix td{padding:16px;border-bottom:1px solid var(--border-default);font-size:20px;text-align:center}.finalist-matrix thead th{color:var(--text-secondary);font-family:var(--font-mono);font-weight:700;text-transform:uppercase}.finalist-matrix tbody th{text-align:left}.finalist-matrix tbody th button{display:flex;gap:12px;align-items:center;border:0;background:transparent;color:var(--text-primary);font-size:22px;font-weight:700;text-align:left}.finalist-matrix tbody th button span{color:var(--accent-primary);font-family:var(--font-display);font-size:30px}.finalist-matrix .is-current-user{background:color-mix(in srgb,var(--color-trail-blue) 12%,transparent);color:var(--color-white)}
+.verdict-roster{margin:0 0 76px}.verdict-roster>div{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin-top:28px}.verdict-roster article{position:relative;min-height:260px;padding:24px 16px 18px;border:2px solid var(--border-default);border-top:4px solid var(--accent-primary);background:var(--surface-elevated)}.verdict-roster article>img{position:absolute;top:-62px;right:12px;width:126px;height:126px;object-fit:contain;filter:drop-shadow(0 14px 12px rgba(0,0,0,.5))}.verdict-roster h3{max-width:calc(100% - 84px);margin:32px 0 14px;font:400 30px/.92 var(--font-display);text-transform:uppercase}.verdict-roster ol{display:grid;gap:10px;margin:0;padding:0;list-style:none}.verdict-roster li{display:grid;grid-template-columns:28px 38px 1fr;gap:8px;align-items:center;font-size:20px}.verdict-roster li>span{color:var(--accent-primary);font-family:var(--font-mono);font-weight:700}.verdict-roster li .media-image{width:38px;height:38px;border-radius:50%}
+.final-decision-panel{display:grid;grid-template-columns:minmax(0,.85fr) minmax(340px,1.15fr);gap:36px;align-items:start;padding:clamp(26px,4vw,54px);border:2px solid color-mix(in srgb,var(--color-olive) 70%,var(--border-default));background:linear-gradient(125deg,color-mix(in srgb,var(--color-olive) 17%,var(--surface-card)),var(--surface-card))}.final-decision-panel>div>p:not(.eyebrow){color:var(--text-secondary);font-size:20px;line-height:1.4}.final-decision-panel .travel-effort-key{margin:22px 0 0;color:var(--color-gray-300)}.final-decision-panel__choices{display:flex;flex-wrap:wrap;align-content:start;gap:12px}.final-decision-panel__choices .lgs-button{min-height:50px;font-size:20px}.final-decision-panel__saved{display:grid;gap:10px;padding:24px;border:2px solid var(--color-olive);background:color-mix(in srgb,var(--color-olive) 13%,var(--surface-base))}.final-decision-panel__saved strong{color:var(--color-olive-light);font-size:25px}.final-decision-panel__saved span{color:var(--text-secondary);font-size:20px;line-height:1.35}
+.finalist-drawer{position:fixed;z-index:20;right:clamp(16px,3vw,56px);bottom:clamp(16px,3vw,56px);width:min(100% - 32px,480px);overflow:hidden;border:2px solid var(--border-strong);background:var(--surface-overlay);box-shadow:var(--shadow-lg);backdrop-filter:blur(18px)}.finalist-drawer__close{position:absolute;z-index:2;top:10px;right:10px;display:grid;width:44px;height:44px;place-items:center;border:1px solid var(--border-strong);border-radius:50%;background:rgba(27,23,20,.86);color:var(--color-white);font-size:30px}.finalist-drawer__image{height:220px}.finalist-drawer__body{padding:24px}.finalist-drawer__body h2{margin:8px 0 0;font:400 50px/.9 var(--font-display);text-transform:uppercase}.finalist-drawer__country{margin:8px 0 20px;color:var(--text-secondary);font-size:22px}.finalist-drawer dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0}.finalist-drawer dl div{display:grid;gap:4px;padding-top:12px;border-top:1px solid var(--border-default)}.finalist-drawer dt,.finalist-drawer dd{margin:0;font-size:20px}.finalist-drawer dt{color:var(--text-secondary)}.finalist-drawer dd{font-size:22px;font-weight:700}.finalist-drawer__effort-note{margin:18px 0;color:var(--text-secondary);font-size:20px;line-height:1.35}.finalist-drawer .lgs-button{width:100%;font-size:20px}.final-decision-dialog__error{padding:12px;border:1px solid var(--color-terra);color:var(--color-terra-light)}
+.personal-results-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin:42px 0}.personal-result-card{display:grid;grid-template-columns:180px 1fr;gap:0;margin:0;padding:0;overflow:hidden}.personal-result-card>.media-image{height:100%;min-height:290px}.personal-result-card__body{display:grid;align-content:start;gap:12px;padding:26px}.personal-result-card__body h2{margin:0}.personal-result-card__body>p:not(.eyebrow){margin:0;color:var(--text-secondary);font-size:20px;line-height:1.35}.personal-result-card details{margin-top:8px;padding-top:14px;border-top:1px solid var(--border-default)}.personal-result-card summary{cursor:pointer;color:var(--accent-primary);font-size:20px;font-weight:700}.personal-result-card details p{color:var(--text-secondary);font-size:20px;line-height:1.4}.personal-result-card details strong{color:var(--text-primary)}
+@media(max-width:1023px){.verdict-insights{grid-template-columns:1fr}.verdict-finalists__list{grid-template-columns:repeat(3,minmax(0,1fr))}.verdict-roster>div{grid-template-columns:repeat(3,minmax(0,1fr))}.final-decision-panel{grid-template-columns:1fr}.personal-results-grid{grid-template-columns:1fr}}
+@media(max-width:639px){.verdict-screen__hero{min-height:620px}.verdict-screen__hero:after{background:linear-gradient(0deg,rgba(27,23,20,.98),rgba(27,23,20,.36))}.verdict-screen__hero-copy{padding:30px 22px}.verdict-screen__hero-copy h1{font-size:54px}.verdict-screen__hero-copy>p:not(.eyebrow){font-size:20px}.verdict-screen__content{width:min(100% - 32px,1280px);padding:48px 0 72px}.verdict-finalists__list{grid-template-columns:repeat(2,minmax(0,1fr))}.verdict-finalists__list>button{min-height:236px}.verdict-finalists__list strong{font-size:28px}.verdict-finalists__list small,.verdict-insights span,.finalist-matrix__heading>p,.finalist-matrix th,.finalist-matrix td,.final-decision-panel>div>p:not(.eyebrow),.final-decision-panel__saved span,.finalist-drawer dt,.finalist-drawer__effort-note,.personal-result-card__body>p:not(.eyebrow),.personal-result-card summary,.personal-result-card details p{font-size:18px}.finalist-matrix{padding:20px}.finalist-matrix__heading{display:grid}.verdict-roster>div{grid-template-columns:1fr}.final-decision-panel{padding:24px}.finalist-drawer{right:16px;bottom:16px}.personal-result-card{grid-template-columns:1fr}.personal-result-card>.media-image{height:230px;min-height:0}.personal-result-card__body{padding:22px}}
+.app-notice-overlay {
+  position: fixed;
+  z-index: 60;
+  right: 24px;
+  bottom: 24px;
+  width: min(100% - 32px, 540px);
+}

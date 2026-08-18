@@ -19,14 +19,17 @@ Destination photography is permitted during comparisons as a deliberately accept
 
 The current reveal exposes group top five and each traveler's top three, never raw activity-by-activity choices. Group order is derived from normalized individual destination scores minus the documented polarization penalty.
 
-## Remaining V1 completion work
+## Implemented but unreleased one-trip work
+
+The local build now includes the destination-free profile, completion-only waiting lobby, snapshot-backed personal and group result views, qualitative result explanations, group-finalist matrix, and one immutable post-reveal final decision. It also adds versioned comparison persistence, atomic pending-pair claims, seed binding, immutable reveal snapshots, and explicit Firebase Emulator configuration. These changes remain unreleased while the model and rehearsal gates below are open.
+
+## Remaining one-trip release gates
 
 These are product gaps, not documentation changes to make the requirements disappear.
 
-1. **Preference-profile surface:** `/v1/profile` is available after completion, but the frontend does not yet present the intended human-readable profile beat before the atlas.
-2. **Waiting/group-status surface:** `/v1/group-status` exists, but the frontend does not yet have the dedicated roster-completion/waiting experience described in the journey map.
-3. **Reveal explanation and final discussion:** the verdict gives a useful short list and top threes, but not yet the full “why this ranked” explanation or post-reveal final gut-check input specified by the journey.
-4. **Production confidence:** the current test suite covers ranking and API behavior in the local adapter. Add Firestore-emulator and authenticated multi-roster end-to-end coverage before relying on the app for the actual trip decision.
+1. **Model promotion:** the first `bt-hierarchical-laplace-v1` evaluation failed closed. It has not replaced the deterministic production ranking path; see [model evaluation](model-evaluation.md) and ADR 0003. Calibration must pass the fixed synthetic gate before promotion.
+2. **Rehearsal:** Firestore Emulator configuration and local configuration tests exist, but this machine lacks the Java JDK required to run the Firestore Emulator. Install it, run the emulator transaction suite and the five-identity browser rehearsal, then record the evidence in the one-trip runbook.
+3. **Release verification:** complete the visual/manual quality gate, independent post-fix review, Cloud Run/Firebase deployment, preflight export/reset rehearsal, and production smoke test only after the preceding gates pass.
 
 ## Required one-trip inference work
 

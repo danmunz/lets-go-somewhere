@@ -21,5 +21,15 @@ Google sign-in is enabled. The deployed Cloud Run service verifies Firebase ID t
 ## Operational notes
 
 - Cloud Run supplies `K_SERVICE`; its presence forces the Firestore repository so a production restart cannot fall back to process memory.
-- The local `X-Demo-User` adapter is intentionally rejected in production.
+- The local `X-Demo-User` adapter requires `LGS_TEST_MODE=demo`; `NODE_ENV` alone never enables it. It is always rejected whenever `K_SERVICE` is present, even if a test flag is set accidentally.
 - Firebase Hosting rewrites `/v1/**` to the `lgs-api` Cloud Run service; no browser client has direct Firestore access.
+
+## Firebase Emulator Suite
+
+The Emulator Suite has a deliberately isolated project ID, `lgs-emulator-test`; it never uses the default production Firebase project or its data. Firestore Emulator Suite requires a local Java runtime (JDK 11 or newer) in addition to the Firebase CLI.
+
+1. To inspect locally isolated Auth and Firestore, run `npm run emulators:start`. The Emulator UI opens on port 4000, with Auth on 9099 and Firestore on 8080.
+2. To verify the isolated configuration, run `npm run test:emulator`. It invokes `firebase emulators:exec --project lgs-emulator-test`, starts only the local Auth/Firestore emulators, checks the positive `LGS_TEST_MODE=emulator` selection, and tears the processes down afterward.
+3. The normal unit/API suite uses the explicitly selected in-memory demo adapter through `npm test` (`LGS_TEST_MODE=demo`). It cannot access Firestore or a real roster account.
+
+`LGS_TEST_MODE` accepts only `demo` or `emulator`. Do not add it to Cloud Run, Firebase Hosting, or a production environment file. Full authenticated emulator transaction coverage and the five-browser rehearsal are separate release tasks; this smoke test verifies configuration isolation only.

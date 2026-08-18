@@ -6,9 +6,12 @@
   "scripts": {
     "build": "npm run build -w shared && npm run build -w backend && npm run build -w frontend",
     "dev": "npm run dev -w backend",
-    "test": "npm run build -w shared && vitest run",
+    "test": "npm run build -w shared && LGS_TEST_MODE=demo vitest run",
+    "emulators:start": "firebase emulators:start --project lgs-emulator-test --only auth,firestore",
+    "test:emulator": "firebase emulators:exec --project lgs-emulator-test --only auth,firestore \"LGS_TEST_MODE=emulator vitest run backend/tests/emulator-config.test.ts\"",
     "typecheck": "tsc -b shared backend frontend",
-    "validate:seed": "npm run build -w shared && tsx scripts/validate-seed.ts"
+    "validate:seed": "npm run build -w shared && tsx scripts/validate-seed.ts",
+    "evaluate:model": "tsx scripts/evaluate-model.ts"
   },
   "devDependencies": {"@types/node": "^22.13.10", "tsx": "^4.19.3", "typescript": "^5.7.3", "vitest": "^3.0.8"}
 }
