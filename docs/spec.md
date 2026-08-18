@@ -597,7 +597,7 @@ The primary screen is extremely simple.
 
 Hike into the mountains, spend the night on a ridge, and watch a neighboring volcano erupt after dark.
 
-Historical V1 note: no image. Current comparisons may use opaque destination photography as an intentionally accepted soft cue, without names or geographic metadata.
+Historical V1 note: no image. Current comparisons may use opaque, activity-specific editorial photography as an intentionally accepted soft cue, without names or geographic metadata.
 
 **PICK THIS**
 
@@ -609,7 +609,7 @@ Historical V1 note: no image. Current comparisons may use opaque destination pho
 
 Walk through old mining tunnels and underground roads before emerging into plazas and hillside neighborhoods.
 
-Historical V1 note: no image. Current comparisons may use opaque destination photography as an intentionally accepted soft cue, without names or geographic metadata.
+Historical V1 note: no image. Current comparisons may use opaque, activity-specific editorial photography as an intentionally accepted soft cue, without names or geographic metadata.
 
 **PICK THIS**
 
@@ -632,7 +632,7 @@ A photograph may immediately reveal:
 Options:
 
 ### Historical V1
-No images. The current product intentionally accepts non-iconic destination photography as a soft cue, while holding back all explicit destination metadata and credit information until the atlas.
+No images. The current product intentionally accepts activity-specific editorial photography as a soft cue, while holding back all explicit destination metadata and credit information until the atlas.
 
 ### V2
 Use carefully selected atmospheric images.

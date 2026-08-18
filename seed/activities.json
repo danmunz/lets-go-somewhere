@@ -14,7 +14,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/001.webp"
+    "imageUrl": "/media/cards/003.webp"
   },
   {
     "id": "oaxaca-market",
@@ -31,7 +31,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/002.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "oaxaca-petrified-waterfalls",
@@ -48,7 +48,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/003.webp"
+    "imageUrl": "/media/cards/057.webp"
   },
   {
     "id": "oaxaca-artisans",
@@ -65,7 +65,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/001.webp"
+    "imageUrl": "/media/cards/041.webp"
   },
   {
     "id": "oaxaca-street-food",
@@ -82,7 +82,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/002.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "cartagena-walls",
@@ -99,7 +99,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/004.webp"
+    "imageUrl": "/media/cards/046.webp"
   },
   {
     "id": "cartagena-fortress",
@@ -116,7 +116,7 @@
       "novelty": 5,
       "physicalIntensity": 3
     },
-    "imageUrl": "/media/cards/005.webp"
+    "imageUrl": "/media/cards/048.webp"
   },
   {
     "id": "cartagena-color",
@@ -150,7 +150,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/004.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "cartagena-drums",
@@ -167,7 +167,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/005.webp"
+    "imageUrl": "/media/cards/054.webp"
   },
   {
     "id": "antigua-volcano-camp",
@@ -184,7 +184,7 @@
       "novelty": 5,
       "physicalIntensity": 5
     },
-    "imageUrl": "/media/cards/007.webp"
+    "imageUrl": "/media/cards/019.webp"
   },
   {
     "id": "antigua-coffee",
@@ -201,7 +201,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/008.webp"
+    "imageUrl": "/media/cards/036.webp"
   },
   {
     "id": "antigua-ruins",
@@ -235,7 +235,7 @@
       "novelty": 5,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/007.webp"
+    "imageUrl": "/media/cards/019.webp"
   },
   {
     "id": "antigua-market",
@@ -252,7 +252,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/008.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "lima-food",
@@ -269,7 +269,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/010.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "lima-pyramid",
@@ -286,7 +286,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/011.webp"
+    "imageUrl": "/media/cards/003.webp"
   },
   {
     "id": "lima-barranco",
@@ -303,7 +303,7 @@
       "novelty": 3,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/012.webp"
+    "imageUrl": "/media/cards/054.webp"
   },
   {
     "id": "lima-surf",
@@ -337,7 +337,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/011.webp"
+    "imageUrl": "/media/cards/031.webp"
   },
   {
     "id": "medellin-cable-cars",
@@ -371,7 +371,7 @@
       "novelty": 5,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/014.webp"
+    "imageUrl": "/media/cards/029.webp"
   },
   {
     "id": "medellin-street-art",
@@ -388,7 +388,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/015.webp"
+    "imageUrl": "/media/cards/041.webp"
   },
   {
     "id": "medellin-market",
@@ -405,7 +405,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/013.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "medellin-sculptures",
@@ -422,7 +422,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/014.webp"
+    "imageUrl": "/media/cards/041.webp"
   },
   {
     "id": "quito-ridge",
@@ -439,7 +439,7 @@
       "novelty": 5,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/016.webp"
+    "imageUrl": "/media/cards/012.webp"
   },
   {
     "id": "quito-volcano",
@@ -456,7 +456,7 @@
       "novelty": 5,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/017.webp"
+    "imageUrl": "/media/cards/020.webp"
   },
   {
     "id": "quito-old-town",
@@ -473,7 +473,7 @@
       "novelty": 4,
       "physicalIntensity": 3
     },
-    "imageUrl": "/media/cards/018.webp"
+    "imageUrl": "/media/cards/016.webp"
   },
   {
     "id": "quito-cloud-forest",
@@ -490,7 +490,7 @@
       "novelty": 5,
       "physicalIntensity": 3
     },
-    "imageUrl": "/media/cards/016.webp"
+    "imageUrl": "/media/cards/036.webp"
   },
   {
     "id": "quito-equator",
@@ -507,7 +507,7 @@
       "novelty": 5,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/017.webp"
+    "imageUrl": "/media/cards/012.webp"
   },
   {
     "id": "el-salvador-volcano",
@@ -541,7 +541,7 @@
       "novelty": 3,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/020.webp"
+    "imageUrl": "/media/cards/036.webp"
   },
   {
     "id": "el-salvador-pupusas",
@@ -558,7 +558,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/021.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "el-salvador-flowers",
@@ -575,7 +575,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/019.webp"
+    "imageUrl": "/media/cards/039.webp"
   },
   {
     "id": "el-salvador-maya",
@@ -592,7 +592,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/020.webp"
+    "imageUrl": "/media/cards/040.webp"
   },
   {
     "id": "guadalajara-murals",
@@ -609,7 +609,7 @@
       "novelty": 2,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/022.webp"
+    "imageUrl": "/media/cards/041.webp"
   },
   {
     "id": "guadalajara-wrestling",
@@ -626,7 +626,7 @@
       "novelty": 5,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/023.webp"
+    "imageUrl": "/media/cards/054.webp"
   },
   {
     "id": "guadalajara-food",
@@ -643,7 +643,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/024.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "guadalajara-crafts",
@@ -660,7 +660,7 @@
       "novelty": 3,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/022.webp"
+    "imageUrl": "/media/cards/041.webp"
   },
   {
     "id": "guadalajara-architecture",
@@ -694,7 +694,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/025.webp"
+    "imageUrl": "/media/cards/037.webp"
   },
   {
     "id": "bogota-gold",
@@ -711,7 +711,7 @@
       "novelty": 5,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/026.webp"
+    "imageUrl": "/media/cards/041.webp"
   },
   {
     "id": "bogota-salt",
@@ -728,7 +728,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/027.webp"
+    "imageUrl": "/media/cards/068.webp"
   },
   {
     "id": "bogota-street-art",
@@ -745,7 +745,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/025.webp"
+    "imageUrl": "/media/cards/041.webp"
   },
   {
     "id": "bogota-market",
@@ -762,7 +762,7 @@
       "novelty": 5,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/026.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "monterrey-canyon",
@@ -779,7 +779,7 @@
       "novelty": 4,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/028.webp"
+    "imageUrl": "/media/cards/029.webp"
   },
   {
     "id": "monterrey-museum",
@@ -796,7 +796,7 @@
       "novelty": 3,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/029.webp"
+    "imageUrl": "/media/cards/045.webp"
   },
   {
     "id": "monterrey-grill",
@@ -813,7 +813,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/030.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "monterrey-park",
@@ -830,7 +830,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/028.webp"
+    "imageUrl": "/media/cards/045.webp"
   },
   {
     "id": "monterrey-viewpoint",
@@ -864,7 +864,7 @@
       "novelty": 5,
       "physicalIntensity": 3
     },
-    "imageUrl": "/media/cards/031.webp"
+    "imageUrl": "/media/cards/003.webp"
   },
   {
     "id": "puebla-mole",
@@ -881,7 +881,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/032.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "puebla-tunnels",
@@ -898,7 +898,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/033.webp"
+    "imageUrl": "/media/cards/068.webp"
   },
   {
     "id": "puebla-talavera",
@@ -915,7 +915,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/031.webp"
+    "imageUrl": "/media/cards/041.webp"
   },
   {
     "id": "puebla-squares",
@@ -932,7 +932,7 @@
       "novelty": 3,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/032.webp"
+    "imageUrl": "/media/cards/038.webp"
   },
   {
     "id": "granada-volcano-board",
@@ -949,7 +949,7 @@
       "novelty": 5,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/034.webp"
+    "imageUrl": "/media/cards/019.webp"
   },
   {
     "id": "granada-lava-lake",
@@ -966,7 +966,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/035.webp"
+    "imageUrl": "/media/cards/019.webp"
   },
   {
     "id": "granada-colonial",
@@ -983,7 +983,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/036.webp"
+    "imageUrl": "/media/cards/038.webp"
   },
   {
     "id": "granada-islets",
@@ -1017,7 +1017,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/035.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "guanajuato-tunnels",
@@ -1034,7 +1034,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/037.webp"
+    "imageUrl": "/media/cards/068.webp"
   },
   {
     "id": "guanajuato-mummies",
@@ -1068,7 +1068,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/039.webp"
+    "imageUrl": "/media/cards/068.webp"
   },
   {
     "id": "guanajuato-funicular",
@@ -1102,7 +1102,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/038.webp"
+    "imageUrl": "/media/cards/039.webp"
   },
   {
     "id": "copan-stelae",
@@ -1136,7 +1136,7 @@
       "novelty": 5,
       "physicalIntensity": 3
     },
-    "imageUrl": "/media/cards/041.webp"
+    "imageUrl": "/media/cards/068.webp"
   },
   {
     "id": "copan-macaws",
@@ -1170,7 +1170,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/040.webp"
+    "imageUrl": "/media/cards/036.webp"
   },
   {
     "id": "copan-sculpture",
@@ -1204,7 +1204,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/043.webp"
+    "imageUrl": "/media/cards/045.webp"
   },
   {
     "id": "detroit-motown",
@@ -1221,7 +1221,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/044.webp"
+    "imageUrl": "/media/cards/054.webp"
   },
   {
     "id": "detroit-art",
@@ -1255,7 +1255,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/043.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "detroit-market",
@@ -1272,7 +1272,7 @@
       "novelty": 3,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/044.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "quebec-walls",
@@ -1306,7 +1306,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/047.webp"
+    "imageUrl": "/media/cards/065.webp"
   },
   {
     "id": "quebec-food",
@@ -1323,7 +1323,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/048.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "quebec-citadel",
@@ -1340,7 +1340,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/046.webp"
+    "imageUrl": "/media/cards/048.webp"
   },
   {
     "id": "quebec-winter",
@@ -1357,7 +1357,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/047.webp"
+    "imageUrl": "/media/cards/049.webp"
   },
   {
     "id": "banff-canyon",
@@ -1374,7 +1374,7 @@
       "novelty": 5,
       "physicalIntensity": 3
     },
-    "imageUrl": "/media/cards/049.webp"
+    "imageUrl": "/media/cards/051.webp"
   },
   {
     "id": "banff-gondola",
@@ -1425,7 +1425,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/049.webp"
+    "imageUrl": "/media/cards/050.webp"
   },
   {
     "id": "banff-wildlife",
@@ -1459,7 +1459,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/052.webp"
+    "imageUrl": "/media/cards/054.webp"
   },
   {
     "id": "cleveland-park",
@@ -1476,7 +1476,7 @@
       "novelty": 3,
       "physicalIntensity": 3
     },
-    "imageUrl": "/media/cards/053.webp"
+    "imageUrl": "/media/cards/065.webp"
   },
   {
     "id": "cleveland-art",
@@ -1493,7 +1493,7 @@
       "novelty": 1,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/054.webp"
+    "imageUrl": "/media/cards/045.webp"
   },
   {
     "id": "cleveland-market",
@@ -1510,7 +1510,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/052.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "cleveland-industrial",
@@ -1527,7 +1527,7 @@
       "novelty": 3,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/053.webp"
+    "imageUrl": "/media/cards/045.webp"
   },
   {
     "id": "sedona-ridge",
@@ -1595,7 +1595,7 @@
       "novelty": 5,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/055.webp"
+    "imageUrl": "/media/cards/058.webp"
   },
   {
     "id": "sedona-ruins",
@@ -1612,7 +1612,7 @@
       "novelty": 4,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/056.webp"
+    "imageUrl": "/media/cards/060.webp"
   },
   {
     "id": "moab-arches",
@@ -1680,7 +1680,7 @@
       "novelty": 5,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/058.webp"
+    "imageUrl": "/media/cards/056.webp"
   },
   {
     "id": "moab-dinosaur",
@@ -1697,7 +1697,7 @@
       "novelty": 5,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/059.webp"
+    "imageUrl": "/media/cards/060.webp"
   },
   {
     "id": "chattanooga-ridge",
@@ -1714,7 +1714,7 @@
       "novelty": 3,
       "physicalIntensity": 3
     },
-    "imageUrl": "/media/cards/061.webp"
+    "imageUrl": "/media/cards/064.webp"
   },
   {
     "id": "chattanooga-cave",
@@ -1731,7 +1731,7 @@
       "novelty": 5,
       "physicalIntensity": 2
     },
-    "imageUrl": "/media/cards/062.webp"
+    "imageUrl": "/media/cards/068.webp"
   },
   {
     "id": "chattanooga-battlefield",
@@ -1782,7 +1782,7 @@
       "novelty": 3,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/062.webp"
+    "imageUrl": "/media/cards/061.webp"
   },
   {
     "id": "zion-narrows",
@@ -1799,7 +1799,7 @@
       "novelty": 5,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/064.webp"
+    "imageUrl": "/media/cards/065.webp"
   },
   {
     "id": "zion-overlook",
@@ -1816,7 +1816,7 @@
       "novelty": 5,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/065.webp"
+    "imageUrl": "/media/cards/064.webp"
   },
   {
     "id": "zion-kolob",
@@ -1833,7 +1833,7 @@
       "novelty": 4,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/066.webp"
+    "imageUrl": "/media/cards/065.webp"
   },
   {
     "id": "zion-petroglyphs",
@@ -1850,7 +1850,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/064.webp"
+    "imageUrl": "/media/cards/060.webp"
   },
   {
     "id": "zion-stars",
@@ -1867,7 +1867,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/065.webp"
+    "imageUrl": "/media/cards/058.webp"
   },
   {
     "id": "el-paso-border-food",
@@ -1884,7 +1884,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/067.webp"
+    "imageUrl": "/media/cards/005.webp"
   },
   {
     "id": "el-paso-peak",
@@ -1901,7 +1901,7 @@
       "novelty": 5,
       "physicalIntensity": 5
     },
-    "imageUrl": "/media/cards/068.webp"
+    "imageUrl": "/media/cards/064.webp"
   },
   {
     "id": "el-paso-cavern",
@@ -1918,7 +1918,7 @@
       "novelty": 5,
       "physicalIntensity": 3
     },
-    "imageUrl": "/media/cards/069.webp"
+    "imageUrl": "/media/cards/068.webp"
   },
   {
     "id": "el-paso-canyon",
@@ -1935,7 +1935,7 @@
       "novelty": 4,
       "physicalIntensity": 4
     },
-    "imageUrl": "/media/cards/067.webp"
+    "imageUrl": "/media/cards/065.webp"
   },
   {
     "id": "el-paso-mission",
@@ -1952,7 +1952,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/068.webp"
+    "imageUrl": "/media/cards/007.webp"
   },
   {
     "id": "palm-springs-boulders",
@@ -2020,7 +2020,7 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/070.webp"
+    "imageUrl": "/media/cards/043.webp"
   },
   {
     "id": "palm-springs-stars",
@@ -2037,6 +2037,6 @@
       "novelty": 4,
       "physicalIntensity": 1
     },
-    "imageUrl": "/media/cards/071.webp"
+    "imageUrl": "/media/cards/072.webp"
   }
 ]

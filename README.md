@@ -6,7 +6,7 @@ The V1 use case is one fixed five-person trip in November 2026 (Dan, John, Matt,
 
 ## Status
 
-The local V1 is implemented as a TypeScript workspace with a destination-blind React flow, a backend-owned deterministic ranking engine, seed validation, tests, and CI checks. Firebase configuration, Firestore persistence, and the approved Google-account roster mapping remain deployment handoff work.
+The app is a TypeScript workspace with a destination-blind React flow, a backend-owned deterministic ranking engine, activity-specific editorial media, Firestore-backed roster persistence, Google authentication, seed validation, tests, and CI checks. The candidate atlas becomes available after a player finishes; personal and group rankings stay sealed until the full group reveal.
 
 ## Repository map
 
@@ -17,7 +17,7 @@ The local V1 is implemented as a TypeScript workspace with a destination-blind R
 - `frontend/` — future React/Vite client.
 - `backend/` — future TypeScript API and ranking engine.
 - `shared/` — future shared types, schemas, and constants.
-- `scripts/` — future operational scripts, including Firestore seeding.
+- `scripts/` — seed validation and operational helpers.
 
 ## Start here
 

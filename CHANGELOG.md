@@ -13,9 +13,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Local TypeScript workspace, shared schemas, seed validation, deterministic V1 ranking engine, presentation-safe API, destination-blind frontend flow, tests, and CI quality workflow.
 - A completion-gated, unranked destination atlas API contract for the pre-reveal exploration moment.
 - V3 editorial travel presentation: character-led onboarding, destination-photo comparisons, a real atlas map, gallery credits, and motion-safe loading and transition states.
+- V4 retro-adventure refinement: unboxed interactive roster art, activity-matched opaque imagery, live completion progress, a full-bleed map-first atlas, and a character-led group verdict.
+- Firestore-backed comparison, pending-pair, and reveal persistence, plus a completion-gated social-results API with normalized preference scores and a consensus penalty.
 
 ### Changed
 
 - Clarified the fixed five-person V1 scope, Google-authenticated roster, group reveal embargo, text-only comparison cards, and display-only practical context.
 - Aligned documentation precedence, design-system references, and seed/schema examples for implementation.
 - Updated the reveal embargo: completed participants may explore named candidate destinations and general trip context, while every personal and group outcome remains hidden until the group reveal.
+- Tightened the final reveal so it opens only after the whole five-person roster finishes; it exposes each participant's top three rather than raw choices.

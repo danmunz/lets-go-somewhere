@@ -2,6 +2,7 @@ import type { Activity, Attributes, Comparison, Destination } from '@lgs/shared'
 import { ATTRIBUTE_KEYS } from '@lgs/shared';
 
 export type Ranking = { activityScores: Record<string, number>; attributeScores: Record<string, number>; destinationScores: Record<string, number> };
+export type GroupDestinationResult = { id: string; meanPreference: number; polarization: number; groupScore: number };
 const blankAttributes = (): Attributes => Object.fromEntries(ATTRIBUTE_KEYS.map((key) => [key, 0])) as Attributes;
 
 export function rankUser(destinations: Destination[], activities: Activity[], comparisons: Comparison[]): Ranking {
@@ -33,6 +34,20 @@ export function isComplete(activities: Activity[], comparisons: Comparison[]) {
   const appearances = Object.fromEntries(activities.map((activity) => [activity.destinationId, 0] as const));
   for (const comparison of comparisons) for (const id of [comparison.activityA, comparison.activityB]) appearances[activities.find((activity) => activity.id === id)!.destinationId]++;
   return Object.values(appearances).every((total) => total >= 2) && comparisons.length >= 28;
+}
+
+export function groupRankings(destinations: Destination[], individualScores: Array<Record<string, number>>): GroupDestinationResult[] {
+  return destinations.map((destination) => {
+    const values = individualScores.map((scores) => scores[destination.id]);
+    const meanPreference = values.reduce((sum, value) => sum + value, 0) / values.length;
+    const polarization = Math.sqrt(values.reduce((sum, value) => sum + (value - meanPreference) ** 2, 0) / values.length);
+    return { id: destination.id, meanPreference, polarization, groupScore: meanPreference - polarization * 0.25 };
+  }).sort((a, b) => b.groupScore - a.groupScore || a.id.localeCompare(b.id));
+}
+
+export function normalizeDestinationScores(scores: Record<string, number>): Record<string, number> {
+  const values = Object.values(scores), low = Math.min(...values), high = Math.max(...values), range = high - low || 1;
+  return Object.fromEntries(Object.entries(scores).map(([id, score]) => [id, (score - low) / range]));
 }
 
 export function selectNextPair(activities: Activity[], comparisons: Comparison[]) {

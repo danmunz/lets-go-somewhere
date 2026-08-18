@@ -1418,7 +1418,7 @@ The current ranking-module interface is intended to make this optional extractio
 | Backend | TypeScript HTTP API | Shared language/types with frontend |
 | Backend hosting | Cloud Run | Managed, conventional server runtime, scale-to-zero |
 | Database | Firestore | Simple document-oriented application state |
-| Initial activity imagery | Opaque local destination photo | A deliberately accepted soft cue; all explicit geographic metadata stays embargoed |
+| Initial activity imagery | Opaque local activity-specific photo | A deliberately accepted soft cue; all explicit geographic metadata stays embargoed |
 | Future images | Cloud Storage or static hosting | Post-MVP, subject to blindness review |
 | CI/CD | GitHub Actions | Natural GitHub integration |
 | Ranking | Isolated domain module | Allows algorithms to evolve independently |
