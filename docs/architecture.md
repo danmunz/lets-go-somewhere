@@ -1,6 +1,6 @@
 # Let's Go Somewhere — Architecture Overview
 
-This document describes the intended architecture for **Let's Go Somewhere**, the adaptive destination-preference application.
+This document describes the architecture for **Let's Go Somewhere**, separating the implemented V1 foundation from the longer-term target design.
 
 The application presents users with repeated destination-blind, pairwise activity choices such as:
 
@@ -19,6 +19,12 @@ The system uses those choices to infer:
 The architecture is intentionally simple for the MVP while preserving clear seams for more sophisticated ranking models, airfare integrations, admin tooling, richer analytics, and multi-group use later.
 
 The preferred platform is **GitHub + Google Cloud / Firebase**.
+
+## Current implementation boundary
+
+The deployed V1 foundation is intentionally smaller than the aspirational tree below: a React/Vite/TypeScript SPA, a Hono API on Cloud Run, shared Zod contracts, checked-in seed content, Firebase Auth with Google, and Firestore. The large component, route, organizer, and multi-group sketches in this document remain target architecture rather than a claim about current source layout.
+
+The current frontend uses the Firebase Web SDK, MapLibre, NumberFlow, Paper Shaders, and local CSS. It does not use React Router, Tailwind, or Framer Motion. GitHub Actions runs quality checks; it is not the production deployment mechanism.
 
 ---
 
@@ -49,7 +55,9 @@ lets-go-somewhere/
 │   │   ├── auth/
 │   │   └── app/
 │   ├── public/
-│   │   └── activities/
+│   │   └── media/
+│   │       ├── cards/
+│   │       └── destinations/
 │   ├── tests/
 │   └── package.json
 ├── design-system/
@@ -88,7 +96,8 @@ lets-go-somewhere/
 │
 ├── seed/
 │   ├── destinations.json
-│   └── activities.json
+│   ├── activities.json
+│   └── activity-media.json
 │
 ├── scripts/
 │   └── seed-firestore.ts
@@ -149,7 +158,7 @@ The frontend should never contain the canonical ranking algorithm.
                            │ Source + Actions │
                            └────────┬─────────┘
                                     │
-                              CI/CD deploy
+                         quality checks / manual release
                                     │
                      ┌──────────────┴──────────────┐
                      ▼                             ▼
@@ -388,7 +397,24 @@ Firestore fits the MVP because the data is naturally document-oriented and the r
 
 ---
 
-### 4.2 Core Collections
+### 4.2 Current V1 Firestore layout
+
+The deployed fixed-roster study uses a deliberately compact layout:
+
+```text
+lgsV4Users/{rosterId}
+  comparisons: Comparison[]
+  pending: [activityId, activityId] | null
+  updatedAt: ISO timestamp
+
+lgsV4State/reveal
+  open: boolean
+  openedAt: ISO timestamp
+```
+
+The backend loads destinations, activities, activity-media metadata, coordinates, and galleries from checked-in seed files; they are not Firestore collections. Firebase identities are verified and then mapped to a fixed roster ID. The roster ID—not the Firebase UID—is the persisted V1 key.
+
+### 4.2.1 Future multi-group collection shape
 
 A practical initial structure:
 
@@ -511,7 +537,7 @@ Example:
   "destinationId": "antigua",
   "title": "Camp above the clouds beside an erupting volcano",
   "description": "Hike into the mountains, spend the night on a ridge, and watch a neighboring volcano erupt after dark.",
-  "imageUrl": null,
+  "imageUrl": "/media/cards/001.webp",
   "attributes": {
     "adventure": 5,
     "nature": 5,
@@ -676,6 +702,24 @@ The frontend may hide unauthorized controls, but frontend checks are not conside
 ---
 
 ## 6. API Surface
+
+### Current deployed V1 routes
+
+```text
+GET  /v1/session
+GET  /v1/comparison/next
+POST /v1/comparisons
+GET  /v1/profile
+GET  /v1/atlas
+GET  /v1/group-status
+POST /v1/reveal
+GET  /v1/results/me
+GET  /v1/results/group
+```
+
+`/v1/profile`, `/v1/group-status`, and `/v1/results/me` are implemented backend contracts whose dedicated frontend payoff surfaces remain V1 completion work. Comparison responses expose only activity ID, title, description, and opaque local card image path. Atlas and result routes are completion/reveal gated as appropriate.
+
+### Target multi-group API surface
 
 Initial API design might include:
 
@@ -1374,15 +1418,13 @@ Add infrastructure only when a demonstrated requirement justifies it.
 
 ### V2
 
-Potential additions:
+Potential additions after the fixed-roster V1 completion work:
 
 - hierarchical preference model;
 - confidence intervals;
 - more rigorous information-gain comparison selection;
 - dynamic airfare data;
 - practical-trip ranking;
-- activity and destination imagery;
-- real-time group-completion status;
 - shareable result pages;
 - improved organizer dashboard;
 - multiple simultaneous trips per user;
@@ -1419,7 +1461,7 @@ The current ranking-module interface is intended to make this optional extractio
 | Backend hosting | Cloud Run | Managed, conventional server runtime, scale-to-zero |
 | Database | Firestore | Simple document-oriented application state |
 | Initial activity imagery | Opaque local activity-specific photo | A deliberately accepted soft cue; all explicit geographic metadata stays embargoed |
-| Future images | Cloud Storage or static hosting | Post-MVP, subject to blindness review |
+| Future user-authored images | Cloud Storage or static hosting | Post-MVP; current curated media is locally hosted and credit-validated |
 | CI/CD | GitHub Actions | Natural GitHub integration |
 | Ranking | Isolated domain module | Allows algorithms to evolve independently |
 | Source of truth | Raw comparisons | Allows complete model recomputation |

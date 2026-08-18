@@ -17,6 +17,10 @@ Its main purpose is to produce a concrete inventory of:
 
 V1 has one participant role: an approved member of the fixed five-person roster. The organizer journey below is retained as a post-MVP reference; V1 uses the checked-in trip configuration and Dan may only end the study to open the reveal gate.
 
+## Current implementation note
+
+The shipped V3/V4 path is **welcome → choose character → Google OAuth → comparisons → completion-gated named atlas → group reveal**. The atlas is unranked and contains no personal or group outcome data. The standalone profile, waiting roster, personal-results, detailed rationale, and final gut-check screens described below remain V1 completion work; they are not silently treated as shipped. See [implementation status](implementation-status.md).
+
 The broader product has two primary roles:
 
 1. **Participant** — one of the travelers completing the preference exercise.
@@ -114,13 +118,12 @@ Until the reveal, do not expose:
 - destination names;
 - countries;
 - flags;
-- recognizable landmarks;
 - airport codes;
 - airfare;
 - maps;
 - destination-specific terminology that trivially gives away location.
 
-The participant is evaluating **experiences**, not brands.
+The participant is evaluating **experiences**, not brands. Activity-specific photography may create geographic recognition; this is an accepted V3/V4 tradeoff. Explicit destination metadata and outcome signals remain embargoed during comparison.
 
 ---
 
@@ -312,7 +315,7 @@ The landing page should communicate the entire premise visually before the user 
 
 ## Purpose
 
-Confirm which trip the authenticated user is joining and show their assigned character profile.
+Let a participant choose their intended traveler before authentication, then verify that selection against the approved Google roster mapping.
 
 ## Required information
 
@@ -322,28 +325,28 @@ Confirm which trip the authenticated user is joining and show their assigned cha
 
 ### Character Selection Prompt
 
-> **You're joining as Dan.**
+> **Choose the traveler who matches your Google account.**
 
 ### Character Selection Grid (5-Traveler Roster)
 
 Interactive character cards for the 5 trip participants:
 
-1. **Dan** — *Trip Planner*
-2. **James** — *Adventurer*
-3. **John** — *Navigator*
-4. **Matt** — *Explorer*
-5. **Peter** — *Photographer*
+1. **Dan** — *Trip wrangler*
+2. **James** — *Curiosity engine*
+3. **John** — *Good-times scout*
+4. **Matt** — *Trail negotiator*
+5. **Peter** — *Wildcard energy*
 
 #### Interactive 3D Card States & Micro-animations:
 
-- **Initial State**: Straight-on hero illustration (`_0.png`) with subtle ground shadow.
-- **Hover State**: Card smoothly enlarges ($1.12\times$) with a playful 3D tilt/wiggle (`scale(1.12) rotateZ(±4deg) rotateY(±8deg)`) and softened ground shadow.
-- **Click / Selection State**: On click, the character launches into an energetic 360° selection spin (`rotateY(360deg)` with spring jump `scale(1.25)` → `scale(1.08)`), illuminating a checkmark badge (`✓`) and blue glow border.
-- **Assigned State**: The authenticated traveler’s assigned character is selected; the other roster cards are visible but unavailable.
+- **Initial State**: Free-standing transparent cutout with a floor shadow and nameplate; no enclosing card.
+- **Hover State**: Gentle lift and playful 3D wiggle (`scale(1.12) rotateZ(±4deg) rotateY(±8deg)`) with a softened floor shadow.
+- **Click / Selection State**: One 750 ms 360° lock-in spin, checkmark, and live selection confirmation; reduced motion uses color and shadow only.
+- **Verification State**: Google OAuth verifies that the selected character matches the approved roster account; a mismatch is rejected rather than silently switching identity.
 
 ### Primary CTA
 
-**Join as [Selected Character Name]** (e.g. *Join as Dan*)
+**Continue as [Selected Character Name]** (e.g. *Continue as Dan*)
 
 ### Secondary CTA
 
@@ -359,16 +362,16 @@ Interactive character cards for the 5 trip participants:
 
 On confirmation:
 
-- create group membership;
-- preserve authenticated UID;
-- associate the authenticated player with their preassigned `characterId` (e.g. `"dan"`).
+- verify the Firebase identity;
+- map the verified account to its approved fixed-roster `characterId` (e.g. `"dan"`);
+- reject a selected-character/identity mismatch.
 
 ## Exit
 
 ```text
 Join as [Character]
        ↓
-P03 How It Works (Welcomed by selected character)
+P04 Comparison
 ```
 
 ## Emotion
@@ -386,6 +389,8 @@ Character selection bypasses awkward email/display names and instantly grounds t
 ---
 
 # 8. Screen P03 — How It Works
+
+**Implementation status:** the onboarding explanation is currently integrated into the welcome and character-select screens rather than shipped as this standalone screen. Retain the content intent when extracting it later.
 
 ## Purpose
 
@@ -470,7 +475,7 @@ Make one effortless preference decision.
 
 - short activity title;
 - 1–2 sentence description;
-- optional destination-blind illustration;
+- opaque, activity-specific editorial photograph with no visible destination metadata or credits;
 - entire card selectable.
 
 ### Activity B
@@ -483,21 +488,15 @@ Same structure and visual weight.
 
 ### Progress indicator & Active Traveler Badge
 
-- **Active Traveler Micro-Avatar**: Compact 3D avatar chip (`CharacterAvatar`) pinned in the header bar showing the user's selected character (e.g. Dan's avatar).
+- **Active Traveler Avatar**: The selected transparent character art is displayed at approximately 150 px in the header.
 - **Progress bar / text**:
   ```text
-  ████████████░░░░░
-  About 60% there
+  18 answered · 24 minimum · up to 40
   ```
 
 ### Milestone Micro-Toasts (Gamified Feedback)
 
-At key progress milestones (25%, 50%, 75% complete), a lightweight toast notification (`CharacterToast`) slides in from the bottom/top corner:
-- The user's micro-avatar pops up with a playful 3D wiggle/spin.
-- Short celebratory copy:
-  - *25%*: "Nice! Getting a feel for your style."
-  - *50%*: "Halfway there! Keep the rhythm going."
-  - *75%*: "Almost done! Homestretch."
+Progress copy moves from “Finding your trip rhythm” to “You’re on a roll” and “Almost there — just a few gut calls left.” The live counter and bar express the real minimum/maximum envelope rather than a fixed total.
 
 ## Example
 
@@ -529,6 +528,8 @@ On selection:
 4. next comparison appears.
 
 No "Are you sure?"
+
+The hover/focus cue reads **“I’d rather…”**; selection acknowledgement is short (about 180 ms) and never blocks the next answer.
 
 ## Transitions
 
@@ -826,7 +827,7 @@ Avoid generic personality language that could describe anybody.
 
 ## Purpose
 
-Deliver the principal payoff after the entire roster completes the blind exercise or Dan ends the study.
+Deliver the principal payoff after the entire roster completes the blind exercise and Dan opens the reveal gate. There is no early-reveal path in the fixed-roster V1 study.
 
 ## Required information
 
@@ -1129,6 +1130,8 @@ P13 Group Reveal
 
 # 17. Screen P12 — Waiting for Group
 
+**Implementation status:** `/v1/group-status` provides completion-only roster data, but this dedicated waiting lobby is not yet implemented. It is a V1 completion task.
+
 ## Purpose
 
 Handle the period between individual completion and group completion.
@@ -1210,6 +1213,8 @@ Make the waiting screen itself socially useful by making it easy to prod the hol
 ## Purpose
 
 Provide the second major payoff: what the five people collectively prefer.
+
+**Implementation status:** the shipped verdict presents a winning cover image, group top five, a consensus/polarization cue, and every traveler's top three. The fuller matrix, group awards, practical constraints, sharing, detailed destination view, and final decision actions below remain planned work.
 
 ## Required information
 

@@ -15,10 +15,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - V3 editorial travel presentation: character-led onboarding, destination-photo comparisons, a real atlas map, gallery credits, and motion-safe loading and transition states.
 - V4 retro-adventure refinement: unboxed interactive roster art, activity-matched opaque imagery, live completion progress, a full-bleed map-first atlas, and a character-led group verdict.
 - Firestore-backed comparison, pending-pair, and reveal persistence, plus a completion-gated social-results API with normalized preference scores and a consensus penalty.
+- A consolidated traveler-art library: current roster cutouts remain at `assets/images/`, with legacy variants retained under `assets/images/old/`.
 
 ### Changed
 
-- Clarified the fixed five-person V1 scope, Google-authenticated roster, group reveal embargo, text-only comparison cards, and display-only practical context.
+- Clarified the fixed five-person V1 scope, Google-authenticated roster, group reveal embargo, destination-blind activity-photo cards, and display-only practical context.
 - Aligned documentation precedence, design-system references, and seed/schema examples for implementation.
 - Updated the reveal embargo: completed participants may explore named candidate destinations and general trip context, while every personal and group outcome remains hidden until the group reveal.
 - Tightened the final reveal so it opens only after the whole five-person roster finishes; it exposes each participant's top three rather than raw choices.
+- Reconciled deployment, delivery, implementation, and review documents with the shipped Firebase/Cloud Run/Firestore release; documented the remaining V1 completion gaps separately from the V2 roadmap.

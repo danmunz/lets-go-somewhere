@@ -83,7 +83,12 @@ Example:
   "name": "Antigua",
   "country": "Guatemala",
   "tagline": "Colonial highland city surrounded by volcanoes",
-  "imageUrl": null,
+  "coordinates": { "longitude": -90.733, "latitude": 14.558 },
+  "gallery": [
+    { "path": "/media/destinations/antigua-01.webp", "alt": "Editorial travel photograph", "photographerName": "…", "photographerUrl": "…", "sourceUrl": "…" },
+    { "path": "/media/destinations/antigua-02.webp", "alt": "Editorial travel photograph", "photographerName": "…", "photographerUrl": "…", "sourceUrl": "…" },
+    { "path": "/media/destinations/antigua-03.webp", "alt": "Editorial travel photograph", "photographerName": "…", "photographerUrl": "…", "sourceUrl": "…" }
+  ],
   "airfare": {
     "nyc": 450,
     "dc": 475,
@@ -94,9 +99,9 @@ Example:
 }
 ```
 
-Airfare and travel friction are **destination metadata**, not necessarily something shown during activity comparisons.
+Coordinates, galleries, airfare, and travel friction are **destination metadata**, not necessarily something shown during activity comparisons. Every destination has three locally hosted, credited gallery photos; this metadata is atlas/reveal-only.
 
-They can be incorporated later into the final recommendation or displayed during the reveal.
+Travel context can be displayed after completion/reveal but must not alter the blind ranking without an explicit later practical-ranking model.
 
 ---
 
@@ -112,7 +117,7 @@ Example:
   "destinationId": "antigua",
   "title": "Camp above the clouds beside an erupting volcano",
   "description": "Hike into the highlands, spend the night on a ridge, and watch a neighboring volcano erupt after dark.",
-  "imageUrl": null,
+  "imageUrl": "/media/cards/001.webp",
   "attributes": {
     "adventure": 5,
     "nature": 5,
@@ -125,6 +130,8 @@ Example:
   }
 }
 ```
+
+Every activity has an opaque local card path. The private `seed/activity-media.json` catalog records that card's source URL, photographer, profile URL, and descriptive alt text; those credit fields never cross the comparison API boundary.
 
 Another activity from the same destination:
 
@@ -211,18 +218,20 @@ Google authentication is required for the MVP. Each approved Google identity is 
 
 Each traveler profile maps to an illustrated character asset with defined 3D micro-animation states:
 
-| `characterId` | Name | Default Role | Hero Asset | Split Views (1–4) |
-|---|---|---|---|---|
-| `"dan"` | Dan | Trip Planner | `dan_0.png` | `dan_1.png` – `dan_4.png` |
-| `"james"` | James | Adventurer | `james_0.png` | `james_1.png` – `james_4.png` |
-| `"john"` | John | Navigator | `john_0.png` | `john_1.png` – `john_4.png` |
-| `"matt"` | Matt | Explorer | `matt_0.png` | `matt_1.png` – `matt_4.png` |
-| `"peter"` | Peter | Photographer | `peter_0.png` | `peter_1.png` – `peter_4.png` |
+| `characterId` | Name | Default Role | Canonical roster asset |
+|---|---|---|---|
+| `"dan"` | Dan | Trip wrangler | `dan_cutout.png` |
+| `"james"` | James | Curiosity engine | `james_cutout.png` |
+| `"john"` | John | Good-times scout | `john_cutout.png` |
+| `"matt"` | Matt | Trail negotiator | `matt_cutout.png` |
+| `"peter"` | Peter | Wildcard energy | `peter_cutout.png` |
+
+Legacy rendered variants are retained under `assets/images/old/`; they are not part of the production roster contract.
 
 #### Client-side Animation Triggers:
 
 - `CHARACTER_HOVER`: Enlarges to $1.12\times$ with playful 3D tilt/wiggle (`wiggle3D`).
-- `CHARACTER_SELECT`: Triggers 360° selection spin (`selectionSpin360` + spring pop).
+- `CHARACTER_SELECT`: Triggers one 750 ms 360° lock-in spin and a live selection confirmation. Under reduced motion, color and shadow convey the same state without the spin.
 - `PROGRESS_MILESTONE`: Fires micro-toast with animated avatar badge (at 25%, 50%, 75% complete).
 - `GROUP_MEMBER_COMPLETE`: Triggers lobby token 360° spin + real-time toast alert.
 
@@ -599,7 +608,7 @@ Hike into the mountains, spend the night on a ridge, and watch a neighboring vol
 
 Historical V1 note: no image. Current comparisons may use opaque, activity-specific editorial photography as an intentionally accepted soft cue, without names or geographic metadata.
 
-**PICK THIS**
+**I'D RATHER…** (shown on hover or keyboard focus)
 
 ### OR
 
@@ -611,7 +620,7 @@ Walk through old mining tunnels and underground roads before emerging into plaza
 
 Historical V1 note: no image. Current comparisons may use opaque, activity-specific editorial photography as an intentionally accepted soft cue, without names or geographic metadata.
 
-**PICK THIS**
+**I'D RATHER…** (shown on hover or keyboard focus)
 
 Destination names, countries, flags, airport codes, airfare, and overt destination labels should be hidden. Activity writing may retain authentic cultural and environmental detail; the goal is to reduce brand bias, not guarantee total geographic anonymity.
 
@@ -629,20 +638,18 @@ A photograph may immediately reveal:
 - Flags
 - Famous monuments
 
-Options:
+### Current product policy
 
-### Historical V1
-No images. The current product intentionally accepts activity-specific editorial photography as a soft cue, while holding back all explicit destination metadata and credit information until the atlas.
+The current product intentionally accepts locally hosted, activity-specific editorial photography as a soft cue, while holding back all explicit destination metadata and credit information until the completion-gated atlas. Each card image is selected to match the described activity, even when that makes geographic recognition more likely.
 
-### V2
-Use carefully selected atmospheric images.
-
-Example:
+Examples:
 
 - Hiking boots on volcanic terrain
 - Market food
 - Tunnel interior
 - Cable car silhouette
+
+Future image work must retain the same redaction boundary and credit policy; it is not a reason to move destination metadata into comparison responses.
 
 Avoid iconic landmarks.
 
@@ -775,7 +782,9 @@ If the system remains uncertain between two destinations, ask another comparison
 
 # 29. First Reveal: Preference Profile
 
-Before showing destinations, reveal what the system learned.
+The intended V1 profile is a destination-free recognition beat that explains what the system learned.
+
+The accepted V3/V4 flow permits a completed participant to open the unranked named atlas before the group reveal. That does not retire this profile requirement: it should be added before or alongside atlas entry without implying a destination ranking. See [implementation status](implementation-status.md) for the current gap.
 
 Example:
 
@@ -797,7 +806,7 @@ This builds anticipation before revealing where those preferences lead.
 
 # 30. Group Reveal Gate
 
-After a participant finishes, show an unranked destination atlas. The atlas may show every candidate destination’s name, general trip context, real map placement, and credited editorial photography, but must not expose personal or group scores, ranks, activity-response evidence, or another participant’s choices. Named results, destination details tied to a participant’s preferences, and sharing remain embargoed until all five roster members have finished or Dan explicitly ends the study.
+After a participant finishes, show an unranked destination atlas. The atlas may show every candidate destination’s name, general trip context, real map placement, and credited editorial photography, but must not expose personal or group scores, ranks, activity-response evidence, or another participant’s choices. Named results, destination details tied to a participant’s preferences, and sharing remain embargoed until all five roster members have finished and Dan opens the reveal gate.
 
 # 31. Destination Reveal
 
@@ -1175,13 +1184,13 @@ That alone is enough to make the concept work.
 
 # 46. V2
 
+Activity-specific editorial photography and restrained selection/loading/reveal motion were deliberately shipped in V3/V4. They are no longer V2-only work; explicit geographic metadata and ranking signals remain protected during play.
+
 Add:
 
 - Hierarchical preference modeling
 - Confidence intervals
 - Better adaptive information-gain calculations
-- Activity images
-- Animated reveal
 - Practical-vs-pure preference rankings
 - Automatic airfare refresh
 - Group awards

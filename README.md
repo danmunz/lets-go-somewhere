@@ -8,15 +8,17 @@ The V1 use case is one fixed five-person trip in November 2026 (Dan, John, Matt,
 
 The app is a TypeScript workspace with a destination-blind React flow, a backend-owned deterministic ranking engine, activity-specific editorial media, Firestore-backed roster persistence, Google authentication, seed validation, tests, and CI checks. The candidate atlas becomes available after a player finishes; personal and group rankings stay sealed until the full group reveal.
 
+Production preview: <https://lets-go-somewhere-3549f.web.app>. For shipped scope and the remaining V1/V2 boundary, see [implementation status](docs/implementation-status.md).
+
 ## Repository map
 
 - `docs/` — product, UX, architecture, origin context, and design guidance.
 - `seed/` — canonical initial destination and activity content.
 - `design-system/` — production visual tokens, CSS contracts, local fonts, and approved logo.
 - `assets/` — supplied traveler artwork; approved only for the roster, progress, waiting, and celebratory UI.
-- `frontend/` — future React/Vite client.
-- `backend/` — future TypeScript API and ranking engine.
-- `shared/` — future shared types, schemas, and constants.
+- `frontend/` — deployed React/Vite client.
+- `backend/` — deployed TypeScript/Cloud Run API and ranking engine.
+- `shared/` — shared runtime schemas, safe presentation contracts, and constants.
 - `scripts/` — seed validation and operational helpers.
 
 ## Start here
@@ -27,6 +29,7 @@ The app is a TypeScript workspace with a destination-blind React flow, a backend
 - [Project origins and constraints](docs/project-origins-background.md)
 - [Documentation index](docs/README.md)
 - [Design system](docs/design-system.md)
+- [Implementation status](docs/implementation-status.md)
 
 ## Seed data
 
@@ -40,6 +43,6 @@ Treat these files as product content: activity wording must preserve destination
 2. `npm run validate:seed && npm test && npm run typecheck && npm run build`
 3. In one terminal run `npm run dev -w backend`; in another run `npm run dev -w frontend`.
 
-The shipped identity selector is development-only. Before any production deployment, complete the Firebase handoff in [docs/implementation-spec.md](docs/implementation-spec.md).
+Production uses Firebase Google sign-in and Firestore-backed responses; local development may use the explicitly non-production identity adapter. See [docs/deployment.md](docs/deployment.md) for the deployed environment and release checks.
 
 See [AGENTS.md](AGENTS.md) for contribution standards.

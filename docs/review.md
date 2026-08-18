@@ -1,10 +1,6 @@
-# V1 implementation review
+# V1 baseline implementation review — historical
 
-## Summary
-
-- Files reviewed: workspace, shared contracts, backend ranking/API, frontend flow, CI, and documentation.
-- Checks: seed validation, six deterministic unit/API tests, strict type checking, production build, diff whitespace check, and browser smoke test.
-- Specification alignment: local V1 passes the destination-blind comparison, backend-owned ranking, profile, embargo, organizer reveal, and individual top-five requirements.
+This was the original local implementation review. Its former Firebase/Auth/Firestore deployment blocker is resolved and the document is retained as a baseline rather than a statement of current release status.
 
 ## Resolved during review
 
@@ -13,6 +9,8 @@
 - `SEC-001` — The local roster adapter is rejected under `NODE_ENV=production`; production authentication requires Firebase.
 - `A11Y-001` — The document declares its language, viewport, semantic buttons, labelled progress, focus styling, and reduced-motion support.
 
-## Accepted deployment blocker
+## Current release validation
 
-Firebase/Auth configuration, Firestore persistence, Cloud Run/Firebase Hosting provisioning, and Google-account roster assignments require credentials and account decisions not present in the repository. They are tracked as `TASK-008` in [tasks.md](tasks.md).
+The deployed app now includes Firebase Google authentication, Firestore-backed comparison and reveal persistence, Cloud Run, Firebase Hosting, activity-specific editorial media, a completion-gated map atlas, and a group-results API. The current automated suite covers deterministic ranking and API boundaries in the local adapter; Firestore-emulator and authenticated multi-roster end-to-end coverage remain hardening work.
+
+Use [implementation status](implementation-status.md) for the current gaps and release boundary.

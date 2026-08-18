@@ -1,5 +1,9 @@
 # V1 experience design
 
+## Current implementation status
+
+Landing, character selection, comparison, completion-gated atlas, and group verdict are shipped. The preference-profile and waiting-status surfaces remain planned V1 completion work; see [implementation status](implementation-status.md). The comparison counter truthfully communicates the 24-answer minimum and 40-answer maximum rather than an exact fixed total.
+
 ## Screens
 
 - Landing: a short visual explanation of the destination-blind game and a clear time expectation, followed by character selection before Google sign-in.

@@ -20,6 +20,8 @@ Deliver a runnable TypeScript monorepo for the fixed 2026 five-person trip. It m
 4. Ranking, pair selection, stopping, and API validation have deterministic tests.
 5. The UI imports the checked-in design-system foundations and is responsive, keyboard operable, and reduced-motion safe.
 
-## Deferred handoff
+## Current implementation status
 
-The Firebase project, web app, and Firestore database are provisioned. Google sign-in enablement, raw comparison persistence, deployment release secrets, and the approved Google email-to-roster mapping remain the final deployment tasks.
+The Firebase project, Google sign-in, approved roster mapping, Cloud Run API, Firebase Hosting, and Firestore-backed comparison persistence are implemented and deployed. The local adapter remains available only for development and deterministic tests.
+
+Acceptance criteria 1, 2, 4, and 5 are shipped. Criterion 3 is partially shipped: the game reaches a completion-gated atlas and embargoed group reveal, but the dedicated preference-profile and waiting-status screens remain V1 completion work. See [implementation status](implementation-status.md) for the current release boundary.

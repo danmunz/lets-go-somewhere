@@ -580,7 +580,7 @@ Their task is simply:
 
 Destination names are hidden during preference collection because they create bias.
 
-For this five-person MVP, a completed traveler sees only their preference profile until the whole roster completes (or Dan explicitly ends the study). Destination names then reveal for everyone together.
+Historical product direction: a completed traveler would see only their preference profile until the whole roster completed. The shipped V3/V4 product intentionally changed that timing: an individual may browse an unranked named atlas after completion, while personal and group outcomes remain sealed until all five are complete and Dan opens the reveal gate. See [implementation status](implementation-status.md).
 
 This is not secrecy for its own sake.
 
