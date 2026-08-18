@@ -10,7 +10,7 @@ Deliver a runnable TypeScript monorepo for the fixed 2026 five-person trip. It m
 - `shared` owns Zod schemas and public presentation-safe contracts.
 - `backend` owns deterministic V1 Elo-style activity scoring, equal-weight destination aggregation, attributes, pair selection, and stopping rules.
 - The checked-in seed data is loaded by the backend only. Comparison payloads omit destination metadata.
-- The absence of Firebase configuration and approved account mapping means local development uses an explicitly non-production `X-Demo-User` roster adapter. Production requests must be authenticated by a Firebase verifier before deployment.
+- Local development uses an explicitly non-production `X-Demo-User` roster adapter. Production requests verify Firebase ID tokens and match their verified email against the `ROSTER_EMAILS` deployment variable.
 
 ## Acceptance criteria
 
@@ -22,4 +22,4 @@ Deliver a runnable TypeScript monorepo for the fixed 2026 five-person trip. It m
 
 ## Deferred handoff
 
-Firebase Auth, Firestore persistence, Cloud Run/Firebase Hosting configuration, release secrets, and the approved Google email-to-roster mapping remain deployment tasks because the required project identifiers and identities are not present in this repository.
+The Firebase project, web app, and Firestore database are provisioned. Google sign-in enablement, raw comparison persistence, deployment release secrets, and the approved Google email-to-roster mapping remain the final deployment tasks.

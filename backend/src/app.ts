@@ -2,13 +2,12 @@ import { Hono } from 'hono';
 import { comparisonSchema, toSafeActivity } from '@lgs/shared';
 import { activities, addComparison, destinations, getComparisons, isRevealOpen, openReveal, ROSTER, setPending, takePending, type RosterUser } from './store.js';
 import { isComplete, rankUser, selectNextPair } from './ranking.js';
+import { authenticate } from './auth.js';
 
-const userFrom = (value: string | undefined): RosterUser | undefined => ROSTER.find((user) => user === value);
 export const app = new Hono<{ Variables: { user: RosterUser } }>();
 app.get('/health', (context) => context.json({ ok: true }));
 app.use('*', async (context, next) => {
-  if (process.env.NODE_ENV === 'production') return context.json({ error: 'Firebase authentication is required in production.' }, 501);
-  const user = userFrom(context.req.header('X-Demo-User'));
+  const user = await authenticate(context.req.header('Authorization'), context.req.header('X-Demo-User'));
   if (!user) return context.json({ error: 'Use an approved local roster identity.' }, 401);
   context.set('user', user);
   await next();

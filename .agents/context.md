@@ -8,6 +8,7 @@
 - Implementation scaffolding exists, but no application packages, Firebase project configuration, CI workflows, or runtime code have been created.
 - `design-system/` is now the visual source of truth; it contains tokens, base styles, component contracts, and the product logo.
 - Local V1 implementation now exists. Its `X-Demo-User` local roster adapter is intentionally rejected in production; Firebase Auth, Firestore persistence, and account-to-roster mapping require external deployment configuration.
+- Firebase project `lets-go-somewhere-3549f`, web app `lets-go-somewhere-web`, and Firestore Native in `us-east4` are provisioned. Google provider enablement, roster emails, persistence wiring, and release deployment remain.
 
 ## Key guardrails
 

@@ -9,7 +9,7 @@
 | TASK-005 | Implementation | Destination-blind React game flow | TASK-002, TASK-004 | Complete |
 | TASK-006 | Infrastructure | Local environment template, CI quality workflow, deployment handoff | TASK-001 | Complete |
 | TASK-007 | Review | Unit tests, typecheck, build, security/spec/accessibility review | TASK-003–006 | Complete |
-| TASK-008 | Deployment | Configure Firebase, Firebase Admin, Firestore, Cloud Run, approved roster mapping | TASK-006 | Blocked: external configuration |
+| TASK-008 | Deployment | Firebase project, web app, Firestore, Cloud Run, approved roster mapping | TASK-006 | In progress: Firebase/Firestore provisioned; identities and release remain |
 
 ## Critical path
 
