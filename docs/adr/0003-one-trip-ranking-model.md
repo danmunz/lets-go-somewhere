@@ -48,3 +48,11 @@ information-gain policy or HTTP redaction. It does not change this ADR's
 decision: the candidate is not promoted. The next valid experiment is a full
 deterministic information-gain-policy replay, not lower thresholds or a claim
 that aggregate calibration alone is sufficient.
+
+## Method grounding
+
+The model family and its active top-k evaluation logic are grounded in
+[the individual preference-model method note](../model-method-research.md).
+That note records the external literature basis for the conventional
+Bradley–Terry, boundary-information, coverage, and calibrated-stopping design;
+it does not change this ADR's **not promoted** decision.

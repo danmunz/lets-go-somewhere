@@ -15,6 +15,7 @@ Use these documents together; each addresses a different source of truth for **L
 | [One-trip implementation specification](one-trip-implementation-spec.md) | Detailed target contract for the remaining one-shot journey and release gates. |
 | [One-trip task board](one-trip-tasks.md) | Dependency-aware implementation tasks and acceptance criteria. |
 | [Model evaluation](model-evaluation.md) | Current synthetic evidence and explicit promotion decision for advanced inference. |
+| [Individual preference-model method note](model-method-research.md) | Research basis for active top-five inference and its evaluation gate. |
 | [One-trip operator runbook](one-trip-runbook.md) | Preflight, emulator rehearsal, deployment, reset, recovery, and reveal procedures. |
 | [`adr/`](adr/) | Accepted or proposed architectural decisions. |
 
