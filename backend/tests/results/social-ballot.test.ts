@@ -25,6 +25,28 @@ const broadBallots = {
   peter: ['c', 'a', 'b', 'd', 'e'],
 } as const;
 
+function v2SnapshotFixture() {
+  return {
+    schemaVersion: 2,
+    modelVersion: 'elo-coverage-v1',
+    seedVersion: 'a'.repeat(64),
+    inputDigest: 'b'.repeat(64),
+    createdAt: '2026-08-18T12:00:00.000Z',
+    users: Object.fromEntries(users.map((user) => [user, {
+      topFive: broadBallots[user], profileThemes: ['Adventure'],
+      profile: { headline: 'A travel shape', synthesis: 'A clear travel shape.', dimensions: [
+        { key: 'adventure', label: 'Adventure', strength: 'strong', direction: 'drawn-to' },
+        { key: 'nature', label: 'Nature', strength: 'present', direction: 'drawn-to' },
+      ], confidenceLabel: 'clear-shape' },
+      personalResults: { confidence: { label: 'close-call', summary: 'Close choices.' }, topFive: broadBallots[user].map((id, index) => ({
+        rank: index + 1, id, fitLabel: index === 0 ? 'strong-match' : 'contender', interval: { low: 0, high: 1 },
+        explanation: { themes: ['Adventure', 'Nature'], matchedActivityCount: 1, encounteredActivityCount: 1 },
+      })) },
+    }])),
+    group: buildTransparentSocialBallot(input(broadBallots)),
+  };
+}
+
 describe('transparent social ballot', () => {
   it('uses only top-five ranks as the 5/4/3/2/1 ballot and gives lower ranks zero', () => {
     const ballot = buildTransparentSocialBallot(input(broadBallots));
@@ -116,28 +138,37 @@ describe('transparent social ballot', () => {
   });
 
   it('keeps v1 legacy reading separate from v2-only snapshot creation and rejects mixed/old v2 fields', () => {
-    const v2 = {
-      schemaVersion: 2,
-      modelVersion: 'elo-coverage-v1',
-      seedVersion: 'a'.repeat(64),
-      inputDigest: 'b'.repeat(64),
-      createdAt: '2026-08-18T12:00:00.000Z',
-      users: Object.fromEntries(users.map((user) => [user, {
-        topFive: broadBallots[user], profileThemes: ['Adventure'],
-        profile: { headline: 'A travel shape', synthesis: 'A clear travel shape.', dimensions: [
-          { key: 'adventure', label: 'Adventure', strength: 'strong', direction: 'drawn-to' },
-          { key: 'nature', label: 'Nature', strength: 'present', direction: 'drawn-to' },
-        ], confidenceLabel: 'clear-shape' },
-        personalResults: { confidence: { label: 'close-call', summary: 'Close choices.' }, topFive: broadBallots[user].map((id, index) => ({
-          rank: index + 1, id, fitLabel: index === 0 ? 'strong-match' : 'contender', interval: { low: 0, high: 1 },
-          explanation: { themes: ['Adventure', 'Nature'], matchedActivityCount: 1, encounteredActivityCount: 1 },
-        })) },
-      }])),
-      group: buildTransparentSocialBallot(input(broadBallots)),
-    };
+    const v2 = v2SnapshotFixture();
     expect(transparentResultSnapshotSchema.parse(v2).schemaVersion).toBe(2);
     expect(transparentResultSnapshotSchema.safeParse({ ...v2, group: { ...v2.group, confidence: {} } }).success).toBe(false);
     expect(transparentResultSnapshotSchema.safeParse({ ...v2, schemaVersion: 1 }).success).toBe(false);
+  });
+
+  it('rejects persisted snapshots when any tally, rank matrix, mode, or evidence is not reproducible from personal top fives', () => {
+    const valid = v2SnapshotFixture();
+    expect(transparentResultSnapshotSchema.safeParse(valid).success).toBe(true);
+
+    const incorrectPoints = structuredClone(valid);
+    incorrectPoints.group.finalists[0]!.points += 1;
+    expect(transparentResultSnapshotSchema.safeParse(incorrectPoints).success).toBe(false);
+
+    const incorrectSupporters = structuredClone(valid);
+    incorrectSupporters.group.finalists[0]!.topFiveSupporters = ['dan'];
+    expect(transparentResultSnapshotSchema.safeParse(incorrectSupporters).success).toBe(false);
+
+    const incorrectMatrix = structuredClone(valid);
+    incorrectMatrix.group.finalistRanks[0]!.ranks[0] = { user: 'dan', rank: 'outside-top-five' };
+    expect(transparentResultSnapshotSchema.safeParse(incorrectMatrix).success).toBe(false);
+
+    const incorrectMode = structuredClone(valid);
+    incorrectMode.group.displayMode = 'no-consensus';
+    expect(transparentResultSnapshotSchema.safeParse(incorrectMode).success).toBe(false);
+
+    const unsupportedInsight = structuredClone(valid);
+    unsupportedInsight.group.insights = [{
+      kind: 'wild-card', title: 'Not a wild card', body: 'This claim has no ballot evidence.', destinationIds: ['a'], users: ['dan'],
+    }];
+    expect(transparentResultSnapshotSchema.safeParse(unsupportedInsight).success).toBe(false);
   });
 
   it('parses a complete enriched public ballot and rejects unknown public fields', () => {

@@ -713,10 +713,230 @@ export const transparentGroupBallotSchema = z
 export type TransparentGroupBallot = z.infer<typeof transparentGroupBallotSchema>;
 
 /**
+ * Snapshot v2 is an immutable record, rather than a cache that clients may
+ * repair.  Keep the arithmetic that establishes the social ballot here (and
+ * deliberately independent of backend result builders) so persisted values
+ * can be checked at every reader boundary.
+ */
+const SOCIAL_BALLOT_POINTS = [5, 4, 3, 2, 1] as const;
+const SOCIAL_INSIGHT_PRIORITY: readonly GroupInsight['kind'][] = [
+  'strong-shared-destination',
+  'split-destination',
+  'two-camps',
+  'wild-card',
+  'shared-destination',
+  'shared-theme',
+  'contrasting-themes',
+];
+
+type RecomputedSocialTally = {
+  id: string;
+  points: number;
+  firstPlaceVotes: number;
+  supporters: RosterUser[];
+};
+
+function sameRosterUsers(left: readonly RosterUser[], right: readonly RosterUser[]): boolean {
+  return left.length === right.length && left.every((user, index) => user === right[index]);
+}
+
+function sameRosterUserSet(left: readonly RosterUser[], right: readonly RosterUser[]): boolean {
+  return left.length === right.length && left.every((user) => right.includes(user));
+}
+
+function recomputeSocialTallies(users: SocialBallotUsers): RecomputedSocialTally[] {
+  const tallies = new Map<string, RecomputedSocialTally>();
+  for (const user of ROSTER_USERS) {
+    users[user].topFive.forEach((id, index) => {
+      const tally = tallies.get(id) ?? { id, points: 0, firstPlaceVotes: 0, supporters: [] };
+      tally.points += SOCIAL_BALLOT_POINTS[index]!;
+      if (index === 0) tally.firstPlaceVotes += 1;
+      tally.supporters.push(user);
+      tallies.set(id, tally);
+    });
+  }
+  return [...tallies.values()].sort((left, right) => right.points - left.points
+    || right.firstPlaceVotes - left.firstPlaceVotes
+    || right.supporters.length - left.supporters.length
+    || left.id.localeCompare(right.id));
+}
+
+function samePublishedSocialTally(left: RecomputedSocialTally, right: RecomputedSocialTally): boolean {
+  return left.points === right.points
+    && left.firstPlaceVotes === right.firstPlaceVotes
+    && left.supporters.length === right.supporters.length;
+}
+
+function displayedSocialRank(tallies: readonly RecomputedSocialTally[], index: number): number {
+  let rank = 1;
+  for (let current = 1; current <= index; current += 1) {
+    if (!samePublishedSocialTally(tallies[current - 1]!, tallies[current]!)) rank = current + 1;
+  }
+  return rank;
+}
+
+function recomputeGroupDisplayMode(tallies: readonly RecomputedSocialTally[]): GroupDisplayMode {
+  const [first, second] = tallies;
+  if (!first || !second) return 'shared-shortlist';
+  if (first.supporters.length >= 3 && first.points - second.points >= 3) return 'broad-leader';
+  if (tallies.every((tally) => tally.supporters.length < 3)) return 'no-consensus';
+  // A close, broadly-supported pair is intentionally framed as a shortlist,
+  // including an unresolved shared first place; it is not a faux horse race.
+  if (first.supporters.length >= 3 && second.supporters.length >= 3 && first.points - second.points <= 2) {
+    return 'shared-shortlist';
+  }
+  if (first.points - second.points <= 2) return 'near-tie';
+  return 'shared-shortlist';
+}
+
+function addSnapshotIssue(context: z.RefinementCtx, message: string): void {
+  context.addIssue({ code: z.ZodIssueCode.custom, message });
+}
+
+function validateStoredInsight(
+  insight: GroupInsight,
+  users: SocialBallotUsers,
+  tallies: ReadonlyMap<string, RecomputedSocialTally>,
+  context: z.RefinementCtx,
+): void {
+  const destinationIds = insight.destinationIds ?? [];
+  const tallyFor = (id: string) => tallies.get(id);
+  const requireOneDestination = () => {
+    if (destinationIds.length !== 1 || !tallyFor(destinationIds[0]!)) {
+      addSnapshotIssue(context, `${insight.kind} insight must cite one destination in a stored top five.`);
+      return undefined;
+    }
+    return tallyFor(destinationIds[0]!);
+  };
+
+  switch (insight.kind) {
+    case 'strong-shared-destination': {
+      const tally = requireOneDestination();
+      if (tally && (tally.supporters.length < 3 || !sameRosterUsers(insight.users, tally.supporters))) {
+        addSnapshotIssue(context, 'Strong shared-destination insight users must be exactly its three-or-more supporters.');
+      }
+      break;
+    }
+    case 'shared-destination': {
+      const tally = requireOneDestination();
+      if (tally && (tally.supporters.length !== 2 || !sameRosterUsers(insight.users, tally.supporters))) {
+        addSnapshotIssue(context, 'Shared-destination insight users must be exactly its two supporters.');
+      }
+      break;
+    }
+    case 'split-destination': {
+      const tally = requireOneDestination();
+      if (tally && (tally.supporters.length < 2
+        || ROSTER_USERS.length - tally.supporters.length < 2
+        || !sameRosterUserSet(insight.users, ROSTER_USERS))) {
+        addSnapshotIssue(context, 'Split-destination insights require two supporters, two outside voters, and all roster users.');
+      }
+      break;
+    }
+    case 'wild-card': {
+      const tally = requireOneDestination();
+      const user = insight.users[0];
+      if (tally && (insight.users.length !== 1
+        || tally.supporters.length !== 1
+        || tally.supporters[0] !== user
+        || users[user!].topFive[0] !== tally.id)) {
+        addSnapshotIssue(context, 'Wild-card insights must cite a traveler\'s unique personal #1.');
+      }
+      break;
+    }
+    case 'two-camps': {
+      if (destinationIds.length !== 2) {
+        addSnapshotIssue(context, 'Two-camps insights must cite exactly two destinations.');
+        break;
+      }
+      const [first, second] = destinationIds.map(tallyFor);
+      if (!first || !second || first.id === second.id) {
+        addSnapshotIssue(context, 'Two-camps insights must cite two distinct destinations in stored top fives.');
+        break;
+      }
+      const disjoint = first.supporters.every((user) => !second.supporters.includes(user));
+      const supporters = [...first.supporters, ...second.supporters];
+      if (!disjoint || first.supporters.length < 2 || second.supporters.length < 2
+        || supporters.length < 4 || !sameRosterUserSet(insight.users, supporters)) {
+        addSnapshotIssue(context, 'Two-camps insight users must be the disjoint two-or-more supporter groups.');
+      }
+      break;
+    }
+    case 'shared-theme': {
+      if (destinationIds.length !== 0) addSnapshotIssue(context, 'Theme insights cannot cite destinations.');
+      const theme = users[insight.users[0]!].profileThemes[0];
+      if (insight.users.length < 2 || insight.users.some((user) => users[user].profileThemes[0] !== theme)) {
+        addSnapshotIssue(context, 'Shared-theme insights require two-or-more travelers with the same leading theme.');
+      }
+      break;
+    }
+    case 'contrasting-themes': {
+      if (destinationIds.length !== 0) addSnapshotIssue(context, 'Theme insights cannot cite destinations.');
+      const themeCounts = new Map<string, number>();
+      for (const user of insight.users) {
+        const theme = users[user].profileThemes[0]!;
+        themeCounts.set(theme, (themeCounts.get(theme) ?? 0) + 1);
+      }
+      if (themeCounts.size !== 2 || [...themeCounts.values()].some((count) => count < 2)) {
+        addSnapshotIssue(context, 'Contrasting-themes insights require two distinct leading themes with two-or-more travelers each.');
+      }
+      break;
+    }
+  }
+}
+
+function validateTransparentSnapshotIntegrity(
+  value: { users: SocialBallotUsers; group: TransparentGroupBallot },
+  context: z.RefinementCtx,
+): void {
+  const tallies = recomputeSocialTallies(value.users);
+  const finalistTallies = tallies.slice(0, 5);
+  const tallyById = new Map(tallies.map((tally) => [tally.id, tally]));
+
+  value.group.finalists.forEach((finalist, index) => {
+    const expected = finalistTallies[index];
+    if (!expected || finalist.id !== expected.id
+      || finalist.rank !== displayedSocialRank(tallies, index)
+      || finalist.points !== expected.points
+      || finalist.firstPlaceVotes !== expected.firstPlaceVotes
+      || !sameRosterUsers(finalist.topFiveSupporters, expected.supporters)) {
+      addSnapshotIssue(context, 'Stored finalists must exactly match the tally recomputed from every personal top five.');
+    }
+  });
+
+  value.group.finalistRanks.forEach((row, index) => {
+    const finalist = finalistTallies[index];
+    if (!finalist || row.destinationId !== finalist.id) {
+      addSnapshotIssue(context, 'Finalist rank rows must follow the stored finalist order.');
+      return;
+    }
+    row.ranks.forEach((entry, userIndex) => {
+      const user = ROSTER_USERS[userIndex];
+      const expectedRank = value.users[user].topFive.indexOf(finalist.id);
+      const rank = expectedRank === -1 ? 'outside-top-five' : expectedRank + 1;
+      if (entry.user !== user || entry.rank !== rank) {
+        addSnapshotIssue(context, 'Finalist rank rows must exactly match every stored personal top five.');
+      }
+    });
+  });
+
+  if (value.group.displayMode !== recomputeGroupDisplayMode(tallies)) {
+    addSnapshotIssue(context, 'Stored display mode must match the immutable tally and published mode rules.');
+  }
+
+  const kinds = value.group.insights.map((insight) => insight.kind);
+  if (new Set(kinds).size !== kinds.length) addSnapshotIssue(context, 'Stored insight kinds must be unique.');
+  if (kinds.some((kind, index) => SOCIAL_INSIGHT_PRIORITY.indexOf(kind) < SOCIAL_INSIGHT_PRIORITY.indexOf(kinds[index - 1]!))) {
+    addSnapshotIssue(context, 'Stored insights must retain their documented priority order.');
+  }
+  value.group.insights.forEach((insight) => validateStoredInsight(insight, value.users, tallyById, context));
+}
+
+/**
  * The only persisted shape valid for new social-ballot creation.  The legacy
  * v1 reader above is intentionally not part of this creation schema.
  */
-export const transparentResultSnapshotSchema = z
+const transparentResultSnapshotBaseSchema = z
   .object({
     schemaVersion: z.literal(2),
     modelVersion: z.string().min(1),
@@ -727,17 +947,25 @@ export const transparentResultSnapshotSchema = z
     group: transparentGroupBallotSchema,
   })
   .strict();
+
+export const transparentResultSnapshotSchema = transparentResultSnapshotBaseSchema
+  .superRefine(validateTransparentSnapshotIntegrity);
 export type TransparentResultSnapshot = z.infer<typeof transparentResultSnapshotSchema>;
 
 /** Reads an immutable snapshot of either era; callers must branch on schemaVersion. */
-export const resultSnapshotReaderSchema = z.discriminatedUnion('schemaVersion', [
-  legacyResultSnapshotSchema,
-  transparentResultSnapshotSchema,
-]);
+export const resultSnapshotReaderSchema = z
+  .discriminatedUnion('schemaVersion', [legacyResultSnapshotSchema, transparentResultSnapshotBaseSchema])
+  .superRefine((value, context) => {
+    if (value.schemaVersion === 2) validateTransparentSnapshotIntegrity(value, context);
+  });
 export type VersionedResultSnapshot = z.infer<typeof resultSnapshotReaderSchema>;
 
-/** New snapshot writes are v2-only. */
-export const resultSnapshotCreationSchema = transparentResultSnapshotSchema;
+/**
+ * New snapshot writes are v2-only. The store stamps `createdAt` before it is
+ * read through the integrity-refined v2 reader above, so this remains an
+ * object schema for its timestamp-omitting input adapter.
+ */
+export const resultSnapshotCreationSchema = transparentResultSnapshotBaseSchema;
 export type ResultSnapshotCreation = z.infer<typeof resultSnapshotCreationSchema>;
 
 export const apiErrorCodeSchema = z.enum([
