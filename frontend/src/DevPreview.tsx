@@ -7,8 +7,7 @@ import jamesAvatar from '../../assets/images/james_cutout.png';
 import johnAvatar from '../../assets/images/john_cutout.png';
 import mattAvatar from '../../assets/images/matt_cutout.png';
 import peterAvatar from '../../assets/images/peter_cutout.png';
-import { AtlasMap } from './AtlasMap.js';
-import { MediaImage, TravelEffortKey } from './components/index.js';
+import { AtlasExplorer } from './AtlasExplorer.js';
 import { MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
 
@@ -46,9 +45,7 @@ const myResults: PersonalResultsResponse = {
 };
 
 function PreviewAtlas() {
-  const [activeId, setActiveId] = useState(atlasDestinations[0]!.id);
-  const active = atlasDestinations.find((destination) => destination.id === activeId)!;
-  return <main className="atlas-page screen-enter"><header className="atlas-toolbar"><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" /><div><p className="eyebrow">Preview atlas</p><b>Every place is still in play.</b></div></header><section className="atlas-map-stage"><AtlasMap destinations={atlasDestinations} activeId={activeId} onSelect={setActiveId} /><aside className="atlas-drawer"><p className="eyebrow">Now exploring</p><h1>{active.name}</h1><p className="country">{active.country}</p><p>{active.tagline}</p><div className="atlas-facts"><div><span>November</span><b>{active.novemberWeather}</b></div><div><span>Travel effort</span><b>{active.travelFriction}/5</b><small>1 = easy route · 5 = big expedition</small></div></div><MediaImage src={active.gallery[0]!.path} alt={active.gallery[0]!.alt} fallbackLabel="Photo unavailable" /></aside></section><section className="atlas-list atlas-list--v4">{atlasDestinations.map((destination) => <button key={destination.id} onClick={() => setActiveId(destination.id)} aria-pressed={activeId === destination.id}><MediaImage src={destination.gallery[0]!.path} alt="" fallbackLabel="Photo unavailable" /><b>{destination.name}</b><small>{destination.country}</small></button>)}</section><TravelEffortKey /></main>;
+  return <AtlasExplorer destinations={atlasDestinations} user="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarSrc={danAvatar} onOpenWaiting={() => undefined} onOpenProfile={() => undefined} />;
 }
 
 function PreviewComparison() {
