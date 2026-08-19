@@ -2,7 +2,7 @@
 
 ## Current implementation status
 
-Landing, character selection, comparison, completion-gated atlas, group verdict, preference profile, waiting status, personal results, and immutable final-decision surfaces are implemented in the committed one-trip checkpoint. They remain unreleased while the advanced-model, emulator/E2E, visual-QA, and deployment gates are open; see [implementation status](implementation-status.md). The comparison counter truthfully communicates the 24-answer minimum and 40-answer maximum rather than an exact fixed total.
+Landing, character selection, comparison, completion-gated atlas, group verdict, preference profile, waiting status, personal results, and immutable final-decision surfaces are implemented in the committed one-trip checkpoint. The transparent-verdict fixture and visual/accessibility review are complete locally; the advanced-model promotion, five-identity browser rehearsal, and deployment gates remain open. See [implementation status](implementation-status.md). The comparison counter truthfully communicates the 24-answer minimum and 40-answer maximum rather than an exact fixed total.
 
 ## Screens
 
