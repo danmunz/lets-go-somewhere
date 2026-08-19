@@ -9,7 +9,7 @@ This is the operational status companion to the product specification. It record
 - Fixed five-person November 2026 trip, Google-authenticated roster, Firebase Hosting, Cloud Run API, and Firestore persistence.
 - 24 seeded destinations and 120 validated activity comparisons, with a backend-owned fixed 32-choice Bayesian attribute shortlist and adaptive pair selection.
 - Destination-safe comparison responses: activity ID, title, description, and opaque local image path only.
-- Completion-gated atlas with named destinations, coordinates, real MapLibre map, galleries, and Unsplash credits; no personal or group result data before reveal.
+- Completion-gated atlas with named destinations, coordinates, real MapLibre map, galleries, and Unsplash credits; a completed caller may also see only their own private top five before reveal. Other travelers’ results and all group result data remain sealed.
 - Dan-controlled group reveal after every roster member is complete, with an
   immutable v2 public top-five points scoreboard, each member's post-reveal
   top five, stored social insights, and one snapshot-bound final decision.
@@ -28,7 +28,7 @@ claims.
 
 ## Implemented but unreleased one-trip work
 
-The local build now includes the destination-free profile, completion-only waiting lobby, snapshot-backed personal and group result views, qualitative result explanations, group-finalist matrix, and one immutable post-reveal final decision. The transparent group result is the stored `5/4/3/2/1` ballot—not a normalized group score—and v2 snapshots are cross-field validated before they are served. An independent audit also closed the legacy-final-decision and stale-decision-read gaps in `fbae847`. The guarded count-only preflight/reset tooling in `4ce95f0` is unit-tested locally; it has not been run against production. These changes remain unreleased while the fixed-shortlist verification and rehearsal gates below are open.
+The local build now includes a plain-language destination-free profile, immediate caller-only private shortlist, completion-only waiting lobby, durable post-completion navigation, snapshot-backed group result view, qualitative result explanations, group-finalist matrix, and one immutable post-reveal final decision. The transparent group result is the stored `5/4/3/2/1` ballot—not a normalized group score—and v2 snapshots are cross-field validated before they are served. An independent audit also closed the legacy-final-decision and stale-decision-read gaps in `fbae847`. The guarded count-only preflight/reset tooling in `4ce95f0` is unit-tested locally; it has not been run against production. These changes remain unreleased while the fixed-shortlist verification and rehearsal gates below are open.
 
 ## Remaining one-trip release gates
 

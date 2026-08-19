@@ -759,24 +759,7 @@ Users do not need to know the algorithm's stopping condition.
 
 # 28. Stopping Condition
 
-Stop when the system can support a confident **top-five** destination set, not a complete ordering of every active destination.
-
-Potential criteria:
-
-- Every active destination has appeared at least twice
-- Each current top-five destination has appeared at least three times
-- The fifth-place boundary is stable under the V1 score model
-- Remaining uncertainty is unlikely to change the top five
-
-Hybrid rule:
-
-```text
-minimum comparisons: 24
-target: 28–35
-maximum: 40
-```
-
-If the system remains uncertain between two destinations, ask another comparison involving those destinations.
+Every traveler answers exactly **32** comparisons. The first 24 protect broad destination coverage; the last eight adapt toward the emerging fifth/sixth shortlist boundary when an eligible pair exists. The public experience never claims a confidence threshold or early completion.
 
 ---
 
@@ -786,27 +769,13 @@ The intended V1 profile is a destination-free recognition beat that explains wha
 
 The accepted V3/V4 flow permits a completed participant to open the unranked named atlas before the group reveal. That does not retire this profile requirement: it should be added before or alongside atlas entry without implying a destination ranking. See [implementation status](implementation-status.md) for the current gap.
 
-Example:
-
-> # Okay. We know your type.
-
-### You kept choosing:
-
-```text
-Mountains & adventure   █████
-History & old places    ████
-Strange local stuff     ████
-Food                    ███
-Urban exploration       ███
-```
-
-This builds anticipation before revealing where those preferences lead.
+Use the plain-language `Your trip rhythm` explanation: it describes recurring qualities in the anonymous experiences a traveler chose, not a destination or a final answer. It leads to their private, caller-only top five.
 
 ---
 
 # 30. Group Reveal Gate
 
-After a participant finishes, show an unranked destination atlas. The atlas may show every candidate destination’s name, general trip context, real map placement, and credited editorial photography, but must not expose personal or group scores, ranks, activity-response evidence, or another participant’s choices. Named results, destination details tied to a participant’s preferences, and sharing remain embargoed until all five roster members have finished and Dan opens the reveal gate.
+After a participant finishes, show an unranked destination atlas. The atlas may show every candidate destination’s name, general trip context, real map placement, and credited editorial photography. The completed authenticated participant may also see their own private model-generated top five, with a clear request not to share it before the group is ready. The atlas must not imply it is that person’s ranking, and the app must not expose any other participant’s choices or result, the group tally, scores, or social insights until all five roster members finish and Dan opens the reveal gate. Raw card-by-card choices are never rendered.
 
 # 31. Destination Reveal
 

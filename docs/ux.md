@@ -1116,7 +1116,7 @@ P11
 P12 Waiting for Group
 ```
 
-Before the group gate, do not show destination rankings, destination details tied to any participant’s responses, or sharing. After finishing, a participant may browse an unranked destination atlas with names, general trip context, map placement, and credited editorial photography. During comparisons, destination photography is allowed as an intentional soft cue, but destination names, countries, flags, map UI, ranking signals, and photo-credit metadata remain hidden. After the gate opens, P11 can link to P13 Group Reveal.
+Before the group gate, do not show any other participant’s destination ranking, any group outcome, or sharing surface. After finishing, a participant may browse an unranked destination atlas with names, general trip context, map placement, and credited editorial photography, and may privately see their own model-generated top five. The private shortlist includes a clear request not to disclose it so it cannot bias the other travelers’ calls. During comparisons, destination photography is allowed as an intentional soft cue, but destination names, countries, flags, map UI, ranking signals, and photo-credit metadata remain hidden. After the gate opens, P11 can link to P13 Group Reveal.
 
 If complete:
 

@@ -8,6 +8,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Made the completed caller’s personal top five available privately before the group reveal, while preserving the embargo on every other traveler’s result and the group ballot.
+- Reframed the post-completion profile as a plain-language `Your trip rhythm`, added durable post-completion navigation, and redesigned the atlas around its full unranked candidate set, keyboard-visible map selection, and a credited photo lightbox.
 - Replaced the one-trip production ranking path with `bayes-attribute-shortlist-v1`: exactly 32 adaptive, destination-blind comparisons over the eight canonical activity attributes.
 - Reframed individual results as a personal trip shortlist and removed public confidence, interval, fit-strength, and early-completion language.
 - Recorded the policy version in new immutable social-reveal snapshots; the transparent 5/4/3/2/1 group tally is unchanged.

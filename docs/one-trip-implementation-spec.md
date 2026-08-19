@@ -1,6 +1,6 @@
 # One-trip implementation specification
 
-**Status:** Approved implementation plan  
+**Status:** Historical implementation plan — superseded by the fixed-32 shortlist and private-shortlist decisions in [ADR 0003](adr/0003-one-trip-ranking-model.md).  
 **Scope:** All remaining work in Sprints 1–3 of [the one-trip roadmap](roadmap.md).  
 **Release bar:** This is the required implementation for the one real five-person trip decision. It is not a pilot, product platform, or V2 staging plan.
 
@@ -8,13 +8,13 @@
 
 ## 1. Outcome and non-negotiable boundaries
 
-Let’s Go Somewhere must take each fixed-roster traveler from their last blind comparison through a credible individual recognition beat, an unranked atlas and social waiting state, a group verdict, and one final, recorded group decision. Before the real run, the existing deterministic Elo/coverage implementation must be replaced as the production default with a regularized hierarchical Bradley–Terry model, calibrated uncertainty, information-gain pair selection, and confidence-aware bounded stopping.
+Let’s Go Somewhere must take each fixed-roster traveler from their last blind comparison through a credible individual recognition beat, an unranked atlas and social waiting state, a group verdict, and one final, recorded group decision. The current production candidate is the fixed-32 Bayesian attribute shortlist. Older hierarchical Bradley–Terry and confidence-aware stopping material below is retained as historical implementation context, not a release requirement.
 
 The current product boundary remains in force:
 
 - During comparisons, return only an activity ID, title, description, and opaque local image path. Destination names, countries, flags, coordinates, maps, ranks, scores, source credits, and destination IDs must never cross that API boundary.
 - Activity photography is an accepted soft cue. It must match the activity and have no visible credit or location metadata until the completion-gated atlas.
-- After a traveler completes, they may view the named but unranked atlas. Their own result, all other travelers’ outcomes, and all group outcomes remain sealed until every roster member completes and Dan opens the reveal.
+- After a traveler completes, they may view the named but unranked atlas and only their own private top five. All other travelers’ outcomes and all group outcomes remain sealed until every roster member completes and Dan opens the reveal.
 - The group reveal exposes the crew's published top-five tally and every
   person's top five, never activity-by-activity choices or comparison history.
 - The final decision is a post-reveal social input. It never changes blind choices, the model, or the group ranking.

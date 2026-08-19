@@ -12,7 +12,7 @@ This repository is the content source of truth for the fixed five-person trip. T
 | Public optimized activity-card images | `frontend/public/media/cards/` | The local opaque image path referenced by `activities.json`. Do not add credit text or destination IDs to filenames. |
 | Public destination gallery images | `frontend/public/media/destinations/` (or the current gallery path recorded in the destination seed) | Three local optimized images per destination. Keep the seed path, alt text, and credit metadata synchronized. |
 | Roster names, roles, accents, and traveler art mapping | `frontend/src/main.tsx` and `frontend/src/app.css` | The fixed roster presentation only. Account authorization remains backend-owned. |
-| Welcome, character-select, comparison, atlas, waiting, and reveal copy | `frontend/src/main.tsx` | The route-level screen composition and most user-facing microcopy live here. Keep state-dependent copy destination-safe before completion/reveal. |
+| Welcome, character-select, comparison, atlas, waiting, and reveal copy | `frontend/src/main.tsx`, `frontend/src/AtlasExplorer.tsx` | The route-level screen composition and most user-facing microcopy live here. Keep state-dependent copy destination-safe before completion/reveal. |
 | Profile synthesis and controlled explanation language | `backend/src/model/profile.ts` | `ATTRIBUTE_COPY`, profile headlines, themes, and evidence labels. This is server-owned and must remain destination-free. |
 | API errors and gate copy | `backend/src/app.ts`, `backend/src/dto/one-trip.ts`, `frontend/src/api.ts` | Change the server-safe error contract and client recovery intent together; add a focused test. |
 | Profile, waiting, results, verdict, and decision copy | `frontend/src/screens/` and `frontend/src/components/` | Screen-specific post-completion and post-reveal language. Raw activity choices must never be rendered here. |
@@ -40,7 +40,7 @@ This repository is the content source of truth for the fixed five-person trip. T
 
 ### Change screen copy or microcopy
 
-Most route copy is colocated in `frontend/src/main.tsx`. The comparison progress milestones are the `progressMessage` function near the top of that file. Profile and waiting copy are in `frontend/src/screens/ProfileScreen.tsx` and `WaitingScreen.tsx`; verdict and final-decision copy are in `VerdictScreen.tsx`, `VerdictAdditions.tsx`, and `FinalDecisionDialog.tsx`. Update the relevant focused test when copy is asserted exactly.
+Most route copy is colocated in `frontend/src/main.tsx`. The comparison progress milestones are the `progressMessage` function near the top of that file. Profile and private-shortlist copy are in `frontend/src/screens/ProfileScreen.tsx` and `MyResultsScreen.tsx`; Atlas header, selection, gallery, lightbox, and fallback copy are in `frontend/src/AtlasExplorer.tsx` and `AtlasMap.tsx`; waiting copy is in `WaitingScreen.tsx`; verdict and final-decision copy are in `VerdictScreen.tsx`, `VerdictAdditions.tsx`, and `FinalDecisionDialog.tsx`. Update the relevant focused test when copy is asserted exactly.
 
 ### Change model/explanation copy
 
@@ -50,7 +50,7 @@ Do not edit model output in the browser. Update controlled server copy in `backe
 
 Before a participant completes the comparison round, cards may contain an activity-matched photograph as an intentionally accepted soft cue. They must not expose destination names, countries, flags, airport codes, map UI, coordinates, scores, ranks, or photographer/source credits. Comparison DTOs should contain only the activity ID, title, description, and opaque local image path.
 
-After completion, the atlas may show named destinations, real map placement, galleries, practical context, and credits. Personal and group outcomes remain sealed until Dan opens the reveal. After reveal, show the approved five-place `5/4/3/2/1` points tally, every member's full personal top five, stored evidence-backed social insights, finalist context, and the immutable final decision; never display raw activity-by-activity votes, normalized group utilities, or group confidence claims.
+After completion, the atlas may show named destinations, real map placement, galleries, practical context, and credits. A completed caller may also view their own private model-generated top five, accompanied by a reminder not to share it until the group finishes. Every other person’s shortlist, the group tally, and social insights remain sealed until Dan opens the reveal. After reveal, show the approved five-place `5/4/3/2/1` points tally, every member's full personal top five, stored evidence-backed social insights, finalist context, and the immutable final decision; never display raw activity-by-activity votes, normalized group utilities, or group confidence claims.
 
 ## Content validation and release workflow
 
