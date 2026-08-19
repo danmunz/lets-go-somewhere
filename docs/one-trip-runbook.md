@@ -56,6 +56,21 @@ Use the repository's existing deployment configuration and keep secrets in the c
 
 ## Reset and recovery
 
-Before anyone starts, export or otherwise preserve the isolated preflight state, verify that no roster member has comparisons, and reset only the named one-trip Firestore documents. Verify empty group status afterward. Never reset a live trip to fix content, rerun a model, or recover a user without an explicit group decision. A seed-version mismatch is intentionally fail-closed: restore the original checked-in seed rather than mutating the live journey.
+Before anyone starts, run the dedicated count-only preflight against an explicitly selected project. It uses Application Default Credentials and refuses to inspect when the credential-selected project differs from the command target. It never prints document bodies, comparisons, addresses, or tokens.
+
+```sh
+npm run preflight:one-trip -- --project lets-go-somewhere-3549f
+```
+
+It exits successfully only when the reveal is `closed` and there are zero started users, completed users, snapshots, and decisions. `open-v1`, `missing-snapshot`, and `invalid` are hard stops. In particular, preserve an `open-v1` snapshot read-only; do not manufacture a v2 replacement or reset it without an explicit group decision.
+
+The guarded reset is only for untouched, disposable preflight debris. Generate and retain a private export reference outside the repository, then run the exact command below. The `private:` reference is included in the count-only receipt, so use an opaque locally generated value rather than a document ID, email address, or secret.
+
+```sh
+export LGS_EXPORT_REF="private:$(openssl rand -hex 16)"
+npm run reset:one-trip -- --project lets-go-somewhere-3549f --confirm-trip-reset --export-ref "$LGS_EXPORT_REF"
+```
+
+The reset re-runs preflight before deletion, refuses after any started traveler or opened/missing/invalid reveal, deletes only documents in `lgsV4Users`, `lgsV4State/reveal`, `lgsV4ResultSnapshots`, and `lgsV4FinalDecisions`, then re-runs preflight and succeeds only on the empty state. Store its receipt (project, commit, seed digest, UTC time, export reference, and count-only post-reset state) in private trip notes. Never reset a live trip to fix content, rerun a model, or recover a user without an explicit group decision. A seed-version mismatch is intentionally fail-closed: restore the original checked-in seed rather than mutating the live journey.
 
 After reveal, snapshots and final decisions are immutable. Do not delete or rewrite them as a content operation. For an incident, preserve the snapshot ID, seed digest, model version, request timestamp, and safe error code, then stop and investigate using the deployment/run logs.
