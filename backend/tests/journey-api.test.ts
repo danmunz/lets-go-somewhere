@@ -104,13 +104,25 @@ describe('one-trip route DTOs', () => {
     expect(JSON.stringify(payload)).not.toMatch(/comparisons|progress|destination|profile|score|rank/i);
   });
 
-  it('keeps personal results sealed until reveal and returns caller-only safe results afterwards', async () => {
+  it('returns only the completed caller’s private shortlist before reveal, then preserves it in the immutable snapshot', async () => {
     await complete('dan');
-    const sealed = await app.request('/v1/results/me', { headers: headersFor('dan') });
-    expect(sealed.status).toBe(423);
-    expect(await sealed.json()).toEqual({ code: 'reveal-locked', error: 'The group reveal is still closed.' });
+    const privateResponse = await app.request('/v1/results/me', { headers: headersFor('dan') });
+    const privatePayload = personalResultsResponseSchema.parse(await privateResponse.json());
+    expect(privateResponse.status).toBe(200);
+    expect(privatePayload).not.toHaveProperty('snapshotId');
+    const privateRaw = JSON.stringify(privatePayload);
+    for (const forbidden of [
+      'activityA', 'activityB', 'winner', 'comparisons', 'attributeScores', 'activityScores', 'destinationScores',
+      'rawChoices', 'covariance', 'group', 'members', 'finalistRanks', 'insights', 'decisions', 'snapshotId',
+    ]) expect(privateRaw).not.toContain(`\"${forbidden}\"`);
+    expect((await app.request('/v1/results/group', { headers: headersFor('dan') })).status).toBe(423);
 
-    for (const user of ['james', 'john', 'matt', 'peter']) await complete(user);
+    await complete('james');
+    const jamesPrivate = personalResultsResponseSchema.parse(await (await app.request('/v1/results/me', { headers: headersFor('james') })).json());
+    expect(jamesPrivate).not.toHaveProperty('snapshotId');
+    expect(JSON.stringify(jamesPrivate)).not.toContain('dan');
+
+    for (const user of ['john', 'matt', 'peter']) await complete(user);
     const reveal = await app.request('/v1/reveal', { method: 'POST', headers: headersFor('dan') });
     expect(reveal.status).toBe(200);
 
@@ -122,6 +134,8 @@ describe('one-trip route DTOs', () => {
     expect(payload.snapshotId).toBe(groupPayload.snapshotId);
     expect(payload.modelVersion).toBe(groupPayload.modelVersion);
     expect(payload.results).toHaveLength(5);
+    expect(payload.profile).toEqual(privatePayload.profile);
+    expect(payload.results).toEqual(privatePayload.results);
     expect(payload.results.every((result) => result.explanation.themes.length >= 2)).toBe(true);
     const raw = JSON.stringify(payload);
     // Post-reveal results intentionally include a named destination, country,
