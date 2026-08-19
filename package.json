@@ -13,6 +13,7 @@
     "validate:seed": "npm run build -w shared && tsx scripts/validate-seed.ts",
     "evaluate:model": "tsx scripts/evaluate-model.ts",
     "audit:model-policy": "tsx scripts/audit-adaptive-policy.ts",
+    "audit:model-policy:status": "tsx scripts/model-policy-status.ts",
     "preflight:one-trip": "tsx scripts/one-trip-preflight.ts",
     "reset:one-trip": "tsx scripts/one-trip-reset.ts"
   },

@@ -140,6 +140,13 @@ LGS_MODEL_POLICY_PARTITION=3/4 npm run audit:model-policy
 LGS_MODEL_POLICY_SUMMARIZE=1 npm run audit:model-policy
 ```
 
+While those workers run, the read-only status command shows per-fixture
+completion and the newest local artifact; it never starts or changes a worker:
+
+```sh
+npm run audit:model-policy:status
+```
+
 Rerunning a completed partition is a safe resume. A separate deterministic
 replay compares regenerated comparisons, stopping facts, and guardrails with
 the saved artifacts:
