@@ -1,0 +1,178 @@
+# One-trip release gates
+
+**Status:** Implementation handoff. **Not a release approval.**
+
+This specification closes the remaining verification work for the transparent
+social ballot. It does not alter the hard individual-model promotion gate in
+[model evaluation](model-evaluation.md), nor does it authorize a deployment
+while that report remains **FAIL — DO NOT PROMOTE**.
+
+## Release rule
+
+The real five-person trip may start only when every gate below has recorded
+evidence against one immutable commit, canonical seed digest, and selected
+model version:
+
+1. Social-ballot integrity, API redaction, emulator, browser, and visual QA
+   pass.
+2. The advanced individual model has a separate documented promotion decision
+   in ADR 0003 after full adaptive-policy replay, posterior calibration, and
+   payload-redaction evaluation pass their predeclared thresholds.
+3. A production preflight confirms there is no open v1 reveal and the trip
+   state is empty after the controlled reset.
+4. Cloud Run and Hosting deploy successfully, followed by the approved
+   production smoke test. The smoke test uses only the disposable preflight
+   state and is reset before any real traveler begins.
+
+Failure of any gate is a release stop. It must be recorded as a failure, not
+worked around by changing copy, thresholds, snapshot data, or the real trip
+state.
+
+## Social-ballot verification
+
+### Backend and persistence
+
+- Add focused tests that load deliberately malformed v2 snapshots and confirm
+  the repository rejects them before either personal or group result DTO is
+  built. Cover mismatched finalist IDs, rank matrix entries, member top fives,
+  points, first-place counts, supporter sets, displayed ranks, display mode,
+  and insight evidence/order.
+- Test a valid v2 snapshot through repeated reads and repeated organizer-open
+  requests; the same snapshot ID and stored facts must return after a restart
+  or changed live ranking implementation. Never recalculate an opened reveal.
+- Test final-decision membership against only the five stored finalists plus
+  `need-more-research`, one immutable decision per roster member, and the
+  stale/repeat conflict response.
+- Test legacy behavior with a persisted `schemaVersion: 1` snapshot: result
+  routes must return the existing safe `temporarily-unavailable` response,
+  must not write a v2 replacement, and must not calculate a live group result.
+- Test public responses recursively for absence of comparison/activity data,
+  model utilities, posterior/interval data, normalized scores, legacy
+  consensus or polarization labels, coordinates, and media-credit metadata.
+- Exercise broad leader, near/shared first tie, default shared shortlist,
+  no-consensus, all-different, wild-card, two-camp, and split-destination
+  fixtures through the real v2 result route. Assert the published 5/4/3/2/1
+  tally and display facts are exactly those persisted in the snapshot.
+
+### Frontend and visual review
+
+- Add component fixtures for every stored display mode and overlay. Verify
+  that shared rank leaders receive equal visual hierarchy, no-consensus shows
+  all five personal #1 picks without a winner claim, and a wild card remains
+  visible on its traveler's card.
+- Verify the always-visible 5/4/3/2/1 key, image-led five-place scoreboard,
+  supporter-avatar text equivalents, all five personal top fives, and the
+  finalist matrix. Matrix cells must say `Outside top five`, never `6+`.
+- Test keyboard opening/closing of destination details and final-decision
+  confirmation, focus return, 44px controls, and reduced motion. Sequential
+  decoration must not delay readable result content or a decision.
+- Capture desktop and mobile screenshots for broad leader, shared first tie,
+  no consensus, and a split/wild-card combination. Review for the 20px desktop
+  text floor, contrast, non-color rank/point evidence, imagery fallback, and
+  destination names only after the reveal gate.
+
+## Preflight and controlled reset
+
+Implement a dedicated operator-only script, separate from the public API,
+with a read-only mode and an explicitly destructive reset mode. It uses
+Application Default Credentials or the configured private deployment service
+identity; it accepts no credentials, roster addresses, or project secrets on
+the command line and must never print document bodies, raw comparisons, or
+tokens.
+
+### Read-only preflight
+
+`npm run preflight:one-trip -- --project lets-go-somewhere-3549f` must:
+
+- require an explicit project ID, verify the credential-selected project
+  matches it, and print that target before inspecting it;
+- inspect only `lgsV4Users`, `lgsV4State/reveal`, `lgsV4ResultSnapshots`, and
+  `lgsV4FinalDecisions`;
+- report counts only: started users, completed users, snapshots, decisions;
+- report reveal state as `closed`, `open-v1`, `open-v2`, `missing-snapshot`, or
+  `invalid`; validate any referenced snapshot with the persisted reader;
+- exit nonzero for `open-v1`, `missing-snapshot`, or `invalid`, and exit zero
+  only when the state is empty/closed and contains no started users, snapshots,
+  or decisions.
+
+The preflight output is the required v1 migration evidence. An `open-v1`
+result is a hard stop: preserve the legacy snapshot read-only, do not deploy a
+route that reinterprets it, and obtain a group decision before resetting that
+trip.
+
+### Controlled reset
+
+`npm run reset:one-trip -- --project lets-go-somewhere-3549f --confirm-trip-reset --export-ref <private-reference>`
+is permitted only before the real trip begins. It must require all four
+arguments exactly, re-run the read-only inspection, and refuse to run without
+the locally generated export reference. It deletes only the named one-trip
+documents in the four collections above, never a collection root, unrelated
+Firestore data, deployment configuration, or source files.
+
+After deletion it re-runs preflight and exits successfully only for the empty
+state. It emits a count-only receipt with project ID, commit, seed digest,
+UTC time, export reference, and post-reset status; the operator stores that
+receipt in private trip notes, outside the repository. No reset is permitted
+after a real participant starts or after Dan opens a real reveal.
+
+## Five-identity rehearsal and evidence
+
+Run the verified commit against the isolated Auth/Firestore Emulator with five
+test identities mapped to Dan, John, Matt, Peter, and James. Do not use Google
+OAuth or a real roster account. Record browser, viewport, commit, seed digest,
+model version, timestamps, and pass/fail screenshots outside Git.
+
+The rehearsal must prove:
+
+- selection/account mismatch is recoverable; each identity can resume an
+  unexpired pending pair after refresh; stale and duplicate submissions do
+  not append twice;
+- progress is truthful from the 24-answer minimum through the selected
+  bounded stopping result; completion reaches profile, atlas, and waiting
+  without leaking personal or group ranks;
+- the atlas works with map/list synchronization and remains usable under its
+  documented map/image fallback;
+- only Dan can open the envelope after all five identities complete; the
+  locked route exposes no result data before then;
+- all five identities receive the same immutable snapshot ID after reveal;
+  the social ballot, personal results, and final-decision choices agree with
+  it; a stale tab reload observes another user's already-recorded decision;
+- the visual/accessibility checks above pass in desktop and mobile contexts.
+
+Extend the Emulator suite to cover concurrent reveal opening, restart/reload
+snapshot stability, and final-decision persistence in addition to its current
+pending-pair transaction cases. Run `npm run validate:seed`, `npm test`,
+`npm run typecheck`, `npm run build`, and `npm run test:emulator` before
+recording rehearsal success.
+
+## Model handoff, deployment, and smoke test
+
+The release manager may begin the individual-model handoff only after the
+social-reveal tests and rehearsal pass. The model owner must run the full
+200-seed adaptive-policy replay and posterior calibration evaluation using
+production draw configuration, evaluate comparison-payload redaction, and
+record exact commands, fixtures, seed digest, thresholds, results, and the
+pass/fail decision in `docs/model-evaluation.md` and ADR 0003. No threshold,
+draw count, fixture, or stopping-rule change may be made merely to convert a
+failure into a pass. Until ADR 0003 explicitly says **PROMOTED**, production
+continues to use `elo-coverage-v1` for development only and no real-trip
+deployment occurs.
+
+Once all gates are recorded as passed:
+
+1. Run read-only preflight and archive its count-only receipt.
+2. Export the disposable preflight state through the approved private process;
+   perform the guarded reset; rerun preflight and require the empty result.
+3. Deploy the exact verified commit to Cloud Run `lgs-api` in `us-east4`, then
+   deploy Firebase Hosting for `lets-go-somewhere-3549f`.
+4. Smoke-test health, approved-account authentication, one destination-blind
+   comparison, refresh/resume, completion-gated atlas, and organizer reveal
+   authorization against the disposable state. Do not expose the smoke
+   snapshot to real travelers.
+5. Export the smoke state, run the guarded reset, and require a final empty
+   preflight before sharing the production URL with the five friends.
+
+Update the runbook, implementation status, deployment documentation,
+changelog, and persistent context only with the commands and evidence that
+actually passed. The final release note must distinguish **ready for the real
+run** from actually starting the trip.
