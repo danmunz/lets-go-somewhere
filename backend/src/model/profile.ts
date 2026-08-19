@@ -113,15 +113,11 @@ export function buildPreferenceProfileFromAttributes(
   const clearDimensions = dimensions.filter((dimension) => dimension.strength !== 'open');
   const selected = (clearDimensions.length >= 3 ? clearDimensions.slice(0, 5) : dimensions.slice(0, 2))
     .map(({ certainty: _certainty, magnitude: _magnitude, ...dimension }) => dimension);
-  const clearShape = clearDimensions.length >= 3;
   const labels = selected.map((dimension) => dimension.label);
   return {
-    headline: clearShape ? 'The shape of your trip came through clearly.' : 'Apparently, this is your kind of trip.',
-    synthesis: clearShape
-      ? `You consistently leaned toward ${joinLabels(labels)}.`
-      : 'Your trip rhythm is still taking shape, with a few honest close calls.',
+    headline: 'A few patterns showed up in your calls.',
+    synthesis: `You kept gravitating toward ${joinLabels(labels)}.`,
     dimensions: selected,
-    confidenceLabel: clearShape ? 'clear-shape' : 'still-emerging',
   };
 }
 

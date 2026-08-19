@@ -19,7 +19,7 @@ describe('API boundary', () => {
     const payload = await response.json();
     expect(response.status).toBe(200);
     expect(payload.activityA.imageUrl).toMatch(/^\/media\/cards\/[^/]+\.webp$/);
-    expect(payload.progress).toMatchObject({ comparisons: expect.any(Number), minimum: 24, maximum: 40 });
+    expect(payload.progress).toMatchObject({ comparisons: expect.any(Number), minimum: 32, maximum: 32 });
     for (const forbidden of ['destinationId', 'name', 'country', 'coordinates', 'gallery', 'photographerName', 'photographerUrl', 'sourceUrl', 'score', 'rank']) {
       expect(payload.activityA[forbidden]).toBeUndefined();
     }

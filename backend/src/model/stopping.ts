@@ -1,4 +1,4 @@
-import type { Activity, Comparison, CompletionState, Progress } from '@lgs/shared';
+import type { Activity, Comparison, CompletionState } from '@lgs/shared';
 import type { IndividualDestinationAnalysis } from './aggregate.js';
 import { confidenceThresholds } from './aggregate.js';
 import { hasEligibleInformationGainPair } from './selection.js';
@@ -9,9 +9,21 @@ export const MAXIMUM_COMPARISONS = 40 as const;
 export type CompletionReason = 'stable-top-five' | 'maximum-reached' | 'portfolio-exhausted';
 export type CompletionConfidenceLabel = 'clear-shape' | 'close-call';
 
+/**
+ * Historical 24–40 evaluator shape. This model is retained for offline
+ * comparison only; the public contract now belongs to the fixed-32 shortlist.
+ */
+export type LegacyProgress = Readonly<{
+  comparisons: number;
+  minimum: typeof MINIMUM_COMPARISONS;
+  maximum: typeof MAXIMUM_COMPARISONS;
+  estimatedCompletion: number;
+  phase: 'explore' | 'discriminate' | 'checking-boundary';
+}>;
+
 export type StoppingDecision = Readonly<{
   complete: boolean;
-  progress: Progress;
+  progress: LegacyProgress;
   completion?: CompletionState;
 }>;
 
@@ -36,7 +48,7 @@ export class StoppingError extends Error {
   }
 }
 
-function phaseFor(comparisons: number): Progress['phase'] {
+function phaseFor(comparisons: number): LegacyProgress['phase'] {
   if (comparisons < 12) return 'explore';
   if (comparisons < MINIMUM_COMPARISONS) return 'discriminate';
   return 'checking-boundary';
@@ -79,7 +91,7 @@ export function isStableTopFive(analysis: NonNullable<StoppingInput['analysis']>
  * afterward it is guided by current stability. The optional persisted previous
  * value prevents a re-fit from making the client bar move backward.
  */
-export function progressFor(input: StoppingInput): Progress {
+export function progressFor(input: StoppingInput): LegacyProgress {
   const comparisons = input.comparisons.length;
   if (!Number.isInteger(comparisons) || comparisons < 0 || comparisons > MAXIMUM_COMPARISONS) {
     throw new StoppingError('invalid-input', 'Comparison count must remain within the 0–40 game envelope.');
@@ -112,7 +124,7 @@ export function progressFor(input: StoppingInput): Progress {
   };
 }
 
-function completed(progress: Progress, reason: CompletionReason, confidenceLabel: CompletionConfidenceLabel): StoppingDecision {
+function completed(progress: LegacyProgress, reason: CompletionReason, confidenceLabel: CompletionConfidenceLabel): StoppingDecision {
   return {
     complete: true,
     progress: { ...progress, estimatedCompletion: 1 },

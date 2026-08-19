@@ -21,6 +21,7 @@ export type DesignMatrix = Readonly<{
   destinationIndexById: ReadonlyMap<string, number>;
   parameterNames: readonly string[];
   parameterCount: number;
+  includeDestinationEffects: boolean;
 }>;
 
 export class FeatureError extends Error {
@@ -47,7 +48,11 @@ function standardization(activities: readonly Activity[], key: AttributeKey) {
 }
 
 /** Creates a canonical, centered/scaled eight-attribute model design. */
-export function createDesignMatrix(inputActivities: readonly Activity[], residualInputIds: readonly string[] = inputActivities.map((activity) => activity.id)): DesignMatrix {
+export function createDesignMatrix(
+  inputActivities: readonly Activity[],
+  residualInputIds: readonly string[] = inputActivities.map((activity) => activity.id),
+  options: Readonly<{ includeDestinationEffects?: boolean; includeActivityResiduals?: boolean }> = {},
+): DesignMatrix {
   if (inputActivities.length === 0) throw new FeatureError('invalid-comparison', 'A model requires at least one activity.');
   const activities = sortedCopy(inputActivities);
   const activityIds = activities.map((activity) => activity.id);
@@ -57,7 +62,11 @@ export function createDesignMatrix(inputActivities: readonly Activity[], residua
   const attributeMeans = Object.fromEntries(ATTRIBUTE_KEYS.map((key) => [key, stats[key].mean])) as Record<AttributeKey, number>;
   const attributeScales = Object.fromEntries(ATTRIBUTE_KEYS.map((key) => [key, stats[key].scale])) as Record<AttributeKey, number>;
   const activityIndexById = new Map(activityIds.map((id, index) => [id, index]));
-  const residualActivityIds = [...new Set(residualInputIds)].sort((left, right) => left.localeCompare(right));
+  const includeDestinationEffects = options.includeDestinationEffects ?? true;
+  const includeActivityResiduals = options.includeActivityResiduals ?? true;
+  const residualActivityIds = includeActivityResiduals
+    ? [...new Set(residualInputIds)].sort((left, right) => left.localeCompare(right))
+    : [];
   if (residualActivityIds.some((id) => !activityIndexById.has(id))) {
     throw new FeatureError('unknown-activity', 'Residual activity IDs must belong to the activity portfolio.');
   }
@@ -69,7 +78,7 @@ export function createDesignMatrix(inputActivities: readonly Activity[], residua
   ]));
   const parameterNames = [
     ...MODEL_PARAMETER_ORDER,
-    ...destinationIds.map((id) => `destination:${id}`),
+    ...(includeDestinationEffects ? destinationIds.map((id) => `destination:${id}`) : []),
     ...residualActivityIds.map((id) => `activity:${id}`),
   ];
   return {
@@ -85,6 +94,7 @@ export function createDesignMatrix(inputActivities: readonly Activity[], residua
     destinationIndexById,
     parameterNames,
     parameterCount: parameterNames.length,
+    includeDestinationEffects,
   };
 }
 
@@ -102,10 +112,15 @@ export function utilityDesignRow(design: DesignMatrix, activityId: string): numb
   const features = activityFeature(design, activityId);
   for (let index = 0; index < ATTRIBUTE_KEYS.length; index += 1) row[index] = features[index]!;
   const destinationIndex = design.destinationIndexById.get(activity.destinationId);
-  if (destinationIndex === undefined) throw new FeatureError('unknown-activity', `Missing model index for ${activityId}.`);
-  row[ATTRIBUTE_KEYS.length + destinationIndex] = 1;
+  if (design.includeDestinationEffects) {
+    if (destinationIndex === undefined) throw new FeatureError('unknown-activity', `Missing model index for ${activityId}.`);
+    row[ATTRIBUTE_KEYS.length + destinationIndex] = 1;
+  }
   const residualIndex = design.residualActivityIndexById.get(activityId);
-  if (residualIndex !== undefined) row[ATTRIBUTE_KEYS.length + design.destinationIds.length + residualIndex] = 1;
+  if (residualIndex !== undefined) {
+    const residualOffset = ATTRIBUTE_KEYS.length + (design.includeDestinationEffects ? design.destinationIds.length : 0);
+    row[residualOffset + residualIndex] = 1;
+  }
   return row;
 }
 

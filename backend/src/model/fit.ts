@@ -58,7 +58,7 @@ function logSigmoid(value: number): number {
 export function priorPrecisions(design: DesignMatrix, config: ModelConfig = modelConfig): number[] {
   return [
     ...Array.from({ length: ATTRIBUTE_KEYS.length }, () => 1 / config.betaPriorSd ** 2),
-    ...Array.from({ length: design.destinationIds.length }, () => 1 / config.destinationPriorSd ** 2),
+    ...Array.from({ length: design.includeDestinationEffects ? design.destinationIds.length : 0 }, () => 1 / config.destinationPriorSd ** 2),
     ...Array.from({ length: design.residualActivityIds.length }, () => 1 / config.activityResidualPriorSd ** 2),
   ];
 }
@@ -131,6 +131,7 @@ export function fitHierarchicalBradleyTerry(
   activities: readonly Activity[],
   comparisons: readonly Comparison[],
   config: ModelConfig = modelConfig,
+  mode: 'hierarchical' | 'attribute-only' = 'hierarchical',
 ): MapFit {
   if (!isUsableConfig(config)) {
     return {
@@ -147,7 +148,10 @@ export function fitHierarchicalBradleyTerry(
     // cards. Retain explicit residuals for seen activities and marginalize the
     // exchangeable unseen residuals in the posterior portfolio calculation.
     const observedActivityIds = comparisons.flatMap((comparison) => [comparison.activityA, comparison.activityB]);
-    design = createDesignMatrix(activities, observedActivityIds);
+    design = createDesignMatrix(activities, observedActivityIds, {
+      includeDestinationEffects: mode === 'hierarchical',
+      includeActivityResiduals: mode === 'hierarchical',
+    });
     prepared = prepareComparisons(design, comparisons);
   } catch (error) {
     return {
@@ -242,4 +246,13 @@ export function fitHierarchicalBradleyTerry(
     message: `MAP fitting did not converge within ${config.maxNewtonIterations} iterations.`,
     diagnostics: { iterations: config.maxNewtonIterations, lastUpdate, logPosterior: lastObjective },
   };
+}
+
+/** A regularized eight-attribute Bayesian Bradley–Terry fit for the fixed trip. */
+export function fitBayesianAttributeShortlist(
+  activities: readonly Activity[],
+  comparisons: readonly Comparison[],
+  config: ModelConfig,
+): MapFit {
+  return fitHierarchicalBradleyTerry(activities, comparisons, config, 'attribute-only');
 }

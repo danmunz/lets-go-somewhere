@@ -4,20 +4,18 @@ import { TravelEffortKey } from '../components/TravelEffortKey.js';
 
 type Props = { results: PersonalResultsResponse; onBackToVerdict: () => void };
 
-const fitCopy = { 'strong-match': 'Strong match', contender: 'A close contender', 'close-call': 'Close among contenders' } as const;
-
 /** Post-gate-only presentation; it has no ranking or explanation calculation. */
 export function MyResultsScreen({ results, onBackToVerdict }: Props) {
   return (
     <main className="one-trip-screen my-results-screen" aria-labelledby="my-take-title">
-      <p className="eyebrow">My take</p>
+      <p className="eyebrow">My trip shortlist</p>
       <h1 id="my-take-title">The places that fit your calls.</h1>
-      <p className="lede">{results.confidence.summary} These are your own results, revealed only after the group envelope opened.</p>
+      <p className="lede">This is a conversation starter drawn from the choices you made—not a final verdict. It opens only after the group envelope.</p>
       <section className="personal-results-grid" aria-label="Your top five places">
         {results.results.map((result) => <article className="personal-result-card" key={result.id}>
           <MediaImage src={result.imageUrl} alt={`A view from ${result.name}`} fallbackLabel="Photo unavailable" />
           <div className="personal-result-card__body">
-            <p className="eyebrow">#{result.rank} · {fitCopy[result.fitLabel]}</p>
+            <p className="eyebrow">#{result.rank} on your shortlist</p>
             <h2>{result.name}, {result.country}</h2>
             <p>{result.context.novemberWeather} · Travel effort {result.context.travelFriction}/5</p>
             <details>

@@ -1,13 +1,15 @@
 /**
  * Versioned, reviewable configuration for the one-trip ranking model.
  *
- * These values are intentionally provisional until OT-19's synthetic evaluation
- * gate records the selected configuration in the model ADR. Keep version strings
- * here rather than scattering them through selection or persistence code: any
- * value change that can alter a result requires a corresponding model version.
+ * Keep version strings here rather than scattering them through selection or
+ * persistence code: any value change that can alter a shortlist requires a
+ * corresponding model or policy version.
  */
 export const BASELINE_MODEL_VERSION = 'elo-coverage-v1' as const;
 export const MODEL_VERSION = 'bt-hierarchical-laplace-v2-compact' as const;
+/** The deliberately small production model for the one fixed trip. */
+export const SHORTLIST_MODEL_VERSION = 'bayes-attribute-shortlist-v1' as const;
+export const SHORTLIST_POLICY_VERSION = 'fixed-32-boundary-v1' as const;
 export const SELECTOR_VERSION = 'information-gain-v1' as const;
 export const SNAPSHOT_SCHEMA_VERSION = 1 as const;
 
@@ -36,6 +38,20 @@ export const modelConfig = {
   credibleInterval: 0.9,
   /** A single, documented numerical recovery attempt for Cholesky factorization. */
   covarianceJitter: 1e-9,
+} as const;
+
+/**
+ * Thirty-two answers can identify broad preference directions, but not a free
+ * parameter for every destination or card. This model therefore has exactly
+ * the eight standardized activity attributes and a regularizing normal prior.
+ */
+export const shortlistModelConfig = {
+  ...modelConfig,
+  modelVersion: SHORTLIST_MODEL_VERSION,
+  betaPriorSd: 1,
+  destinationPriorSd: 1,
+  activityResidualPriorSd: 1,
+  posteriorDrawCount: 128,
 } as const;
 
 /** Deliberately structural so synthetic evaluation can test candidate settings. */

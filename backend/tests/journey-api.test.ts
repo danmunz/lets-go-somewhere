@@ -35,6 +35,7 @@ describe('one-trip route DTOs', () => {
     const payload = profileResponseSchema.parse(await response.json());
     expect(response.status).toBe(200);
     expect(JSON.stringify(payload)).not.toMatch(/antigua|country|destination|activity|score|rank/i);
+    expect(JSON.stringify(payload)).not.toMatch(/confidence|interval|clear.favorite|close.call/i);
     expect(payload.profile.dimensions.length).toBeGreaterThanOrEqual(2);
   });
 

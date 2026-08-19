@@ -55,7 +55,7 @@ describe('safe preference profiles and explanation primitives', () => {
       history: { expectedContribution: 0.45, positiveProbability: 0.92 },
       novelty: { expectedContribution: 0.25, positiveProbability: 0.86 },
     }));
-    expect(profile.confidenceLabel).toBe('clear-shape');
+    expect(profile.confidenceLabel).toBeUndefined();
     expect(profile.dimensions).toHaveLength(3);
     expect(profile.dimensions.map((dimension) => dimension.key)).toEqual(['adventure', 'history', 'novelty']);
     expect(JSON.stringify(profile)).not.toContain('Antigua');
@@ -67,9 +67,9 @@ describe('safe preference profiles and explanation primitives', () => {
       nature: { expectedContribution: -0.13, positiveProbability: 0.2 },
       food: { expectedContribution: 0.1, positiveProbability: 0.74 },
     }));
-    expect(profile.confidenceLabel).toBe('still-emerging');
+    expect(profile.confidenceLabel).toBeUndefined();
     expect(profile.dimensions).toHaveLength(2);
-    expect(profile.synthesis).toBe('Your trip rhythm is still taking shape, with a few honest close calls.');
+    expect(profile.synthesis).toContain('You kept gravitating toward');
   });
 
   it('omits uncertain or negative themes and uses only safe categorical fallbacks', () => {

@@ -43,7 +43,7 @@ describe('one-trip shared contracts', () => {
     expect(
       nextComparisonResponseSchema.safeParse({
         complete: false,
-        progress: { comparisons: 24, minimum: 24, maximum: 40, estimatedCompletion: 1, phase: 'discriminate' },
+        progress: { comparisons: 24, minimum: 32, maximum: 32, estimatedCompletion: .75, phase: 'checking-boundary' },
         activityA: toSafeActivity(activity),
         activityB: { ...toSafeActivity(activity), id: 'other-activity' },
       }).success,
@@ -79,7 +79,7 @@ describe('one-trip shared contracts', () => {
     expect(
       nextComparisonResponseSchema.safeParse({
         complete: false,
-        progress: { comparisons: 0, minimum: 24, maximum: 40, estimatedCompletion: 0, phase: 'explore' },
+          progress: { comparisons: 0, minimum: 32, maximum: 32, estimatedCompletion: 0, phase: 'explore' },
         activityA: { ...safe, destinationId: activity.destinationId },
         activityB: { ...safe, id: 'other-activity' },
       }).success,
@@ -126,4 +126,3 @@ describe('one-trip shared contracts', () => {
     ).toBe(false);
   });
 });
-

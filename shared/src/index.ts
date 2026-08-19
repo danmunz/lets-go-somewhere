@@ -171,16 +171,16 @@ export type RosterUser = z.infer<typeof rosterUserSchema>;
 export const progressPhaseSchema = z.enum(['explore', 'discriminate', 'checking-boundary']);
 export const progressSchema = z
   .object({
-    comparisons: z.number().int().min(0).max(40),
-    minimum: z.literal(24),
-    maximum: z.literal(40),
+    comparisons: z.number().int().min(0).max(32),
+    minimum: z.literal(32),
+    maximum: z.literal(32),
     estimatedCompletion: z.number().min(0).max(1),
     phase: progressPhaseSchema,
   })
   .strict();
 export type Progress = z.infer<typeof progressSchema>;
 
-export const completionReasonSchema = z.enum(['stable-top-five', 'maximum-reached', 'portfolio-exhausted']);
+export const completionReasonSchema = z.enum(['fixed-round-complete', 'stable-top-five', 'maximum-reached', 'portfolio-exhausted']);
 export const completionConfidenceLabelSchema = z.enum(['clear-shape', 'close-call']);
 export const completionStateSchema = z
   .object({
@@ -235,7 +235,9 @@ export const preferenceProfileSchema = z
     // The specification's honest fallback deliberately permits two dimensions
     // when fewer than three are sufficiently clear.
     dimensions: z.array(profileDimensionSchema).min(2).max(5),
-    confidenceLabel: profileConfidenceLabelSchema,
+    // Historical snapshots retain this field. New shortlist responses omit it:
+    // the product deliberately describes observed patterns, not confidence.
+    confidenceLabel: profileConfidenceLabelSchema.optional(),
   })
   .strict();
 export type PreferenceProfile = z.infer<typeof preferenceProfileSchema>;
@@ -319,8 +321,10 @@ export const personalResultSchema = z
     name: z.string().min(1),
     country: z.string().min(1),
     imageUrl: localMediaPathSchema,
-    fitLabel: z.enum(['strong-match', 'contender', 'close-call']),
-    interval: intervalSchema,
+    // Legacy snapshots may contain these internal-model presentation labels.
+    // New shortlist results intentionally omit numerical/certainty framing.
+    fitLabel: z.enum(['strong-match', 'contender', 'close-call']).optional(),
+    interval: intervalSchema.optional(),
     explanation: personalResultExplanationSchema,
     context: resultContextSchema,
   })
@@ -398,7 +402,7 @@ export const personalResultsResponseSchema = z
   .object({
     snapshotId: z.string().min(1),
     modelVersion: z.string().min(1),
-    confidence: resultConfidenceSchema,
+    confidence: resultConfidenceSchema.optional(),
     profile: preferenceProfileSchema,
     results: z.array(personalResultSchema).length(5),
   })
@@ -455,15 +459,15 @@ export const socialBallotUserSchema = z
     profile: preferenceProfileSchema,
     personalResults: z
       .object({
-        confidence: resultConfidenceSchema,
+        confidence: resultConfidenceSchema.optional(),
         topFive: z
           .array(
             z
               .object({
                 rank: z.number().int().min(1).max(5),
                 id: z.string().min(1),
-                fitLabel: z.enum(['strong-match', 'contender', 'close-call']),
-                interval: intervalSchema,
+                fitLabel: z.enum(['strong-match', 'contender', 'close-call']).optional(),
+                interval: intervalSchema.optional(),
                 explanation: personalResultExplanationSchema,
               })
               .strict(),
@@ -940,6 +944,10 @@ const transparentResultSnapshotBaseSchema = z
   .object({
     schemaVersion: z.literal(2),
     modelVersion: z.string().min(1),
+    // Snapshot v2 originally shipped before the fixed-round shortlist policy.
+    // Keep this optional for read-only historical snapshots; all new writes
+    // stamp it so a real trip can be reproduced without re-running the model.
+    policyVersion: z.string().min(1).optional(),
     seedVersion: z.string().regex(/^[a-f0-9]{64}$/i, 'Seed version must be a SHA-256 digest.'),
     inputDigest: z.string().regex(/^[a-f0-9]{64}$/i, 'Input digest must be a SHA-256 digest.'),
     createdAt: z.string().datetime({ offset: true }),

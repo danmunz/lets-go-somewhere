@@ -22,10 +22,10 @@ import {
   SeedVersionMismatchError,
   type RosterUser,
 } from './store.js';
-import { isComplete, rankUser, selectNextPair } from './ranking.js';
+import { isShortlistComplete, shortlistProgress, selectShortlistPair } from './model/shortlist.js';
 import { authenticate } from './auth.js';
 import {
-  buildBaselineRevealSnapshot,
+  buildShortlistRevealSnapshot,
   buildFinalDecisionResponse,
   buildGroupResultsResponse,
   buildGroupStatusResponse,
@@ -64,34 +64,26 @@ app.use('/v1/*', async (context, next) => {
 app.get('/v1/session', (context) => context.json({ user: context.get('user'), roster: ROSTER }));
 app.get('/v1/comparison/next', async (context) => {
   const user = context.get('user') as RosterUser, comparisons = await getComparisons(user);
-  if (isComplete(activities, comparisons)) {
+  if (isShortlistComplete(comparisons)) {
     return context.json(nextComparisonResponseSchema.parse({
       complete: true,
       completion: {
         complete: true,
-        reason: comparisons.length >= 40 ? 'maximum-reached' : 'stable-top-five',
-        confidenceLabel: 'close-call',
+        reason: 'fixed-round-complete',
       },
     }));
   }
-  const pair = selectNextPair(activities, comparisons);
+  const pair = selectShortlistPair(activities, comparisons, user);
   if (!pair) {
     return context.json(nextComparisonResponseSchema.parse({
       complete: true,
-      completion: { complete: true, reason: 'portfolio-exhausted', confidenceLabel: 'close-call' },
+      completion: { complete: true, reason: 'fixed-round-complete' },
     }));
   }
   await setPending(user, [pair[0].id, pair[1].id]);
-  const phase = comparisons.length < 8 ? 'explore' : comparisons.length < 24 ? 'discriminate' : 'checking-boundary';
   return context.json(nextComparisonResponseSchema.parse({
     complete: false,
-    progress: {
-      comparisons: comparisons.length,
-      minimum: 24,
-      maximum: 40,
-      estimatedCompletion: Math.min(1, comparisons.length / 24),
-      phase,
-    },
+    progress: shortlistProgress(comparisons.length),
     activityA: toSafeActivity(pair[0]),
     activityB: toSafeActivity(pair[1]),
   }));
@@ -103,7 +95,7 @@ app.post('/v1/comparisons', async (context) => {
   const parsed = comparisonSchema.safeParse(body);
   if (!parsed.success) return context.json({ error: 'Invalid comparison.', details: parsed.error.flatten() }, 400);
   const state = await getStoredUserState(user);
-  if (isComplete(activities, state.comparisons)) return context.json({ code: 'conflict', error: 'This round is already complete.' }, 409);
+  if (isShortlistComplete(state.comparisons)) return context.json({ code: 'conflict', error: 'This round is already complete.' }, 409);
   try {
     // The store transaction rechecks this revision and the exact offered pair,
     // so a stale tab can never clear another tab's pending comparison.
@@ -116,12 +108,12 @@ app.post('/v1/comparisons', async (context) => {
 });
 app.get('/v1/profile', async (context) => {
   const user = context.get('user') as RosterUser, comparisons = await getComparisons(user);
-  if (!isComplete(activities, comparisons)) return context.json({ code: 'completion-required', error: 'Finish the preference game first.' }, 409);
-  return context.json(buildProfileResponse(rankUser(destinations, activities, comparisons)));
+  if (!isShortlistComplete(comparisons)) return context.json({ code: 'completion-required', error: 'Finish the preference game first.' }, 409);
+  return context.json(buildProfileResponse(activities, comparisons, user));
 });
 app.get('/v1/atlas', async (context) => {
   const user = context.get('user') as RosterUser, comparisons = await getComparisons(user);
-  if (!isComplete(activities, comparisons)) return context.json({ error: 'Finish the preference game first.' }, 409);
+  if (!isShortlistComplete(comparisons)) return context.json({ error: 'Finish the preference game first.' }, 409);
   return context.json({ destinations: destinations.map(toAtlasDestination) });
 });
 app.get('/v1/group-status', async (context) => {
@@ -129,7 +121,7 @@ app.get('/v1/group-status', async (context) => {
     const state = await getStoredUserState(user);
     return {
       user,
-      complete: isComplete(activities, state.comparisons),
+      complete: isShortlistComplete(state.comparisons),
       ...(state.updatedAt ? { updatedAt: state.updatedAt } : {}),
       ...(state.completedAt ? { completedAt: state.completedAt } : {}),
     };
@@ -140,10 +132,10 @@ app.post('/v1/reveal', async (context) => {
   const user = context.get('user') as RosterUser;
   if (user !== 'dan') return context.json({ error: 'Only the trip organizer can open the reveal.' }, 403);
   await Promise.all(ROSTER.map((member) => assertSeedVersionCompatible(member)));
-  if (!isComplete(activities, await getComparisons(user))) return context.json({ error: 'Finish your preference game before opening the reveal.' }, 409);
+  if (!isShortlistComplete(await getComparisons(user))) return context.json({ error: 'Finish your preference game before opening the reveal.' }, 409);
   const all = await getAllComparisons();
-  if (!ROSTER.every((member) => isComplete(activities, all[member]))) return context.json({ error: 'Wait for the whole crew to finish before opening the reveal.' }, 409);
-  const snapshot = await createOrGetRevealSnapshot(buildBaselineRevealSnapshot(
+  if (!ROSTER.every((member) => isShortlistComplete(all[member]))) return context.json({ error: 'Wait for the whole crew to finish before opening the reveal.' }, 409);
+  const snapshot = await createOrGetRevealSnapshot(buildShortlistRevealSnapshot(
     ROSTER.map((member) => ({ user: member, comparisons: all[member] })),
     destinations,
     activities,
@@ -152,7 +144,7 @@ app.post('/v1/reveal', async (context) => {
 });
 app.get('/v1/results/me', async (context) => {
   const user = context.get('user') as RosterUser, comparisons = await getComparisons(user);
-  if (!isComplete(activities, comparisons)) return context.json({ code: 'completion-required', error: 'Finish the preference game first.' }, 409);
+  if (!isShortlistComplete(comparisons)) return context.json({ code: 'completion-required', error: 'Finish the preference game first.' }, 409);
   if (!await isRevealOpen()) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
   const snapshot = await getRevealSnapshot();
   if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
