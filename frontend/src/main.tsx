@@ -16,6 +16,7 @@ import { ApiError, createApiClient, routeIntentForApiError, type ApiAuthenticati
 import { AppStateNotice, CompletedTransition, MediaImage, TravelEffortKey } from './components/index.js';
 import { getRestoredGoogleToken, signInWithGoogle } from './firebase.js';
 import { MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
+import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
 import type { AppScreen } from './types.js';
 import './app.css';
 
@@ -105,4 +106,17 @@ function App() {
   return <main className="game-shell screen-enter"><header className="game-topbar"><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" />{user && <div className="turn-meta"><Avatar id={user} />{travelerName(user)}’s turn</div>}</header><section className="game-heading"><p className="eyebrow">Trust your first instinct</p><div className="game-title-row"><h1>Which calls to you?</h1><span><NumberFlow value={progress.comparisons} /> answered</span></div><div className="game-progress"><i style={{ width: `${progress.estimatedCompletion * 100}%` }} /></div><p className="progress-message">{progressMessage(progress.comparisons)} <b><NumberFlow value={progress.minimum} /> minimum · up to <NumberFlow value={progress.maximum} /></b></p></section>{busy && !activities.length ? <p className="topo-loader">Loading the next possibility…</p> : <section className="choice-stage">{activities.map((activity, index) => <button key={activity.id} className={`choice-card choice-card--${index} ${picked === activity.id ? 'choice-card--picked' : ''}`} onClick={() => void choose(activity.id)} disabled={Boolean(picked)}><i className="choice-photo" style={{ backgroundImage: `url(${activity.imageUrl})` }} /><i className="choice-photo-wash" /><span className="choice-pick">I’d rather… ↗</span><span className="choice-copy"><strong>{activity.title}</strong><small>{activity.description}</small></span></button>)}</section>}<div className="or-divider"><span />OR<span /></div>{notice}</main>;
 }
 
-createRoot(document.getElementById('root')!).render(<App />);
+const fixtureMode = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('fixture') : null;
+const fixtureOverlay = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('overlay') : null;
+const fixtureAvatar = (id: RosterUser) => travelerById(id).image;
+
+// Local visual-QA route only. It uses deterministic, post-gate fixture data
+// and is excluded from production behavior by the Vite DEV guard above.
+const root = createRoot(document.getElementById('root')!);
+if (fixtureMode === 'transparent-reveal') {
+  const displayMode = fixtureOverlay === 'near-tie' ? 'near-tie' : fixtureOverlay === 'no-consensus' ? 'no-consensus' : fixtureOverlay === 'broad-leader' ? 'broad-leader' : 'shared-shortlist';
+  const socialOverlay = fixtureOverlay === 'wild-card' || fixtureOverlay === 'two-camps' || fixtureOverlay === 'split' ? fixtureOverlay : undefined;
+  root.render(<VerdictScreen results={createVerdictFixture(displayMode, socialOverlay)} currentUser="dan" travelerName={(id) => fixtureTravelerNames[id]} avatarFor={fixtureAvatar} onOpenMyResults={() => undefined} onRecordDecision={async (choice) => ({ user: 'dan', choice, createdAt: '2026-08-19T00:00:00.000Z' })} />);
+} else {
+  root.render(<App />);
+}

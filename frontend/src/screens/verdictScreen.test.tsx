@@ -1,8 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server';
+import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import type { PersonalResultsResponse, RosterUser, TransparentGroupResultsResponse } from '@lgs/shared';
 import { MyResultsScreen } from './MyResultsScreen.js';
 import { VerdictScreen } from './VerdictScreen.js';
+import { createVerdictFixture, verdictFixtureModes } from './verdictFixtures.js';
 
 const users: RosterUser[] = ['dan', 'james', 'john', 'matt', 'peter'];
 const names: Record<RosterUser, string> = { dan: 'Dan', james: 'James', john: 'John', matt: 'Matt', peter: 'Peter' };
@@ -19,6 +21,13 @@ const personalFixture: PersonalResultsResponse = { snapshotId: 'snapshot-test', 
 const renderVerdict = (results = resultFixture) => renderToStaticMarkup(<VerdictScreen results={results} currentUser="dan" travelerName={(user) => names[user]} avatarFor={() => '/assets/traveler.png'} onOpenMyResults={() => undefined} onRecordDecision={async () => resultFixture.decisions[0]!} />);
 
 describe('transparent social reveal', () => {
+  it.each(verdictFixtureModes)('renders the deterministic %s visual-QA fixture without legacy group math', (mode) => {
+    const markup = renderVerdict(createVerdictFixture(mode));
+    expect(markup).toContain('How the crew ballot works');
+    expect(markup).toContain('5 points');
+    expect(markup).toContain('Outside top five');
+    expect(markup).not.toMatch(/normalized|polarization|group confidence|interval/i);
+  });
   it('shows the published key, five personal maps, matrix language, and immutable next step', () => {
     const markup = renderVerdict();
     expect(markup).toContain('How the crew ballot works');
@@ -40,6 +49,38 @@ describe('transparent social reveal', () => {
     const tied = resultFixture.group.map((item, index) => ({ ...item, rank: index < 2 ? 1 : index }));
     const markup = renderVerdict({ ...resultFixture, displayMode: 'near-tie', group: tied });
     expect(markup).toContain('A dead heat.'); expect(markup).toContain('#1 · tied');
+  });
+
+  it.each(['wild-card', 'two-camps', 'split'] as const)('keeps the %s social overlay additive to the stored shortlist', (overlay) => {
+    const fixture = createVerdictFixture('shared-shortlist', overlay);
+    const markup = renderVerdict(fixture);
+    expect(markup).toContain(fixture.insights[0]!.title);
+    expect(markup).toContain('Five places to talk about.');
+    expect(markup).toContain('Oaxaca');
+  });
+
+  it('limits an unresolved final decision to five stored finalists plus research and exposes semantic keyboard controls', () => {
+    const markup = renderVerdict(createVerdictFixture());
+    const actionLabels = [...markup.matchAll(/>Champion ([^<]+)<\/button>/g)].map((match) => match[1]);
+    expect(actionLabels).toEqual(['Oaxaca', 'Antigua', 'Madeira', 'Kyoto', 'Lofoten']);
+    expect(markup).toContain('Need more research');
+    expect(markup).toContain('aria-label="Open place details for Oaxaca"');
+    expect(markup).toContain('aria-label="Scrollable crew rank table"');
+    expect(markup).toContain('tabindex="0"');
+  });
+
+  it('keeps post-gate image fallbacks and focus/reduced-motion contracts explicit in the implementation', async () => {
+    const [mediaImage, styles] = await Promise.all([
+      import('../components/MediaImage.js'),
+      readFile(new URL('../app.css', import.meta.url), 'utf8'),
+    ]);
+    const fallback = renderToStaticMarkup(<mediaImage.MediaImage src="/missing-image.webp" alt="A view from Oaxaca" fallbackLabel="Photo unavailable" />);
+    expect(fallback).toContain('alt="A view from Oaxaca"');
+    expect(styles).toContain('@media(prefers-reduced-motion:reduce)');
+    expect(styles).toContain('.verdict-finalists__list>button:focus-visible');
+    expect(styles).toContain('.finalist-matrix__scroll:focus-visible');
+    expect(styles).toContain('@media(min-width:640px){.ballot-key li:last-child b');
+    expect(styles).not.toContain('animation: screen-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;');
   });
 
   it('renders personal results with post-gate place imagery and concise, non-raw-choice explanation', () => {
