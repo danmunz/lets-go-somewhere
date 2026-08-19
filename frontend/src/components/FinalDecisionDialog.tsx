@@ -24,8 +24,8 @@ export function FinalDecisionDialog({ open, choiceLabel, isSaving = false, error
 
   return (
     <dialog ref={dialog} className="final-decision-dialog" data-testid="final-decision-dialog" aria-labelledby="final-decision-title" onCancel={(event) => { event.preventDefault(); onCancel(); }}>
-      <h2 id="final-decision-title">Lock in your take?</h2>
-      <p>This records what you want the crew to investigate next. It does not change the trip ranking, and it can’t be edited.</p>
+      <h2 id="final-decision-title">Lock in your next step?</h2>
+      <p>This saves what you want the crew to investigate next. It does not rerank the places, and it cannot be edited.</p>
       {error && <p className="final-decision-dialog__error" role="alert">{error}</p>}
       <div className="final-decision-dialog__actions">
         <button autoFocus className="lgs-button lgs-button--secondary" onClick={onCancel} disabled={isSaving}>Not yet</button>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import NumberFlow from '@number-flow/react';
 import { MeshGradient } from '@paper-design/shaders-react';
 import { createRoot } from 'react-dom/client';
-import type { AtlasDestination, FinalDecision, FinalDecisionChoice, GroupResultsResponse, GroupStatus, NextComparisonResponse, PreferenceProfile, RosterUser } from '@lgs/shared';
+import type { AtlasDestination, FinalDecision, FinalDecisionChoice, GroupStatus, NextComparisonResponse, PreferenceProfile, RosterUser, TransparentGroupResultsResponse } from '@lgs/shared';
 import '../../design-system/base.css';
 import '../../design-system/components.css';
 import logoUrl from '../../design-system/assets/logo.png';
@@ -54,7 +54,7 @@ function AtlasScreen({ destinations, user, onOpenWaiting }: { destinations: Atla
 function App() {
   const [screen, setScreen] = useState<AppScreen>('welcome');
   const [user, setUser] = useState<RosterUser>(); const [token, setToken] = useState<string>(); const [selected, setSelected] = useState<RosterUser>(); const [spinning, setSpinning] = useState<RosterUser>();
-  const [next, setNext] = useState<NextComparisonResponse>(); const [profile, setProfile] = useState<PreferenceProfile>(); const [atlas, setAtlas] = useState<AtlasDestination[]>([]); const [status, setStatus] = useState<GroupStatus>(); const [results, setResults] = useState<GroupResultsResponse>(); const [myResults, setMyResults] = useState<Awaited<ReturnType<OneTripApiClient['getPersonalResults']>>>();
+  const [next, setNext] = useState<NextComparisonResponse>(); const [profile, setProfile] = useState<PreferenceProfile>(); const [atlas, setAtlas] = useState<AtlasDestination[]>([]); const [status, setStatus] = useState<GroupStatus>(); const [results, setResults] = useState<TransparentGroupResultsResponse>(); const [myResults, setMyResults] = useState<Awaited<ReturnType<OneTripApiClient['getPersonalResults']>>>();
   const [picked, setPicked] = useState(''); const [toast, setToast] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [booting, setBooting] = useState(true); const bootstrapOnce = useRef(false);
   const api = useMemo(() => user ? createApiClient({ user, token }) : undefined, [token, user]);
 

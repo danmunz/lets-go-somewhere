@@ -2,7 +2,7 @@ import type {
   AtlasDestination,
   FinalDecision,
   FinalDecisionChoice,
-  GroupResultsResponse,
+  TransparentGroupResultsResponse,
   GroupStatus,
   NextComparisonResponse,
   PersonalResultsResponse,
@@ -53,7 +53,7 @@ export type OneTripApiContracts = {
   atlas: AtlasResponse;
   groupStatus: GroupStatus;
   personalResults: PersonalResultsResponse;
-  groupResults: GroupResultsResponse;
+  groupResults: TransparentGroupResultsResponse;
   finalDecision: FinalDecisionResponse;
 };
 

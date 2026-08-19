@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
-import type { FinalDecision, FinalDecisionChoice, GroupResultsResponse, RosterUser } from '@lgs/shared';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { FinalDecision, FinalDecisionChoice, GroupInsight, RosterUser, TransparentGroupResultsResponse } from '@lgs/shared';
 import { FinalDecisionDialog } from '../components/FinalDecisionDialog.js';
 import { FinalistDrawer } from '../components/FinalistDrawer.js';
 import { FinalistMatrix } from '../components/FinalistMatrix.js';
 import { MediaImage } from '../components/MediaImage.js';
 import { TravelEffortKey } from '../components/TravelEffortKey.js';
-import { VerdictExplainer } from '../components/VerdictExplainer.js';
 
 type Props = {
-  results: GroupResultsResponse;
+  results: TransparentGroupResultsResponse;
   currentUser: RosterUser;
   travelerName: (user: RosterUser) => string;
   avatarFor: (user: RosterUser) => string;
@@ -16,121 +15,38 @@ type Props = {
   onRecordDecision: (choice: FinalDecisionChoice) => Promise<FinalDecision>;
 };
 
-const decisionLabel = (choice: FinalDecisionChoice, finalists: GroupResultsResponse['group']) =>
-  choice === 'need-more-research' ? 'need more research' : finalists.find((finalist) => finalist.id === choice)?.name ?? 'this finalist';
+const decisionLabel = (choice: FinalDecisionChoice, finalists: TransparentGroupResultsResponse['group']) =>
+  choice === 'need-more-research' ? 'need more research' : `champion ${finalists.find((finalist) => finalist.id === choice)?.name ?? 'this finalist'}`;
+const insightKicker: Record<GroupInsight['kind'], string | undefined> = { 'shared-destination': undefined, 'strong-shared-destination': undefined, 'split-destination': 'A conversation starter', 'shared-theme': undefined, 'contrasting-themes': undefined, 'two-camps': 'Two trip moods emerged', 'wild-card': undefined };
+const insightClass: Record<GroupInsight['kind'], string> = { 'shared-destination': 'verdict-insights__item--shared', 'strong-shared-destination': 'verdict-insights__item--shared', 'split-destination': 'verdict-insights__item--split', 'shared-theme': 'verdict-insights__item--theme', 'contrasting-themes': 'verdict-insights__item--split', 'two-camps': 'verdict-insights__item--camp', 'wild-card': 'verdict-insights__item--wild-card' };
 
-/**
- * The post-gate reveal composition. It accepts no comparison data and keeps
- * numerical model outputs deliberately out of the social decision moment.
- */
+function AvatarStrip({ users, avatarFor, travelerName }: Pick<Props, 'avatarFor' | 'travelerName'> & { users: readonly RosterUser[] }) {
+  return <span className="supporter-avatars" aria-label={`Top-five supporters: ${users.map(travelerName).join(', ')}`}>{users.map((user) => <img key={user} src={avatarFor(user)} alt="" />)}</span>;
+}
+
+function BallotKey() {
+  return <section className="ballot-key" aria-labelledby="ballot-key-title"><div><p className="eyebrow">Published rules</p><h2 id="ballot-key-title">How the crew ballot works</h2><p>Each traveler’s personal top five becomes a simple ballot. First place earns 5 points, then 4, 3, 2, and 1. Places outside a traveler’s top five earn 0.</p></div><ol aria-label="Top-five points scale"><li><b>#1</b><span>5 points</span></li><li><b>#2</b><span>4</span></li><li><b>#3</b><span>3</span></li><li><b>#4</b><span>2</span></li><li><b>#5</b><span>1</span></li><li><b>Outside top five</b><span>0</span></li></ol><p className="ballot-key__note">Points order the shortlist; they do not decide the trip for you. Ties use first-place votes, then how many travelers included the place; a remaining tie stays a tie.</p></section>;
+}
+
+/** The post-gate reveal displays the immutable social ballot, not a synthetic group utility. */
 export function VerdictScreen({ results, currentUser, travelerName, avatarFor, onOpenMyResults, onRecordDecision }: Props) {
   const [activeId, setActiveId] = useState('');
   const [pendingChoice, setPendingChoice] = useState<FinalDecisionChoice | null>(null);
   const [recordedDecision, setRecordedDecision] = useState<FinalDecision | undefined>(() => results.decisions.find((decision) => decision.user === currentUser));
-  const [isSaving, setIsSaving] = useState(false);
-  const [decisionError, setDecisionError] = useState('');
+  const [isSaving, setIsSaving] = useState(false); const [decisionError, setDecisionError] = useState('');
+  const shortlistRef = useRef<HTMLElement>(null);
   const activeFinalist = useMemo(() => results.group.find((finalist) => finalist.id === activeId), [activeId, results.group]);
-  const winner = results.group[0];
+  const lead = results.group[0]; const second = results.group[1];
+  const exactTie = results.displayMode === 'near-tie' && lead?.rank === second?.rank;
+  useEffect(() => { setRecordedDecision(results.decisions.find((decision) => decision.user === currentUser)); }, [currentUser, results.decisions]);
+  if (!lead) return null;
+  const requestDecision = (choice: FinalDecisionChoice) => { if (!recordedDecision) { setDecisionError(''); setPendingChoice(choice); } };
+  const confirmDecision = async () => { if (!pendingChoice || recordedDecision) return; setIsSaving(true); setDecisionError(''); try { setRecordedDecision(await onRecordDecision(pendingChoice)); setPendingChoice(null); } catch { setDecisionError('We couldn’t save that next step. Your choice has not been recorded; try again.'); } finally { setIsSaving(false); } };
+  const open = (id: string) => setActiveId(id);
+  const scrollToShortlist = () => shortlistRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const hero = results.displayMode === 'no-consensus'
+    ? <div className="verdict-screen__hero-no-consensus"><p className="eyebrow">The envelope is open</p><h1 id="verdict-title">No automatic consensus—this is a true group decision.</h1><p>Everyone brought a different first instinct. The points table is a conversation starter, not an answer.</p><div>{results.members.map((member) => { const first = member.topFive[0]!; return <button key={member.user} onClick={() => open(first.id)}><MediaImage src={first.imageUrl} alt="" fallbackLabel="Photo unavailable" /><span>{travelerName(member.user)}’s #1</span><strong>{first.name}</strong></button>; })}</div></div>
+    : <div className={`verdict-screen__hero-copy ${results.displayMode === 'near-tie' ? 'verdict-screen__hero-copy--tie' : ''}`}><p className="eyebrow">The envelope is open</p>{results.displayMode === 'broad-leader' ? <><h1 id="verdict-title">The crew has a clear shared pull: <em>{lead.name}.</em></h1><p>{lead.topFiveSupporters.length} of 5 travelers placed it in their top five. It leads the crew ballot with {lead.points} points.</p></> : results.displayMode === 'near-tie' ? <><h1 id="verdict-title">{exactTie ? 'A dead heat.' : 'The crew has a real shortlist.'}</h1><p>{exactTie ? `${lead.name} and ${second?.name} share first place after the crew’s published tiebreaks.` : `${lead.name} and ${second?.name} are separated by ${lead.points - (second?.points ?? 0)} point(s). See how the room reads before calling it.`}</p></> : <><h1 id="verdict-title">Here’s where the crew is leaning.</h1><p>{lead.name} leads the published top-five ballot with {lead.points} points. The full shortlist shows the tradeoffs.</p></>}<div className="verdict-screen__hero-actions"><button className="lgs-button lgs-button--primary" onClick={scrollToShortlist}>Explore the shortlist</button><button className="lgs-button lgs-button--secondary" onClick={onOpenMyResults}>See my own results</button></div></div>;
 
-  // A refreshed result response is the source of truth for an immutable
-  // decision made in another tab or returned after a retry.
-  useEffect(() => {
-    setRecordedDecision(results.decisions.find((decision) => decision.user === currentUser));
-  }, [currentUser, results.decisions]);
-
-  if (!winner) return null;
-
-  const requestDecision = (choice: FinalDecisionChoice) => {
-    if (recordedDecision) return;
-    setDecisionError('');
-    setPendingChoice(choice);
-  };
-  const confirmDecision = async () => {
-    if (!pendingChoice || recordedDecision) return;
-    setIsSaving(true);
-    setDecisionError('');
-    try {
-      setRecordedDecision(await onRecordDecision(pendingChoice));
-      setPendingChoice(null);
-    } catch {
-      setDecisionError('We couldn’t save that next step. Your choice has not been recorded; try again.');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  return (
-    <main className="verdict-screen screen-enter" aria-labelledby="verdict-title">
-      <section className="verdict-screen__hero">
-        <MediaImage className="verdict-screen__hero-image" src={winner.imageUrl} alt={`A view from ${winner.name}`} fallbackLabel="Finalist photo unavailable" />
-        <div className="verdict-screen__hero-copy">
-          <p className="eyebrow">The envelope is open</p>
-          <h1 id="verdict-title">The crew’s first place: <em>{winner.name}.</em></h1>
-          <p>{winner.country} rose to the top of the group’s shared map. The rest of the short list is still worth your attention.</p>
-          <div className="verdict-screen__hero-actions">
-            <button className="lgs-button lgs-button--primary" onClick={() => setActiveId(winner.id)}>Explore the winner</button>
-            <button className="lgs-button lgs-button--secondary" onClick={onOpenMyResults}>See my own results</button>
-          </div>
-        </div>
-      </section>
-
-      <section className="verdict-screen__content">
-        <VerdictExplainer confidence={results.confidence} />
-        {results.insights.length > 0 && <ul className="verdict-insights" aria-label="Crew result notes">
-          {results.insights.map((insight) => <li key={insight.kind}><strong>{insight.title}</strong><span>{insight.body}</span></li>)}
-        </ul>}
-
-        <section className="verdict-finalists" aria-labelledby="finalists-title">
-          <div>
-            <p className="eyebrow">The short list</p>
-            <h2 id="finalists-title">Five possible adventures.</h2>
-          </div>
-          <div className="verdict-finalists__list">
-            {results.group.map((finalist) => <button key={finalist.id} className={activeId === finalist.id ? 'is-active' : undefined} onClick={() => setActiveId(finalist.id)}>
-              <MediaImage src={finalist.imageUrl} alt="" fallbackLabel="Photo unavailable" />
-              <span>#{finalist.rank}</span><strong>{finalist.name}</strong><small>{finalist.consensus === 'broad-consensus' ? 'Broad crew fit' : finalist.consensus === 'mixed' ? 'Mixed crew read' : 'Conversation starter'}</small>
-            </button>)}
-          </div>
-        </section>
-
-        <FinalistMatrix finalists={results.group} ranks={results.finalistRanks} travelerName={travelerName} currentUser={currentUser} onSelect={setActiveId} />
-        <section className="verdict-roster" aria-labelledby="verdict-roster-title">
-          <p className="eyebrow">The party’s picks</p>
-          <h2 id="verdict-roster-title">Everyone’s top three.</h2>
-          <div>
-            {results.members.map((member) => <article key={member.user}>
-              <img src={avatarFor(member.user)} alt="" />
-              <h3>{travelerName(member.user)}{member.user === currentUser ? ' · you' : ''}</h3>
-              <ol>{member.topThree.map((place) => <li key={place.id}><span>#{place.rank}</span><MediaImage src={place.imageUrl} alt="" fallbackLabel="Photo unavailable" /><strong>{place.name}</strong></li>)}</ol>
-            </article>)}
-          </div>
-        </section>
-
-        <section className="final-decision-panel" aria-labelledby="next-step-title">
-          <div>
-            <p className="eyebrow">One last call</p>
-            <h2 id="next-step-title">What should the crew explore next?</h2>
-            <p>Choose one finalist to champion, or flag that you need more research. This is a conversation starter—not a rerank.</p>
-            <TravelEffortKey />
-          </div>
-          {recordedDecision
-            ? <div className="final-decision-panel__saved" role="status"><strong>Locked in: {decisionLabel(recordedDecision.choice, results.group)}.</strong><span>Saved after the reveal. This one stays put, even after a refresh.</span></div>
-            : <div className="final-decision-panel__choices">
-              {results.group.map((finalist) => <button key={finalist.id} className="lgs-button lgs-button--secondary" onClick={() => requestDecision(finalist.id)}>Explore {finalist.name}</button>)}
-              <button className="lgs-button lgs-button--ghost" onClick={() => requestDecision('need-more-research')}>Need more research</button>
-            </div>}
-        </section>
-      </section>
-
-      <FinalistDrawer finalist={activeFinalist} onClose={() => setActiveId('')} onChoose={requestDecision} decisionRecorded={Boolean(recordedDecision)} />
-      <FinalDecisionDialog
-        open={pendingChoice !== null}
-        choiceLabel={pendingChoice ? decisionLabel(pendingChoice, results.group) : ''}
-        isSaving={isSaving}
-        error={decisionError}
-        onCancel={() => { if (!isSaving) { setPendingChoice(null); setDecisionError(''); } }}
-        onConfirm={() => void confirmDecision()}
-      />
-    </main>
-  );
+  return <main className={`verdict-screen screen-enter verdict-screen--${results.displayMode}`} aria-labelledby="verdict-title"><section className={`verdict-screen__hero ${results.displayMode === 'near-tie' ? 'verdict-screen__hero--split' : ''}`}>{results.displayMode === 'near-tie' ? <><MediaImage className="verdict-screen__hero-image verdict-screen__hero-image--left" src={lead.imageUrl} alt="" fallbackLabel="Photo unavailable" />{second && <MediaImage className="verdict-screen__hero-image verdict-screen__hero-image--right" src={second.imageUrl} alt="" fallbackLabel="Photo unavailable" />}</> : results.displayMode !== 'no-consensus' && <MediaImage className="verdict-screen__hero-image" src={lead.imageUrl} alt="" fallbackLabel="Photo unavailable" />}{hero}</section><section className="verdict-screen__content"><BallotKey /><section className="verdict-finalists" ref={shortlistRef} aria-labelledby="finalists-title"><div><p className="eyebrow">The short list</p><h2 id="finalists-title">{results.displayMode === 'no-consensus' ? 'Five different first instincts.' : 'Five places to talk about.'}</h2></div><div className="verdict-finalists__list">{results.group.map((finalist) => <button key={finalist.id} className={activeId === finalist.id ? 'is-active' : undefined} onClick={() => open(finalist.id)} aria-label={`Open place details for ${finalist.name}`}><MediaImage src={finalist.imageUrl} alt="" fallbackLabel="Photo unavailable" /><span>{exactTie && finalist.rank === 1 ? '#1 · tied' : `#${finalist.rank}`}</span><strong>{finalist.name}</strong><small>{finalist.points} points</small><em>{finalist.firstPlaceVotes} first-place vote{finalist.firstPlaceVotes === 1 ? '' : 's'} · {finalist.topFiveSupporters.length} top-five supporter{finalist.topFiveSupporters.length === 1 ? '' : 's'}</em><AvatarStrip users={finalist.topFiveSupporters} avatarFor={avatarFor} travelerName={travelerName} /><i>Open place details</i></button>)}</div></section>{results.insights.length > 0 && <section className="verdict-insights" aria-labelledby="insights-title"><div className="verdict-section-heading"><p className="eyebrow">The room</p><h2 id="insights-title">What showed up in the ballot.</h2></div><ul aria-label="Crew result notes">{results.insights.map((insight, index) => <li key={`${insight.kind}-${index}`} className={insightClass[insight.kind]}>{insightKicker[insight.kind] && <p>{insightKicker[insight.kind]}</p>}<strong>{insight.title}</strong><span>{insight.body}</span><AvatarStrip users={insight.users} avatarFor={avatarFor} travelerName={travelerName} /></li>)}</ul></section>}<section className="verdict-roster" aria-labelledby="verdict-roster-title"><p className="eyebrow">The party’s maps</p><h2 id="verdict-roster-title">Everyone’s top five.</h2><p className="verdict-roster__lede">Every first place stays visible, even when the crew did not share it.</p><div>{results.members.map((member) => <article key={member.user}><img src={avatarFor(member.user)} alt="" /><h3>{travelerName(member.user)}{member.user === currentUser ? ' · you' : ''}’s map</h3><ol>{member.topFive.map((place) => <li key={place.id}><button onClick={() => open(place.id)} aria-label={`Open details for ${place.name}, ${travelerName(member.user)}’s number ${place.rank} pick`}><span>#{place.rank}</span><MediaImage src={place.imageUrl} alt="" fallbackLabel="Photo unavailable" /><strong>{place.name}</strong></button></li>)}</ol></article>)}</div></section><FinalistMatrix finalists={results.group} ranks={results.finalistRanks} travelerName={travelerName} currentUser={currentUser} onSelect={open} /><section className="final-decision-panel" aria-labelledby="next-step-title"><div><p className="eyebrow">One last call</p><h2 id="next-step-title">What should the crew investigate next?</h2><p>Choose one place you want to champion, or say you need more research. This records the next conversation step. It does not change anyone’s ballot.</p><TravelEffortKey /></div>{recordedDecision ? <div className="final-decision-panel__saved" role="status"><strong>Locked in: {decisionLabel(recordedDecision.choice, results.group)}.</strong><span>Saved after the reveal. This one stays put, even after a refresh.</span></div> : <div className="final-decision-panel__choices">{results.group.map((finalist) => <button key={finalist.id} className="lgs-button lgs-button--secondary" onClick={() => requestDecision(finalist.id)}>Champion {finalist.name}</button>)}<button className="lgs-button lgs-button--ghost" onClick={() => requestDecision('need-more-research')}>Need more research</button></div>}</section></section><FinalistDrawer finalist={activeFinalist} onClose={() => setActiveId('')} onChoose={requestDecision} decisionRecorded={Boolean(recordedDecision)} /><FinalDecisionDialog open={pendingChoice !== null} choiceLabel={pendingChoice ? decisionLabel(pendingChoice, results.group) : ''} isSaving={isSaving} error={decisionError} onCancel={() => { if (!isSaving) { setPendingChoice(null); setDecisionError(''); } }} onConfirm={() => void confirmDecision()} /></main>;
 }

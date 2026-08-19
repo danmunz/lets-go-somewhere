@@ -1,72 +1,49 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import type { GroupResultsResponse, PersonalResultsResponse, RosterUser } from '@lgs/shared';
+import type { PersonalResultsResponse, RosterUser, TransparentGroupResultsResponse } from '@lgs/shared';
 import { MyResultsScreen } from './MyResultsScreen.js';
 import { VerdictScreen } from './VerdictScreen.js';
 
 const users: RosterUser[] = ['dan', 'james', 'john', 'matt', 'peter'];
 const names: Record<RosterUser, string> = { dan: 'Dan', james: 'James', john: 'John', matt: 'Matt', peter: 'Peter' };
-const place = (index: number) => ({
-  rank: index + 1,
-  id: `place-${index + 1}`,
-  name: `Place ${index + 1}`,
-  country: 'Exampleland',
-  imageUrl: `/media/destinations/place-${index + 1}.webp`,
-  groupScore: 0.7 - index / 100,
-  interval: { low: .4, high: .8 },
-  consensus: index === 0 ? 'broad-consensus' as const : 'mixed' as const,
-  context: { novemberWeather: 'Mild and bright', travelFriction: index + 1 },
-});
+const place = (index: number) => ({ rank: index + 1, id: `place-${index + 1}`, name: `Place ${index + 1}`, country: 'Exampleland', imageUrl: `/media/destinations/place-${index + 1}.webp`, points: 15 - index, firstPlaceVotes: index === 0 ? 2 : 0, topFiveSupporters: users.slice(0, Math.max(1, 5 - index)), context: { novemberWeather: 'Mild and bright', travelFriction: index + 1 } });
 const group = Array.from({ length: 5 }, (_, index) => place(index));
-const resultFixture: GroupResultsResponse = {
-  snapshotId: 'snapshot-test',
-  modelVersion: 'baseline-test',
-  confidence: { label: 'close-call', summary: 'The top of the list is a genuine close call.' },
-  group,
-  members: users.map((user) => ({ user, topThree: group.slice(0, 3).map((item, index) => ({ rank: index + 1 as 1 | 2 | 3, id: item.id, name: item.name, imageUrl: item.imageUrl })) })),
-  finalistRanks: group.map((item, index) => ({
-    destinationId: item.id,
-    ranks: users.map((user, userIndex) => ({ user, rank: userIndex === 4 && index === 4 ? '6+' as const : (index + 1) as 1 | 2 | 3 | 4 | 5 })),
-  })),
-  insights: [{ kind: 'close-call', title: 'Close call', body: 'A real decision deserves a real conversation.' }],
+const resultFixture: TransparentGroupResultsResponse = {
+  snapshotId: 'snapshot-test', modelVersion: 'baseline-test', displayMode: 'shared-shortlist', group,
+  members: users.map((user) => ({ user, topFive: group.map((item, index) => ({ rank: index + 1, id: item.id, name: item.name, imageUrl: item.imageUrl })) })),
+  finalistRanks: group.map((item, index) => ({ destinationId: item.id, ranks: users.map((user, userIndex) => ({ user, rank: userIndex === 4 && index === 4 ? 'outside-top-five' as const : index + 1 })) })),
+  insights: [{ kind: 'split-destination', title: 'A lively split', body: 'Dan and James placed Place 1 in their top five; three travelers did not.', destinationIds: ['place-1'], users: ['dan', 'james'] }],
   decisions: [{ user: 'dan', choice: 'place-1', createdAt: '2026-08-18T12:00:00.000Z' }],
 };
-const personalFixture: PersonalResultsResponse = {
-  snapshotId: 'snapshot-test',
-  modelVersion: 'baseline-test',
-  confidence: { label: 'clear-favorite', summary: 'Your first place has a clear pull.' },
-  profile: { headline: 'A curious route', synthesis: 'Example', confidenceLabel: 'clear-shape', dimensions: [] },
-  results: group.map((item, index) => ({
-    ...item,
-    fitLabel: index === 0 ? 'strong-match' as const : 'contender' as const,
-    explanation: { themes: ['nature', 'novelty'], matchedActivityCount: 3, encounteredActivityCount: 7 },
-  })),
-};
+const personalFixture: PersonalResultsResponse = { snapshotId: 'snapshot-test', modelVersion: 'baseline-test', confidence: { label: 'clear-favorite', summary: 'Your first place has a clear pull.' }, profile: { headline: 'A curious route', synthesis: 'Example', confidenceLabel: 'clear-shape', dimensions: [] }, results: group.map((item, index) => ({ ...item, fitLabel: index === 0 ? 'strong-match' as const : 'contender' as const, interval: { low: .4, high: .8 }, explanation: { themes: ['nature', 'novelty'], matchedActivityCount: 3, encounteredActivityCount: 7 } })) };
+const renderVerdict = (results = resultFixture) => renderToStaticMarkup(<VerdictScreen results={results} currentUser="dan" travelerName={(user) => names[user]} avatarFor={() => '/assets/traveler.png'} onOpenMyResults={() => undefined} onRecordDecision={async () => resultFixture.decisions[0]!} />);
 
-describe('post-gate verdict compositions', () => {
-  it('renders qualitative confidence, the #1–#5/6+ finalist matrix, and an immutable saved decision', () => {
-    const markup = renderToStaticMarkup(<VerdictScreen
-      results={resultFixture}
-      currentUser="dan"
-      travelerName={(user) => names[user]}
-      avatarFor={() => '/assets/traveler.png'}
-      onOpenMyResults={() => undefined}
-      onRecordDecision={async () => resultFixture.decisions[0]!}
-    />);
-
-    expect(markup).toContain('The top of the list is a genuine close call.');
-    expect(markup).toContain('6+');
-    expect(markup).toContain('Locked in: Place 1.');
+describe('transparent social reveal', () => {
+  it('shows the published key, five personal maps, matrix language, and immutable next step', () => {
+    const markup = renderVerdict();
+    expect(markup).toContain('How the crew ballot works');
+    expect(markup).toContain('Outside top five');
+    expect(markup).toContain('Everyone’s top five.');
+    expect(markup).toContain('Locked in: champion Place 1.');
     expect(markup).toContain('This one stays put, even after a refresh.');
-    expect(markup).not.toContain('Group fit');
+    expect(markup).not.toContain('Group fit'); expect(markup).not.toContain('6+'); expect(markup).not.toContain('normalized');
+  });
+
+  it('renders no-consensus as five first instincts without crowning an arithmetic leader', () => {
+    const markup = renderVerdict({ ...resultFixture, displayMode: 'no-consensus' });
+    expect(markup).toContain('No automatic consensus—this is a true group decision.');
+    expect(markup).toContain('Dan’s #1'); expect(markup).toContain('Peter’s #1');
+    expect(markup).not.toContain('The crew has a clear shared pull');
+  });
+
+  it('gives an exact shared first equal language', () => {
+    const tied = resultFixture.group.map((item, index) => ({ ...item, rank: index < 2 ? 1 : index }));
+    const markup = renderVerdict({ ...resultFixture, displayMode: 'near-tie', group: tied });
+    expect(markup).toContain('A dead heat.'); expect(markup).toContain('#1 · tied');
   });
 
   it('renders personal results with post-gate place imagery and concise, non-raw-choice explanation', () => {
     const markup = renderToStaticMarkup(<MyResultsScreen results={personalFixture} onBackToVerdict={() => undefined} />);
-
-    expect(markup).toContain('A view from Place 1');
-    expect(markup).toContain('Why it rose');
-    expect(markup).toContain('Travel effort 1/5');
-    expect(markup).not.toContain('activity-by-activity');
+    expect(markup).toContain('A view from Place 1'); expect(markup).toContain('Why it rose'); expect(markup).not.toContain('activity-by-activity');
   });
 });

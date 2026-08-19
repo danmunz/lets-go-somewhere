@@ -2,7 +2,7 @@ import {
   comparisonSchema,
   finalDecisionRecordSchema,
   finalDecisionRequestSchema,
-  groupResultsResponseSchema,
+  transparentGroupResultsResponseSchema,
   groupStatusSchema,
   nextComparisonResponseSchema,
   personalResultsResponseSchema,
@@ -10,7 +10,7 @@ import {
   rosterUserSchema,
   type FinalDecision,
   type FinalDecisionChoice,
-  type GroupResultsResponse,
+  type TransparentGroupResultsResponse,
   type GroupStatus,
   type NextComparisonResponse,
   type PersonalResultsResponse,
@@ -96,7 +96,7 @@ export function createApiClient(authentication: ApiAuthentication, fetchImpl: Fe
     getAtlas: () => request('/v1/atlas', atlasResponseParser),
     getGroupStatus: () => request('/v1/group-status', groupStatusSchema),
     getPersonalResults: () => request('/v1/results/me', personalResultsResponseSchema),
-    getGroupResults: () => request('/v1/results/group', groupResultsResponseSchema),
+    getGroupResults: () => request('/v1/results/group', transparentGroupResultsResponseSchema),
     getFinalDecision: () => request('/v1/final-decision', finalDecisionResponseParser),
     openReveal: () => request('/v1/reveal', revealResponseParser, { method: 'POST' }),
     recordFinalDecision: (choice: FinalDecisionChoice) =>
@@ -163,7 +163,7 @@ const revealResponseParser = {
 export type OneTripApiClient = ReturnType<typeof createApiClient>;
 export type {
   FinalDecision,
-  GroupResultsResponse,
+  TransparentGroupResultsResponse,
   GroupStatus,
   NextComparisonResponse,
   PersonalResultsResponse,
