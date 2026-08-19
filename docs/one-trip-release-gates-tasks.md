@@ -2,7 +2,11 @@
 
 **Source:** [one-trip release-gates specification](one-trip-release-gates-spec.md) at commit `194123f`.
 
-**Status:** planned. This board is an execution order, not release approval.  
+**Status:** partially complete. RG-01 passed in `fbae847`; RG-03 passed in
+`4ce95f0`; RG-04 passed in `a785de3`; and RG-06 has research handoff in
+`95ea81c`, but its full evaluation remains blocked. RG-02, RG-05, RG-06b,
+RG-07 final reconciliation, and RG-08 remain open. This board is an execution
+order, not release approval.  
 **Hard stop:** deployment and the real five-person trip remain blocked until every required evidence task below passes against one immutable commit, seed digest, and selected model version. A failed task is recorded as failed; its thresholds, snapshot facts, and real-trip state must not be changed to make it pass.
 
 ## Delivery rules
@@ -28,6 +32,10 @@ RG-06 model research + evaluation ─ RG-06b promotion routing ─────�
 
 ### RG-01 — Independent social-ballot backend and API audit
 
+**Recorded outcome:** Passed locally in `fbae847`; see
+[one-trip code review](one-trip-code-review.md). This does not pass the
+browser, model, or deployment gates.
+
 - **Type:** Review + Testing
 - **Complexity:** High
 - **Dependencies:** None
@@ -52,6 +60,9 @@ RG-06 model research + evaluation ─ RG-06b promotion routing ─────�
 
 ### RG-03 — Implement and test the operator preflight/reset guard
 
+**Recorded outcome:** Passed focused implementation tests in `4ce95f0`. No
+production preflight or reset has been run.
+
 - **Type:** Infrastructure + Testing
 - **Complexity:** High
 - **Dependencies:** None
@@ -63,6 +74,9 @@ RG-06 model research + evaluation ─ RG-06b promotion routing ─────�
 - **Branch strategy:** Separate operations branch; no command may target production during automated tests.
 
 ### RG-04 — Extend Firestore Emulator release-proof suite
+
+**Recorded outcome:** Passed locally in `a785de3` with seven isolated Emulator
+tests. The five-identity browser rehearsal remains a separate gate.
 
 - **Type:** Testing
 - **Complexity:** High
@@ -128,8 +142,8 @@ RG-06 model research + evaluation ─ RG-06b promotion routing ─────�
 - **Complexity:** High
 - **Dependencies:** RG-07 and recorded pass evidence for every prior release gate
 - **Can run in parallel with:** None
-- **Description:** The release manager runs read-only preflight, archives the count-only receipt, exports disposable state through the private process, executes guarded reset, deploys the exact verified commit to Cloud Run `lgs-api` in `us-east4` and Firebase Hosting, smoke-tests only disposable state, then exports/resets again and requires final empty preflight before sharing the URL.
-- **Acceptance criteria:** Preflight confirms no open v1 reveal and empty state; deploy succeeds; smoke covers health, approved-account auth, one blind comparison, refresh/resume, completion-gated atlas, and organizer reveal authorization; final preflight is empty. Any failure stops release and preserves evidence/state for investigation.
+- **Description:** The release manager runs and archives production's read-only, count-only preflight, then runs the behavioral smoke suite in a separately provisioned disposable Firebase/GCP environment. Only after that smoke evidence passes, deploy the exact verified commit to Cloud Run `lgs-api` in `us-east4` and Firebase Hosting, then require a final empty production preflight before sharing the URL. The guarded production reset is not a smoke cleanup tool: it refuses any started journey.
+- **Acceptance criteria:** Production preflight confirms no open v1 reveal and empty state both before and after deployment; the separate disposable environment proves health, approved-account auth, one blind comparison, refresh/resume, completion-gated atlas, and organizer reveal authorization; deploy succeeds. Any failure stops release and preserves evidence/state for investigation.
 - **Testing requirements:** Run the full verified command sequence immediately before deploy and record only count-safe receipts and deployment identifiers.
 - **Documentation requirements:** Mark release status only after final preflight; record the deploy commit/version and explicitly say whether the real trip has started.
 - **Branch strategy:** Release-manager-only operation. No unrelated code changes; rollback uses the documented previous deploy, never a destructive repository reset.
@@ -154,4 +168,3 @@ The social-ballot evidence path is also mandatory:
 `RG-01 → RG-04`, plus `RG-02` and `RG-03`, then `RG-05 → RG-07 → RG-08`.
 
 Neither path can be waived. In particular, a visually successful social reveal does not authorize deployment while the individual-model ADR remains **DO NOT PROMOTE**.
-

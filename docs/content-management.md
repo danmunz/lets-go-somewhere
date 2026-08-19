@@ -50,7 +50,7 @@ Do not edit model output in the browser. Update controlled server copy in `backe
 
 Before a participant completes the comparison round, cards may contain an activity-matched photograph as an intentionally accepted soft cue. They must not expose destination names, countries, flags, airport codes, map UI, coordinates, scores, ranks, or photographer/source credits. Comparison DTOs should contain only the activity ID, title, description, and opaque local image path.
 
-After completion, the atlas may show named destinations, real map placement, galleries, practical context, and credits. Personal and group outcomes remain sealed until Dan opens the reveal. After reveal, show only the approved group top five, each member's top three, finalist context, and the immutable final decision; never display raw activity-by-activity votes.
+After completion, the atlas may show named destinations, real map placement, galleries, practical context, and credits. Personal and group outcomes remain sealed until Dan opens the reveal. After reveal, show the approved five-place `5/4/3/2/1` points tally, every member's full personal top five, stored evidence-backed social insights, finalist context, and the immutable final decision; never display raw activity-by-activity votes, normalized group utilities, or group confidence claims.
 
 ## Content validation and release workflow
 

@@ -1214,10 +1214,12 @@ Make the waiting screen itself socially useful by making it easy to prod the hol
 
 Provide the second major payoff: what the five people collectively prefer.
 
-**Implementation status:** the current local verdict is being replaced by the
-transparent points reveal below. It will show all five travelers' personal top
-fives, the published tally, social overlap/divergence notes, and the immutable
-post-reveal decision. Raw activity choices remain private.
+**Implementation status:** the current local verdict implements the
+transparent points reveal below. It shows all five travelers' personal top
+fives, the stored published tally, evidence-backed social overlap/divergence
+notes, and the immutable post-reveal decision. It is not release-approved:
+the browser rehearsal and advanced individual-model promotion remain open.
+Raw activity choices remain private.
 
 ## Required information
 
@@ -1249,7 +1251,7 @@ each traveler's complete personal top five as an image-led character card.
 | 🧭 **James** | #2 | #1 | #5 |
 | 🗺️ **John** | #4 | #3 | #1 |
 | 🏔️ **Matt** | #1 | #4 | #2 |
-| 📷 **Peter** | #3 | #2 | #6 |
+| 📷 **Peter** | #3 | #2 | Outside top five |
 
 ### Shared threads and divergences
 

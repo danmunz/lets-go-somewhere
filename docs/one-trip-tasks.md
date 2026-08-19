@@ -282,7 +282,7 @@
 - **Scope/files:** `docs/one-trip-runbook.md` (new), `docs/deployment.md`, `docs/implementation-status.md`.
 - **Dependencies:** OT-08, OT-20, OT-21, OT-22, OT-23.
 - **Can run in parallel with:** OT-25.
-- **Description:** Write the Dan-oriented, infrastructure-light procedures: preflight digest/roster/auth/deploy check; emulator rehearsal; reset-state production smoke; access-controlled Firestore export; reset only before start; recovery; and one-time reveal verification. Perform a rehearsal using a disposable preflight state and record evidence without committing user data.
+- **Description:** Write the Dan-oriented, infrastructure-light procedures: production count-only preflight digest/roster/auth/deploy check; emulator rehearsal; behavioral smoke in a separately provisioned disposable Firebase/GCP environment; access-controlled Firestore export; reset only before start; recovery; and one-time reveal verification. Production reset is not smoke cleanup because it refuses any started journey. Record evidence without committing user data.
 - **Acceptance/test/doc requirements:** Includes exactly the operations in spec §6.4; no credentials/data are documented; explicitly forbids live-run reset; test command/output locations and expected snapshot verification are clear. Status docs mark only evidenced work complete.
 - **Branch strategy:** Docs-only except recorded operational command validation; never manipulate a real run while authoring.
 

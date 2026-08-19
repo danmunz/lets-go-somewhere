@@ -1,5 +1,10 @@
 # ADR 0002: Aggregate normalized preferences with a polarization penalty
 
+> **Superseded by [ADR 0004](0004-transparent-top-five-group-tally.md).** This
+> historical decision is not the public group-reveal contract. The approved
+> reveal uses the transparent `5/4/3/2/1` personal-top-five tally and makes no
+> normalized group-utility, polarization-penalty, or group-confidence claim.
+
 > **Status: Superseded by ADR 0004.** Retained only as historical context for
 > snapshots created before the approved transparent social-ballot reveal.
 

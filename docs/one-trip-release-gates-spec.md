@@ -1,6 +1,14 @@
 # One-trip release gates
 
-**Status:** Implementation handoff. **Not a release approval.**
+**Status:** Partially implemented and verified locally through `a785de3`.
+**Not a release approval.**
+
+Completed evidence: the independent v2 social-ballot audit/fail-closed fixes
+(`fbae847`), guarded preflight/reset implementation and focused tests
+(`4ce95f0`), the active-top-k method research handoff (`95ea81c`), and the
+seven-case Firestore Emulator persistence proof (`a785de3`). The frontend
+visual/accessibility fixtures, five-identity browser rehearsal, full
+individual-model promotion evaluation, and deployment remain open.
 
 This specification closes the remaining verification work for the transparent
 social ballot. It does not alter the hard individual-model promotion gate in
@@ -20,9 +28,10 @@ model version:
    payload-redaction evaluation pass their predeclared thresholds.
 3. A production preflight confirms there is no open v1 reveal and the trip
    state is empty after the controlled reset.
-4. Cloud Run and Hosting deploy successfully, followed by the approved
-   production smoke test. The smoke test uses only the disposable preflight
-   state and is reset before any real traveler begins.
+4. Cloud Run and Hosting deploy successfully after an empty count-only
+   production preflight. Any behavioral smoke test uses a separately
+   provisioned disposable Firebase/GCP environment, because the guarded
+   production reset correctly refuses a journey once a comparison has started.
 
 Failure of any gate is a release stop. It must be recorded as a failure, not
 worked around by changing copy, thresholds, snapshot data, or the real trip
@@ -163,14 +172,16 @@ Once all gates are recorded as passed:
 1. Run read-only preflight and archive its count-only receipt.
 2. Export the disposable preflight state through the approved private process;
    perform the guarded reset; rerun preflight and require the empty result.
-3. Deploy the exact verified commit to Cloud Run `lgs-api` in `us-east4`, then
+3. Run the behavioral smoke test in the separately provisioned disposable
+   Firebase/GCP environment: health, approved-account authentication, one
+   destination-blind comparison, refresh/resume, completion-gated atlas, and
+   organizer reveal authorization. Record only safe evidence; do not use a
+   real roster account or production documents.
+4. Deploy the exact verified commit to Cloud Run `lgs-api` in `us-east4`, then
    deploy Firebase Hosting for `lets-go-somewhere-3549f`.
-4. Smoke-test health, approved-account authentication, one destination-blind
-   comparison, refresh/resume, completion-gated atlas, and organizer reveal
-   authorization against the disposable state. Do not expose the smoke
-   snapshot to real travelers.
-5. Export the smoke state, run the guarded reset, and require a final empty
-   preflight before sharing the production URL with the five friends.
+5. Rerun production's count-only preflight and require the empty result before
+   sharing the production URL with the five friends. Do not submit a
+   comparison in production before the real trip begins.
 
 Update the runbook, implementation status, deployment documentation,
 changelog, and persistent context only with the commands and evidence that

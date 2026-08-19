@@ -14,7 +14,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - A completion-gated, unranked destination atlas API contract for the pre-reveal exploration moment.
 - V3 editorial travel presentation: character-led onboarding, destination-photo comparisons, a real atlas map, gallery credits, and motion-safe loading and transition states.
 - V4 retro-adventure refinement: unboxed interactive roster art, activity-matched opaque imagery, live completion progress, a full-bleed map-first atlas, and a character-led group verdict.
-- Firestore-backed comparison, pending-pair, and reveal persistence, plus a completion-gated social-results API with normalized preference scores and a consensus penalty.
+- Firestore-backed comparison, pending-pair, and reveal persistence, plus a completion-gated snapshot-backed transparent social-ballot API.
 - A consolidated traveler-art library: current roster cutouts remain at `assets/images/`, with legacy variants retained under `assets/images/old/`.
 - An unreleased one-trip journey: destination-free profile, atlas-to-waiting flow, snapshot-backed personal and group results, immutable post-reveal decisions, explicit state recovery, and hardened atlas/media fallbacks.
 - A local Firebase Auth/Firestore emulator configuration, transactional pending-pair submission, seed-version binding, and immutable reveal snapshots.
@@ -28,7 +28,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Clarified the fixed five-person V1 scope, Google-authenticated roster, group reveal embargo, destination-blind activity-photo cards, and display-only practical context.
 - Aligned documentation precedence, design-system references, and seed/schema examples for implementation.
 - Updated the reveal embargo: completed participants may explore named candidate destinations and general trip context, while every personal and group outcome remains hidden until the group reveal.
-- Tightened the final reveal so it opens only after the whole five-person roster finishes; it exposes each participant's top three rather than raw choices.
+- Tightened the final reveal so it opens only after the whole five-person roster finishes; it exposes each participant's full inferred top five rather than raw choices.
+- Added immutable v2 social-ballot snapshot validation, stale-decision fail-closed handling, and a guarded count-only one-trip preflight/reset operator tool. These are locally tested safeguards, not a completed production preflight, browser rehearsal, or deployment approval.
 - Reconciled deployment, delivery, implementation, and review documents with the shipped Firebase/Cloud Run/Firestore release; documented the remaining one-trip completion gaps separately from platform work that is out of scope.
 - Marked the advanced-model candidate as unreleased: its first synthetic 200-seed promotion evaluation did not meet the predeclared evidence gate, so production remains on the existing verified ranking until recalibration succeeds.
 - Moved the isolated Firestore Emulator to port 8081 to avoid the local service that occupies 8080, and made the emulator test runner architecture-explicit on Apple Silicon.

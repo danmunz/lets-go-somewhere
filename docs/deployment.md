@@ -13,10 +13,17 @@ Google sign-in is enabled. The deployed Cloud Run service verifies Firebase ID t
 
 ## Release procedure
 
-1. Run `npm run validate:seed`, `npm test`, `npm run typecheck`, and `npm run build`.
-2. Deploy backend changes to the `lgs-api` Cloud Run service in `us-east4`; keep `ROSTER_EMAILS` and Firebase configuration out of source control.
-3. Deploy `frontend/dist` to Firebase Hosting with `firebase deploy --only hosting --project lets-go-somewhere-3549f`.
-4. Smoke-test a production sign-in, one comparison, completion-gated atlas access, and the group-reveal authorization behavior.
+This application is **not yet approved for the real one-shot trip**. Follow the
+hard gates in [the one-trip release specification](one-trip-release-gates-spec.md)
+and [operator runbook](one-trip-runbook.md); do not treat this summary as a
+deployment authorization.
+
+1. Run `npm run validate:seed`, `npm test`, `npm run typecheck`, and `npm run build` on the exact candidate commit.
+2. Run production's count-only preflight and require it to be empty. Do not use production documents for behavioral smoke testing.
+3. Run the sign-in, comparison, resume, atlas, and organizer-reveal smoke suite in a separately provisioned disposable Firebase/GCP environment. A comparison starts a journey, and the guarded production reset intentionally refuses such state.
+4. Only after every release gate has recorded a pass, deploy backend changes to the `lgs-api` Cloud Run service in `us-east4`; keep `ROSTER_EMAILS` and Firebase configuration out of source control.
+5. Deploy `frontend/dist` to Firebase Hosting with `firebase deploy --only hosting --project lets-go-somewhere-3549f`.
+6. Re-run production's count-only preflight and require it to remain empty before sharing the URL with the five travelers.
 
 ## Operational notes
 

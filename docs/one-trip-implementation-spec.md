@@ -665,7 +665,7 @@ Create `docs/one-trip-runbook.md` with exactly these operations, written for Dan
 
 1. Preflight: verify seed digest, roster-email Cloud Run config, Firebase sign-in, and deployed build/version.
 2. Emulator rehearsal: run the scripted five-person test command and record its pass output.
-3. Production smoke test before participants start: one approved sign-in and a single comparison only in a deliberately reset preflight state; then reset before the real run.
+3. Keep production preflight count-only and empty before participants start. Run any approved-sign-in, single-comparison, resume, atlas, and reveal-authority smoke test in a separately provisioned disposable Firebase/GCP environment; the guarded production reset intentionally refuses any started journey.
 4. Safe Firestore export: export `lgsV4Users`, `lgsV4State`, `lgsV4ResultSnapshots`, and `lgsV4FinalDecisions` to a dated, access-controlled GCS export path. Never paste data into a public issue or repository.
 5. Controlled reset **only before anyone starts**: verify no participant has begun, export first, delete only the named one-trip collection/documents, redeploy only if required, and verify empty group status. Never reset a live real run without an explicit group decision.
 6. Recovery: if a participant refreshes, tell them to sign in as the same person; if a request fails, retry after reload; if Cloud Run restarts, verify persisted state; if the map fails, use the atlas list; if reveal fails, verify all five completion indicators and Dan’s authenticated identity.
@@ -739,6 +739,6 @@ The one-trip release is complete only when all statements are true:
 - A Laplace-approximated regularized hierarchical Bradley–Terry model is sufficient for this fixed data size and provides the required posterior uncertainty without an MCMC dependency. It is a substantive inference upgrade, not a cosmetic confidence label.
 - Synthetic ground truth is appropriate for calibration because the real five travelers should not have to repeat the exercise. Fixture generation and thresholds must be committed and reproducible.
 - The 24–40 comparison envelope remains a product accessibility constraint. Model uncertainty may influence the finish between those bounds but may not exceed them.
-- “How each person voted” means their post-reveal top three and rank on group finalists, plus their one final decision. It never means their raw activity selections.
+- “How each person voted” means their post-reveal full personal top five and rank on group finalists, plus their one final decision. It never means their raw activity selections.
 - Weather and travel effort are curated destination context, not a practical recommendation model. No live airfare data is required or permitted for this release.
 - Firestore’s existing `lgsV4*` names are retained to avoid an unnecessary production migration. Their schema is extended transactionally and documented here.
