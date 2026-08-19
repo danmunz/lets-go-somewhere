@@ -465,7 +465,7 @@ export const socialBallotUsersSchema = z
   .strict();
 export type SocialBallotUsers = z.infer<typeof socialBallotUsersSchema>;
 
-export const transparentGroupFinalistSchema = z
+const transparentGroupFinalistFieldsSchema = z
   .object({
     // This is a displayed rank. It may be shared when every published
     // tiebreaker is equal; it is not an ordinal array index.
@@ -475,11 +475,17 @@ export const transparentGroupFinalistSchema = z
     firstPlaceVotes: z.number().int().min(0).max(ROSTER_USERS.length),
     topFiveSupporters: z.array(rosterUserSchema).max(ROSTER_USERS.length),
   })
-  .strict()
+  .strict();
+
+const validateUniqueSupporters = (value: { topFiveSupporters: readonly RosterUser[] }, context: z.RefinementCtx) => {
+  if (new Set(value.topFiveSupporters).size !== value.topFiveSupporters.length) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Top-five supporters must be unique.' });
+  }
+};
+
+export const transparentGroupFinalistSchema = transparentGroupFinalistFieldsSchema
   .superRefine((value, context) => {
-    if (new Set(value.topFiveSupporters).size !== value.topFiveSupporters.length) {
-      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Top-five supporters must be unique.' });
-    }
+    validateUniqueSupporters(value, context);
   });
 export type TransparentGroupFinalist = z.infer<typeof transparentGroupFinalistSchema>;
 
@@ -535,14 +541,14 @@ export const transparentGroupResultsResponseSchema = z
     modelVersion: z.string().min(1),
     displayMode: groupDisplayModeSchema,
     group: z
-      .array(transparentGroupFinalistSchema.and(
+      .array(transparentGroupFinalistFieldsSchema.merge(
         z.object({
           name: z.string().min(1),
           country: z.string().min(1),
           imageUrl: localMediaPathSchema,
           context: resultContextSchema,
         }).strict(),
-      ))
+      ).superRefine((value, context) => validateUniqueSupporters(value, context)))
       .length(5),
     members: z
       .array(

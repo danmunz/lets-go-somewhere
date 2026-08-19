@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ROSTER_USERS, transparentResultSnapshotSchema } from '@lgs/shared';
+import { ROSTER_USERS, transparentGroupResultsResponseSchema, transparentResultSnapshotSchema } from '@lgs/shared';
 import { buildTransparentSocialBallot, type SocialBallotInput } from '../../src/results/social-ballot.js';
 
 const users = ROSTER_USERS;
@@ -128,5 +128,28 @@ describe('transparent social ballot', () => {
     expect(transparentResultSnapshotSchema.parse(v2).schemaVersion).toBe(2);
     expect(transparentResultSnapshotSchema.safeParse({ ...v2, group: { ...v2.group, confidence: {} } }).success).toBe(false);
     expect(transparentResultSnapshotSchema.safeParse({ ...v2, schemaVersion: 1 }).success).toBe(false);
+  });
+
+  it('parses a complete enriched public ballot and rejects unknown public fields', () => {
+    const social = buildTransparentSocialBallot(input(broadBallots));
+    const response = {
+      snapshotId: 'snapshot-1',
+      modelVersion: 'elo-coverage-v1',
+      displayMode: social.displayMode,
+      group: social.finalists.map((finalist) => ({
+        ...finalist,
+        name: finalist.id.toUpperCase(), country: 'Testland', imageUrl: `/media/destinations/${finalist.id}/cover.webp`,
+        context: { novemberWeather: 'Warm', travelFriction: 2 },
+      })),
+      members: users.map((user) => ({
+        user,
+        topFive: broadBallots[user].map((id, index) => ({ rank: index + 1, id, name: id.toUpperCase(), imageUrl: `/media/destinations/${id}/cover.webp` })),
+      })),
+      finalistRanks: social.finalistRanks,
+      insights: social.insights,
+      decisions: [],
+    };
+    expect(transparentGroupResultsResponseSchema.parse(response).group[0]!.name).toBe('A');
+    expect(transparentGroupResultsResponseSchema.safeParse({ ...response, hiddenUtility: 1 }).success).toBe(false);
   });
 });
