@@ -20,7 +20,7 @@ This is the implementation source of truth for Let’s Go Somewhere’s visual l
 
 ## Product rules
 
-- V1 uses no activity photography. Character art is allowed only in roster, progress, waiting, and celebratory UI—not within destination-blind activity cards.
+- Activity cards may use opaque, activity-specific destination photography as an accepted soft geographic cue. They must never reveal destination names, countries, map UI, credits, scores, ranks, or identifiers while the game is in progress. Character art remains limited to roster, progress, waiting, and celebratory UI.
 - Use sentence case for labels and CTAs; display headings are uppercase through the display face.
 - Keep comparison cards visually symmetric. Never use color, imagery, size, or motion to imply a preferred option.
 - Motion is purposeful: 150ms feedback, 250ms component transitions, 400–600ms comparison/reveal transitions. Do not animate essential information only through motion.
@@ -31,7 +31,7 @@ This is the implementation source of truth for Let’s Go Somewhere’s visual l
 | --- | --- |
 | Button | 44px minimum hit area; primary uses amber with dark text. |
 | Activity Card | Whole card is the control; use button semantics or `aria-pressed`; preserve equal visual weight. |
-| Progress Bar | Shows only approximate study progress, never a false exact question count. |
+| Progress Bar | Shows the truthful fixed 32-choice count; it never implies certainty or a hidden adaptive stopping threshold. |
 | Avatar | Decorative character imagery gets meaningful alt text only when it conveys participant identity. |
 | Toast | Non-blocking status; do not use it for errors that require action. |
 | Input | Visible label, error text, and keyboard focus. |
