@@ -1,11 +1,20 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { getSeedVersion } from '../src/model/snapshot.js';
+import { buildGroupResultsResponse } from '../src/dto/one-trip.js';
+import { buildTransparentSocialBallot } from '../src/results/social-ballot.js';
 import {
   StoreConflictError,
   claimPendingAndAppendComparison,
+  createFinalDecision,
+  createOrGetRevealSnapshot,
+  destinations,
+  getFinalDecision,
+  getRevealSnapshot,
   getStoredUserState,
   setPending,
+  type RevealSnapshotInput,
 } from '../src/store.js';
 
 /**
@@ -15,6 +24,49 @@ import {
  */
 describe.runIf(process.env.LGS_TEST_MODE === 'emulator')('Firestore transaction adapter', () => {
   const collectionNames = ['lgsV4Users', 'lgsV4State', 'lgsV4ResultSnapshots', 'lgsV4FinalDecisions'];
+  const finalistIds = ['antigua', 'oaxaca', 'quito', 'lima', 'medellin'];
+
+  /** A schema-valid persisted result, deliberately independent of live ranking. */
+  const revealInput = (modelVersion = 'emulator-ballot-v2'): RevealSnapshotInput => {
+    const userSummary = {
+      topFive: finalistIds,
+      profileThemes: ['Adventure', 'Wild places'],
+      profile: {
+        headline: 'A travel shape',
+        synthesis: 'A clear travel shape.',
+        dimensions: [
+          { key: 'adventure' as const, label: 'Adventure', strength: 'strong' as const, direction: 'drawn-to' as const },
+          { key: 'nature' as const, label: 'Wild places', strength: 'present' as const, direction: 'drawn-to' as const },
+        ],
+        confidenceLabel: 'clear-shape' as const,
+      },
+      personalResults: {
+        confidence: { label: 'close-call' as const, summary: 'Close choices.' },
+        topFive: finalistIds.map((id, index) => ({
+          rank: index + 1,
+          id,
+          fitLabel: index === 0 ? 'strong-match' as const : 'contender' as const,
+          interval: { low: 0, high: 1 },
+          explanation: { themes: ['Adventure', 'Wild places'], matchedActivityCount: 1, encounteredActivityCount: 1 },
+        })),
+      },
+    };
+    const users = {
+      dan: userSummary, james: userSummary, john: userSummary, matt: userSummary, peter: userSummary,
+    };
+    return {
+      schemaVersion: 2,
+      modelVersion,
+      seedVersion: getSeedVersion(),
+      inputDigest: 'e'.repeat(64),
+      users,
+      group: buildTransparentSocialBallot({
+        ballots: { dan: finalistIds, james: finalistIds, john: finalistIds, matt: finalistIds, peter: finalistIds },
+        profileThemes: { dan: ['Adventure'], james: ['Adventure'], john: ['Adventure'], matt: ['Adventure'], peter: ['Adventure'] },
+        destinationNames: Object.fromEntries(finalistIds.map((id) => [id, id])),
+      }),
+    };
+  };
 
   async function clearEmulatorState() {
     if (!getApps().length) initializeApp({ projectId: 'lgs-emulator-test' });
@@ -60,5 +112,64 @@ describe.runIf(process.env.LGS_TEST_MODE === 'emulator')('Firestore transaction 
       pending: expect.objectContaining({ activityA: 'oaxaca-ruins', activityB: 'lima-barranco', revision: 0 }),
       comparisons: [],
     });
+  });
+
+  it('stores one identical immutable snapshot when organizer reveal opens race', async () => {
+    const opened = await Promise.all([
+      createOrGetRevealSnapshot(revealInput('first-racing-request')),
+      createOrGetRevealSnapshot(revealInput('second-racing-request')),
+    ]);
+
+    expect(opened[1]).toEqual(opened[0]);
+    expect(opened[0].snapshotId).toMatch(/^reveal-/);
+    // Either racing transaction may win; only one winner may become public.
+    expect(['first-racing-request', 'second-racing-request']).toContain(opened[0].modelVersion);
+    const storedSnapshots = await getFirestore().collection('lgsV4ResultSnapshots').listDocuments();
+    expect(storedSnapshots).toHaveLength(1);
+    await expect(getRevealSnapshot()).resolves.toEqual(opened[0]);
+  }, 15_000);
+
+  it('reloads the exact persisted snapshot facts rather than recalculating a new reveal', async () => {
+    const opened = await createOrGetRevealSnapshot(revealInput('stored-model'));
+    const reload = await getRevealSnapshot();
+    const raw = await getFirestore().collection('lgsV4ResultSnapshots').doc(opened.snapshotId).get();
+
+    expect(raw.exists).toBe(true);
+    expect(reload).toEqual(opened);
+    expect(reload).toMatchObject({ snapshotId: opened.snapshotId, modelVersion: 'stored-model', group: opened.group, users: opened.users });
+  });
+
+  it('persists one immutable decision and rejects a stale repeat without mutation', async () => {
+    const snapshot = await createOrGetRevealSnapshot(revealInput());
+    const attempts = await Promise.allSettled([
+      createFinalDecision('dan', 'antigua'),
+      createFinalDecision('dan', 'oaxaca'),
+    ]);
+    const accepted = attempts.find((attempt): attempt is PromiseFulfilledResult<Awaited<ReturnType<typeof createFinalDecision>>> => attempt.status === 'fulfilled');
+    const rejected = attempts.find((attempt) => attempt.status === 'rejected');
+
+    expect(accepted?.value).toMatchObject({ user: 'dan', snapshotId: snapshot.snapshotId });
+    expect(rejected).toMatchObject({ reason: expect.objectContaining<Partial<StoreConflictError>>({ code: 'final-decision-exists' }) });
+    await expect(getFinalDecision('dan')).resolves.toEqual(accepted?.value);
+    const persisted = await getFirestore().collection('lgsV4FinalDecisions').doc('dan').get();
+    expect(persisted.data()).toEqual(accepted?.value);
+  });
+
+  it('builds a redacted public v2 group result from the Firestore-backed snapshot', async () => {
+    await createOrGetRevealSnapshot(revealInput());
+    const persisted = await getRevealSnapshot();
+    if (!persisted || persisted.schemaVersion !== 2) throw new Error('Expected a persisted v2 reveal fixture.');
+    const response = buildGroupResultsResponse(persisted, destinations, []);
+    const serialized = JSON.stringify(response);
+
+    expect(response.snapshotId).toBe(persisted.snapshotId);
+    expect(response.group).toHaveLength(5);
+    for (const forbidden of [
+      'activityA', 'activityB', 'winner', 'comparisons', 'destinationScores',
+      'attributeScores', 'normalized', 'posterior', 'covariance', 'interval',
+      'coordinates', 'photographerName', 'photographerUrl', 'sourceUrl',
+    ]) {
+      expect(serialized).not.toContain(`\"${forbidden}\"`);
+    }
   });
 });

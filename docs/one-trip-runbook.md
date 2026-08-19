@@ -20,7 +20,7 @@ npm run emulators:start
 npm run test:emulator
 ```
 
-The emulator uses the isolated project ID `lgs-emulator-test`, Auth on port 9099, Firestore on port 8081, and the Emulator UI on port 4000. The non-default Firestore port avoids clashing with the local service commonly occupying 8080. `npm run test:emulator` now exercises real Firestore configuration plus atomic duplicate/stale submission behavior. Add the remaining persistence/reveal cases before claiming the entire emulator checklist below is complete. Do not point these commands at the production project.
+The emulator uses the isolated project ID `lgs-emulator-test`, Auth on port 9099, Firestore on port 8081, and the Emulator UI on port 4000. The non-default Firestore port avoids clashing with the local service commonly occupying 8080. `PATH="/opt/homebrew/opt/openjdk/bin:$PATH" npm run test:emulator` passed on 2026-08-19 with seven tests: explicit emulator routing, concurrent and stale pending claims, racing reveal creation, immutable snapshot reload, immutable final-decision conflict, and redacted v2-result serialization from a Firestore-backed snapshot. The intentional racing transactions may log Firestore lock-retry warnings; the test passes only after the repository returns one identical stored snapshot/decision. Do not point these commands at the production project. The separate five-identity browser rehearsal remains required.
 
 ## Browser rehearsal
 
