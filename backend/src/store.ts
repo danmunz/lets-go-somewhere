@@ -9,7 +9,8 @@ import type {
   Destination,
   FinalDecision,
   FinalDecisionChoice,
-  ResultSnapshot,
+  ResultSnapshotCreation,
+  VersionedResultSnapshot,
 } from '@lgs/shared';
 import {
   activitySchema,
@@ -17,7 +18,8 @@ import {
   destinationSchema,
   finalDecisionChoiceSchema,
   finalDecisionRecordSchema,
-  resultSnapshotSchema,
+  resultSnapshotCreationSchema,
+  resultSnapshotReaderSchema,
 } from '@lgs/shared';
 import { SELECTOR_VERSION } from './model/config.js';
 import { getSeedVersion } from './model/snapshot.js';
@@ -62,8 +64,8 @@ export type StoredUserState = {
  * owns the reveal timestamp and document identity so a client cannot choose
  * either one when the API promotes this capability.
  */
-export type RevealSnapshotInput = Omit<ResultSnapshot, 'createdAt'> & { createdAt?: string };
-export type StoredRevealSnapshot = ResultSnapshot & { snapshotId: string };
+export type RevealSnapshotInput = Omit<ResultSnapshotCreation, 'createdAt'> & { createdAt?: string };
+export type StoredRevealSnapshot = VersionedResultSnapshot & { snapshotId: string };
 export type StoredFinalDecision = FinalDecision & { snapshotId: string };
 
 export type SeedVersionState = {
@@ -149,7 +151,7 @@ const revealStateSchema = z.object({
   openedAt: timestampSchema.optional(),
   snapshotId: z.string().min(1).optional(),
 }).passthrough();
-const revealSnapshotInputSchema = resultSnapshotSchema
+const revealSnapshotInputSchema = resultSnapshotCreationSchema
   .omit({ createdAt: true })
   .extend({ createdAt: timestampSchema.optional() })
   .strict();
@@ -177,7 +179,7 @@ function readRevealState(value: unknown): StoredRevealState {
 }
 
 function readStoredRevealSnapshot(snapshotId: string, value: unknown): StoredRevealSnapshot {
-  const parsed = resultSnapshotSchema.safeParse(value);
+  const parsed = resultSnapshotReaderSchema.safeParse(value);
   if (!parsed.success) throw persistedError(`result snapshot ${snapshotId}`, parsed.error);
   return { snapshotId, ...parsed.data };
 }
@@ -189,12 +191,12 @@ function readStoredFinalDecision(user: RosterUser, value: unknown): StoredFinalD
   return parsed.data;
 }
 
-function snapshotForWrite(input: RevealSnapshotInput, now: string): ResultSnapshot {
+function snapshotForWrite(input: RevealSnapshotInput, now: string): ResultSnapshotCreation {
   const parsed = revealSnapshotInputSchema.safeParse(input);
   if (!parsed.success) throw new StoreDataError(`Cannot persist an invalid result snapshot: ${parsed.error.issues.map((issue) => issue.message).join('; ')}`);
   // Ignore a caller-provided timestamp: only the repository determines when a
   // public reveal became immutable.
-  return resultSnapshotSchema.parse({ ...parsed.data, createdAt: now });
+  return resultSnapshotCreationSchema.parse({ ...parsed.data, createdAt: now });
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -287,7 +289,7 @@ type RawUserDocument = Record<string, unknown>;
 const memoryUsers = new Map<RosterUser, RawUserDocument>();
 const memoryUserLocks = new Map<RosterUser, Promise<void>>();
 let memoryRevealState: StoredRevealState = { open: false };
-const memoryResultSnapshots = new Map<string, ResultSnapshot>();
+const memoryResultSnapshots = new Map<string, VersionedResultSnapshot>();
 const memoryFinalDecisions = new Map<RosterUser, StoredFinalDecision>();
 let memoryRevealLock: Promise<void> = Promise.resolve();
 let testSeedVersionOverride: string | undefined;
@@ -600,7 +602,10 @@ export const createOrGetRevealSnapshot = async (input: RevealSnapshotInput): Pro
 };
 
 function choiceIsAllowed(snapshot: StoredRevealSnapshot, choice: FinalDecisionChoice): boolean {
-  return choice === 'need-more-research' || snapshot.group.topFive.some((destination) => destination.id === choice);
+  if (choice === 'need-more-research') return true;
+  return snapshot.schemaVersion === 2
+    ? snapshot.group.finalists.some((destination) => destination.id === choice)
+    : snapshot.group.topFive.some((destination) => destination.id === choice);
 }
 
 /**
@@ -689,7 +694,7 @@ export const __storeTest = {
   setMemoryUserDocument(user: RosterUser, value: RawUserDocument) { memoryUsers.set(user, value); },
   getMemoryUserDocument(user: RosterUser): RawUserDocument | undefined { return memoryUsers.get(user); },
   getMemoryRevealState(): StoredRevealState { return structuredClone(memoryRevealState); },
-  getMemorySnapshot(snapshotId: string): ResultSnapshot | undefined { return memoryResultSnapshots.get(snapshotId); },
+  getMemorySnapshot(snapshotId: string): VersionedResultSnapshot | undefined { return memoryResultSnapshots.get(snapshotId); },
   getMemoryFinalDecision(user: RosterUser): StoredFinalDecision | undefined { return memoryFinalDecisions.get(user); },
   setCurrentSeedVersion(version: string | undefined) { testSeedVersionOverride = version; },
 };

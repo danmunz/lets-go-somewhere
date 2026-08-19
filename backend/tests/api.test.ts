@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { groupResultsResponseSchema } from '@lgs/shared';
+import { transparentGroupResultsResponseSchema } from '@lgs/shared';
 import { app } from '../src/app.js';
 
 describe('API boundary', () => {
@@ -48,21 +48,21 @@ describe('API boundary', () => {
     expect(payload.destinations[0].gallery[0]).toMatchObject({ path: expect.stringMatching(/^\/media\/cards\/[^/]+\.webp$/), photographerName: expect.any(String), photographerUrl: expect.stringMatching(/^https:\/\//), sourceUrl: expect.stringMatching(/^https:\/\/unsplash\.com\/photos\//) });
     expect(payload.destinations[0]).not.toHaveProperty('preferenceScore');
   });
-  it('keeps the social reveal gated, then returns snapshot-backed group finalists and member top threes', async () => {
+  it('keeps the social reveal gated, then returns snapshot-backed social ballot finalists and full member top fives', async () => {
     for (const user of ['dan', 'james', 'john', 'peter']) await complete(user);
     const blocked = await app.request('/v1/results/group', { headers: { 'X-Demo-User': 'dan' } });
     expect(blocked.status).toBe(423);
     const reveal = await app.request('/v1/reveal', { method: 'POST', headers: { 'X-Demo-User': 'dan' } });
     expect(reveal.status).toBe(200);
     const response = await app.request('/v1/results/group', { headers: { 'X-Demo-User': 'dan' } });
-    const payload = groupResultsResponseSchema.parse(await response.json());
+    const payload = transparentGroupResultsResponseSchema.parse(await response.json());
     expect(response.status).toBe(200);
     expect(payload.group).toHaveLength(5);
-    expect(payload.group[0]).toMatchObject({ rank: 1, groupScore: expect.any(Number), imageUrl: expect.stringMatching(/^\/media\/cards\//) });
+    expect(payload.group[0]).toMatchObject({ rank: 1, points: expect.any(Number), firstPlaceVotes: expect.any(Number), imageUrl: expect.stringMatching(/^\/media\/cards\//) });
     expect(payload.members).toHaveLength(5);
-    expect(payload.members.every((member: { topThree: unknown[] }) => member.topThree.length === 3)).toBe(true);
+    expect(payload.members.every((member: { topFive: unknown[] }) => member.topFive.length === 5)).toBe(true);
     const raw = JSON.stringify(payload);
-    for (const forbidden of ['activityA', 'activityB', 'winner', 'comparisons', 'covariance', 'destinationScores', 'attributeScores']) {
+    for (const forbidden of ['activityA', 'activityB', 'winner', 'comparisons', 'covariance', 'destinationScores', 'attributeScores', 'groupScore', 'normalized', 'interval', 'posterior']) {
       expect(raw).not.toContain(`\"${forbidden}\"`);
     }
   });

@@ -450,6 +450,27 @@ export const socialBallotUserSchema = z
     // These are controlled labels derived from the existing preference
     // profile, never free-form explanations of an individual comparison.
     profileThemes: z.array(z.string().min(1)).min(1).max(5),
+    // Personal presentation remains private to its traveler. These fields are
+    // deliberately absent from the social-ballot tally and group API.
+    profile: preferenceProfileSchema,
+    personalResults: z
+      .object({
+        confidence: resultConfidenceSchema,
+        topFive: z
+          .array(
+            z
+              .object({
+                rank: z.number().int().min(1).max(5),
+                id: z.string().min(1),
+                fitLabel: z.enum(['strong-match', 'contender', 'close-call']),
+                interval: intervalSchema,
+                explanation: personalResultExplanationSchema,
+              })
+              .strict(),
+          )
+          .length(5),
+      })
+      .strict(),
   })
   .strict();
 export type SocialBallotUser = z.infer<typeof socialBallotUserSchema>;

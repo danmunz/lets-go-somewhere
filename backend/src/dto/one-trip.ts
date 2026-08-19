@@ -1,6 +1,6 @@
 import {
   ATTRIBUTE_KEYS,
-  groupResultsResponseSchema,
+  transparentGroupResultsResponseSchema,
   groupStatusSchema,
   personalResultsResponseSchema,
   profileResponseSchema,
@@ -8,20 +8,19 @@ import {
   type Comparison,
   type Destination,
   type FinalDecision,
-  type GroupResultsResponse,
   type GroupStatus,
   type PersonalResultsResponse,
   type ProfileResponse,
-  type ResultSnapshot,
+  type ResultSnapshotCreation,
   type ResultConfidence,
   type RosterUser,
 } from '@lgs/shared';
 import { BASELINE_MODEL_VERSION } from '../model/config.js';
 import { buildPreferenceProfileFromAttributes, safeExplanationThemes } from '../model/profile.js';
 import { createInputDigest, getSeedVersion } from '../model/snapshot.js';
-import { consensusLabel } from '../model/aggregate.js';
-import { groupRankings, normalizeDestinationScores, rankUser, type Ranking } from '../ranking.js';
-import type { RevealSnapshotInput, StoredRevealSnapshot } from '../store.js';
+import { rankUser, type Ranking } from '../ranking.js';
+import { buildTransparentSocialBallot } from '../results/social-ballot.js';
+import { ROSTER, type RevealSnapshotInput, type StoredRevealSnapshot } from '../store.js';
 
 /**
  * OT-12's bridge from the deployed deterministic ranker to the final public
@@ -127,8 +126,8 @@ export function buildPersonalResultsResponse(
   snapshot: StoredRevealSnapshot,
   destinations: readonly Destination[],
 ): PersonalResultsResponse {
+  if (snapshot.schemaVersion !== 2) throw new Error('This legacy reveal must be read through its legacy result path.');
   const summary = snapshot.users[user].personalResults;
-  if (!summary) throw new Error('The immutable reveal snapshot does not contain personal result presentation data.');
   const destinationsById = new Map(destinations.map((destination) => [destination.id, destination]));
   return personalResultsResponseSchema.parse({
     snapshotId: snapshot.snapshotId,
@@ -183,35 +182,14 @@ export function buildBaselineRevealSnapshot(
     comparisons,
     ranking: rankUser([...destinations], [...activities], [...comparisons]),
   }));
-  const individualRanks = new Map(rankings.map(({ user, ranking }) => [user, orderedDestinationScores(ranking)]));
-  const group = groupRankings(
-    [...destinations],
-    rankings.map(({ ranking }) => normalizeDestinationScores(ranking.destinationScores)),
-  );
-  const groupScores = group.map((entry) => entry.groupScore);
-  const diagnostics = {
-    converged: true,
-    iterations: 0,
-    warnings: ['baseline-summary: posterior uncertainty is not yet available for this snapshot'],
-    drawCount: 1,
-  };
-
   const persistedUsers = Object.fromEntries(rankings.map(({ user, comparisons, ranking }) => {
     const ordered = orderedDestinationScores(ranking);
     const allScores = ordered.map((entry) => entry.score);
     const confidence = interimConfidence(allScores);
     return [user, {
-      topFive: ordered.slice(0, 5).map(({ id, score }, index) => ({
-        id,
-        interval: roundedInterval(score, allScores, comparisons.length),
-        topFiveMembershipProbability: 1,
-        rankOneProbability: index === 0 ? 1 : 0,
-        rankFiveBoundaryProbability: 1,
-      })),
-      topThreeIds: ordered.slice(0, 3).map(({ id }) => id),
+      topFive: ordered.slice(0, 5).map(({ id }) => id),
+      profileThemes: baselineProfile(ranking).dimensions.map((dimension) => dimension.label),
       profile: baselineProfile(ranking),
-      confidenceLabel: confidence.label === 'clear-favorite' ? 'clear-shape' : 'close-call',
-      diagnostics,
       personalResults: {
         confidence,
         topFive: ordered.slice(0, 5).map(({ id, score }, index) => {
@@ -226,35 +204,21 @@ export function buildBaselineRevealSnapshot(
         }),
       },
     }];
-  })) as ResultSnapshot['users'];
+  })) as ResultSnapshotCreation['users'];
+
+  const ballot = buildTransparentSocialBallot({
+    ballots: Object.fromEntries(ROSTER.map((user) => [user, persistedUsers[user].topFive])) as Record<RosterUser, string[]>,
+    profileThemes: Object.fromEntries(ROSTER.map((user) => [user, persistedUsers[user].profileThemes])) as Record<RosterUser, string[]>,
+    destinationNames: Object.fromEntries(destinations.map((destination) => [destination.id, destination.name])),
+  });
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     modelVersion: BASELINE_MODEL_VERSION,
     seedVersion: getSeedVersion(),
     inputDigest: createInputDigest(Object.fromEntries(users.map(({ user, comparisons }) => [user, comparisons]))),
     users: persistedUsers,
-    group: {
-      topFive: group.slice(0, 5).map(({ id, groupScore, polarization }, index) => {
-        const worstOrdinalRank = Math.max(...users.map(({ user }) => {
-          const rank = individualRanks.get(user)!.findIndex((entry) => entry.id === id);
-          return rank + 1;
-        }));
-        return {
-          id,
-          interval: roundedInterval(groupScore, groupScores, users.length),
-          topFiveMembershipProbability: 1,
-          rankOneProbability: index === 0 ? 1 : 0,
-          rankFiveBoundaryProbability: 1,
-          consensus: consensusLabel(polarization, worstOrdinalRank),
-        };
-      }),
-      confidence: {
-        label: 'close-call',
-        summary: 'The top of the list is a real close call.',
-      },
-      diagnostics,
-    },
+    group: ballot,
   };
 }
 
@@ -277,71 +241,35 @@ export function buildGroupResultsResponse(
   snapshot: StoredRevealSnapshot,
   destinations: readonly Destination[],
   decisions: readonly FinalDecision[],
-): GroupResultsResponse {
+): import('@lgs/shared').TransparentGroupResultsResponse {
+  if (snapshot.schemaVersion !== 2) throw new Error('This legacy reveal must be read through its legacy result path.');
   const destinationsById = new Map(destinations.map((destination) => [destination.id, destination]));
-  const groupIds = snapshot.group.topFive.map(({ id }) => id);
-  const insights: GroupResultsResponse['insights'] = [];
-  if (snapshot.group.topFive.some(({ consensus }) => consensus === 'broad-consensus')) {
-    insights.push({
-      kind: 'consensus',
-      title: 'Broad consensus',
-      body: 'At least one finalist works across the crew’s preferences.',
-    });
-  }
-  if (snapshot.group.confidence.label === 'close-call') {
-    insights.push({
-      kind: 'close-call',
-      title: 'Close call',
-      body: 'The model sees finalists that are genuinely near each other.',
-    });
-  }
-  if (snapshot.group.topFive.some(({ consensus }) => consensus === 'polarized')) {
-    insights.push({
-      kind: 'polarization',
-      title: 'Mixed crew read',
-      body: 'One or more finalists fit the crew in meaningfully different ways.',
-    });
-  }
-
-  return groupResultsResponseSchema.parse({
+  return transparentGroupResultsResponseSchema.parse({
     snapshotId: snapshot.snapshotId,
     modelVersion: snapshot.modelVersion,
-    confidence: snapshot.group.confidence,
-    group: snapshot.group.topFive.map((summary, index) => {
-      const destination = destinationForResult(summary.id, destinationsById);
+    displayMode: snapshot.group.displayMode,
+    group: snapshot.group.finalists.map((finalist) => {
+      const destination = destinationForResult(finalist.id, destinationsById);
       return {
-        rank: index + 1,
-        id: summary.id,
+        ...finalist,
         name: destination.name,
         country: destination.country,
         imageUrl: destination.gallery[0]!.path,
-        // The snapshot deliberately retains an interval rather than a raw model
-        // utility. Its midpoint is a stable display ordering value only; the UI
-        // never presents it as numerical certainty.
-        groupScore: (summary.interval.low + summary.interval.high) / 2,
-        interval: summary.interval,
-        consensus: summary.consensus,
         context: {
           novemberWeather: destination.novemberWeather,
           travelFriction: destination.travelFriction,
         },
       };
     }),
-    members: (Object.keys(snapshot.users) as RosterUser[]).map((user) => ({
+    members: ROSTER.map((user) => ({
       user,
-      topThree: snapshot.users[user].topThreeIds.map((id, index) => {
+      topFive: snapshot.users[user].topFive.map((id, index) => {
         const destination = destinationForResult(id, destinationsById);
         return { rank: index + 1, id, name: destination.name, imageUrl: destination.gallery[0]!.path };
       }),
     })),
-    finalistRanks: groupIds.map((destinationId) => ({
-      destinationId,
-      ranks: (Object.keys(snapshot.users) as RosterUser[]).map((user) => {
-        const rank = snapshot.users[user].topFive.findIndex((destination) => destination.id === destinationId);
-        return { user, rank: rank === -1 ? '6+' : rank + 1 };
-      }),
-    })),
-    insights,
+    finalistRanks: snapshot.group.finalistRanks,
+    insights: snapshot.group.insights,
     decisions: decisions.map(publicDecision),
   });
 }

@@ -149,12 +149,18 @@ app.get('/v1/results/me', async (context) => {
   const snapshot = await getRevealSnapshot();
   if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
   assertRevealSnapshotSeedVersionCompatible(snapshot);
+  if (snapshot.schemaVersion === 1) {
+    return context.json({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' }, 503);
+  }
   return context.json(buildPersonalResultsResponse(user, snapshot, destinations));
 });
 app.get('/v1/results/group', async (context) => {
   const snapshot = await getRevealSnapshot();
   if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
   assertRevealSnapshotSeedVersionCompatible(snapshot);
+  if (snapshot.schemaVersion === 1) {
+    return context.json({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' }, 503);
+  }
   return context.json(buildGroupResultsResponse(snapshot, destinations, await getAllFinalDecisions()));
 });
 

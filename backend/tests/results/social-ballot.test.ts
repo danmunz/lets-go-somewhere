@@ -122,7 +122,17 @@ describe('transparent social ballot', () => {
       seedVersion: 'a'.repeat(64),
       inputDigest: 'b'.repeat(64),
       createdAt: '2026-08-18T12:00:00.000Z',
-      users: Object.fromEntries(users.map((user) => [user, { topFive: broadBallots[user], profileThemes: ['Adventure'] }])),
+      users: Object.fromEntries(users.map((user) => [user, {
+        topFive: broadBallots[user], profileThemes: ['Adventure'],
+        profile: { headline: 'A travel shape', synthesis: 'A clear travel shape.', dimensions: [
+          { key: 'adventure', label: 'Adventure', strength: 'strong', direction: 'drawn-to' },
+          { key: 'nature', label: 'Nature', strength: 'present', direction: 'drawn-to' },
+        ], confidenceLabel: 'clear-shape' },
+        personalResults: { confidence: { label: 'close-call', summary: 'Close choices.' }, topFive: broadBallots[user].map((id, index) => ({
+          rank: index + 1, id, fitLabel: index === 0 ? 'strong-match' : 'contender', interval: { low: 0, high: 1 },
+          explanation: { themes: ['Adventure', 'Nature'], matchedActivityCount: 1, encounteredActivityCount: 1 },
+        })) },
+      }])),
       group: buildTransparentSocialBallot(input(broadBallots)),
     };
     expect(transparentResultSnapshotSchema.parse(v2).schemaVersion).toBe(2);

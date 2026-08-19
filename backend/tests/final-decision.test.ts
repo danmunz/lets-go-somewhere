@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { groupResultsResponseSchema } from '@lgs/shared';
+import { transparentGroupResultsResponseSchema } from '@lgs/shared';
 import { app } from '../src/app.js';
 import { __storeTest } from '../src/store.js';
 
@@ -42,7 +42,7 @@ describe('immutable post-reveal final decisions', () => {
 
   it('accepts only immutable snapshot finalists or research, and confirms repeats with the existing decision', async () => {
     await openReveal();
-    const before = groupResultsResponseSchema.parse(await (await app.request('/v1/results/group', { headers: headersFor('dan') })).json());
+    const before = transparentGroupResultsResponseSchema.parse(await (await app.request('/v1/results/group', { headers: headersFor('dan') })).json());
     const finalist = before.group[0]!.id;
 
     const invalid = await app.request('/v1/final-decision', {
@@ -86,7 +86,7 @@ describe('immutable post-reveal final decisions', () => {
       ]),
     });
 
-    const after = groupResultsResponseSchema.parse(await (await app.request('/v1/results/group', { headers: headersFor('james') })).json());
+    const after = transparentGroupResultsResponseSchema.parse(await (await app.request('/v1/results/group', { headers: headersFor('james') })).json());
     expect(after.group).toEqual(before.group);
     expect(after.members).toEqual(before.members);
     expect(after.finalistRanks).toEqual(before.finalistRanks);
@@ -95,7 +95,10 @@ describe('immutable post-reveal final decisions', () => {
       expect.objectContaining({ user: 'james', choice: 'need-more-research' }),
     ]));
     const raw = JSON.stringify(after);
-    for (const forbidden of ['activityA', 'activityB', 'winner', 'comparisons', 'covariance', 'destinationScores', 'attributeScores']) {
+    for (const forbidden of [
+      'activityA', 'activityB', 'winner', 'comparisons', 'covariance', 'destinationScores', 'attributeScores',
+      'groupScore', 'normalized', 'interval', 'confidence', 'posterior', 'photographerName', 'sourceUrl',
+    ]) {
       expect(raw).not.toContain(`\"${forbidden}\"`);
     }
   });

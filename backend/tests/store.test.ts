@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getSeedVersion } from '../src/model/snapshot.js';
+import { buildTransparentSocialBallot } from '../src/results/social-ballot.js';
 import {
   LEGACY_SELECTOR_VERSION,
   LEGACY_TIMESTAMP,
@@ -38,40 +39,35 @@ const profile = {
   confidenceLabel: 'clear-shape' as const,
 };
 
-const destinationSummary = (id: string) => ({
-  id,
-  interval: { low: 0.1, high: 0.9 },
-  topFiveMembershipProbability: 0.8,
-  rankOneProbability: 0.2,
-  rankFiveBoundaryProbability: 0.85,
-});
-
 const snapshotInput = (): RevealSnapshotInput => {
-  const topFive = ['antigua', 'oaxaca', 'quito', 'cuzco', 'medellin'].map(destinationSummary);
+  const topFive = ['antigua', 'oaxaca', 'quito', 'cuzco', 'medellin'];
   const userSummary = {
     topFive,
-    topThreeIds: ['antigua', 'oaxaca', 'quito'],
+    profileThemes: ['Adventure', 'Wild places'],
     profile,
-    confidenceLabel: 'clear-shape' as const,
-    diagnostics: { converged: true, iterations: 4, warnings: [], drawCount: 512 },
+    personalResults: {
+      confidence: { label: 'clear-favorite' as const, summary: 'A clear favorite.' },
+      topFive: topFive.map((id, index) => ({
+        rank: index + 1,
+        id,
+        fitLabel: index === 0 ? 'strong-match' as const : 'contender' as const,
+        interval: { low: 0.1, high: 0.9 },
+        explanation: { themes: ['Adventure', 'Wild places'], matchedActivityCount: 1, encounteredActivityCount: 1 },
+      })),
+    },
   };
+  const users = { dan: userSummary, james: userSummary, john: userSummary, matt: userSummary, peter: userSummary };
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     modelVersion: 'bt-hierarchical-laplace-v1',
     seedVersion: 'a'.repeat(64),
     inputDigest: 'b'.repeat(64),
-    users: {
-      dan: userSummary,
-      james: userSummary,
-      john: userSummary,
-      matt: userSummary,
-      peter: userSummary,
-    },
-    group: {
-      topFive: topFive.map((destination) => ({ ...destination, consensus: 'broad-consensus' as const })),
-      confidence: { label: 'clear-favorite' as const, summary: 'The crew has a clear front-runner.' },
-      diagnostics: { converged: true, iterations: 4, warnings: [], drawCount: 512 },
-    },
+    users,
+    group: buildTransparentSocialBallot({
+      ballots: { dan: topFive, james: topFive, john: topFive, matt: topFive, peter: topFive },
+      profileThemes: { dan: ['Adventure'], james: ['Adventure'], john: ['Adventure'], matt: ['Adventure'], peter: ['Adventure'] },
+      destinationNames: Object.fromEntries(topFive.map((id) => [id, id])),
+    }),
   };
 };
 
