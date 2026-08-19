@@ -107,3 +107,71 @@ LGS_MODEL_POLICY_SEEDS=10000 LGS_MODEL_POLICY_SCENARIOS=clear-attribute-preferen
 The command is a diagnostic prerequisite, not a promotion mechanism. Its
 results must still be paired with calibrated posterior recovery and comparison
 payload-redaction checks before ADR 0003 can change.
+
+## Full-policy evidence harness (not yet a completed audit)
+
+The adaptive-policy command now runs the same candidate components that a
+future production route would use: a fresh hierarchical fit before each
+information-gain choice, the selector's real hard coverage/exposure guards,
+the production **512-draw** portfolio posterior after every answer from 24
+onward, and the bounded stopping function. It also constructs strict full
+comparison response DTOs through `toSafeActivity` for all 120 activities and
+asserts recursively that none of the destination, map, rank, model, or credit
+keys cross that boundary.
+
+It writes one JSON artifact per synthetic trajectory below the ignored
+`.agents/local/model-policy/` directory. Every artifact contains the seed
+digest, candidate/selector versions, draw count, min/max bounds, scenario,
+seed, traveler, ordered comparisons, stopping output, guardrails, and elapsed
+time. A resume refuses any artifact whose input fingerprint differs, so a
+configuration or seed-content change cannot be accidentally combined with an
+older run.
+
+The full 200-seed audit consists of 3,000 trajectories (the seven fixtures
+contain fifteen synthetic travelers per seed). It can be partitioned without
+changing its deterministic work ordering. For example, use the same artifact
+directory for four non-overlapping workers:
+
+```sh
+LGS_MODEL_POLICY_PARTITION=0/4 npm run audit:model-policy
+LGS_MODEL_POLICY_PARTITION=1/4 npm run audit:model-policy
+LGS_MODEL_POLICY_PARTITION=2/4 npm run audit:model-policy
+LGS_MODEL_POLICY_PARTITION=3/4 npm run audit:model-policy
+LGS_MODEL_POLICY_SUMMARIZE=1 npm run audit:model-policy
+```
+
+Rerunning a completed partition is a safe resume. A separate deterministic
+replay compares regenerated comparisons, stopping facts, and guardrails with
+the saved artifacts:
+
+```sh
+LGS_MODEL_POLICY_PARTITION=0/4 LGS_MODEL_POLICY_VERIFY_DETERMINISM=1 npm run audit:model-policy
+```
+
+### Measured smoke evidence
+
+On 2026-08-19, this bounded command completed one clear-preference trajectory
+at the production draw count:
+
+```sh
+LGS_MODEL_POLICY_SEEDS=10000 \
+LGS_MODEL_POLICY_SCENARIOS=clear-attribute-preference \
+LGS_MODEL_POLICY_MAX=24 \
+LGS_MODEL_POLICY_OUTPUT=.agents/local/model-policy-smoke \
+npm run audit:model-policy
+```
+
+It took 2,875.9 ms and passed unique-pair, cross-destination, question-24
+coverage, and all-120-activity DTO-redaction checks. A deterministic replay
+with `LGS_MODEL_POLICY_VERIFY_DETERMINISM=1` matched the stored comparisons,
+stopping facts, and guardrails. It did not produce a stable-top-five stop at
+the 24-answer floor. This is useful harness evidence only: it is **not** a
+full-policy pass, a calibration result, or a promotion decision.
+
+The measured 2.876 seconds is only a lower bound: 3,000 such 24-question
+trajectories take about 2.4 sequential CPU-hours before the required
+determinism replay, while 24–40 trajectories perform additional 512-draw
+posterior/stopping evaluations and will take longer. The complete partitioned
+run, per-fixture calibration review, required stable-stop behavior, and ADR
+decision remain hard blockers. No thresholds, priors, or production routes
+changed as part of this harness work.

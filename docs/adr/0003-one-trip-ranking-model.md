@@ -56,3 +56,16 @@ The model family and its active top-k evaluation logic are grounded in
 That note records the external literature basis for the conventional
 Bradley–Terry, boundary-information, coverage, and calibrated-stopping design;
 it does not change this ADR's **not promoted** decision.
+
+## Full-policy evidence harness
+
+The repository now has a resumable, artifact-backed adaptive-policy runner.
+It uses the exact candidate fit, information-gain selection, 512-draw
+posterior analysis, and stopping functions, and it checks the strict full
+comparison DTO serialization for redaction. A one-trajectory smoke run and a
+deterministic replay passed pair, coverage, and DTO-redaction guardrails, but
+the full 200-seed, 3,000-trajectory audit has not been completed. Its measured
+minimum sequential cost is about 2.4 CPU-hours at 24 answers, with the real
+24–40 evaluation costing more. This infrastructure reduces operational risk;
+it supplies no new passing calibration/stopping evidence and does not amend
+the **do-not-promote** decision.
