@@ -54,6 +54,36 @@ Consequently the same opened envelope can show a group verdict from one immutabl
 
 **Code-review findings resolved; release remains blocked.** Run the emulator and five-identity rehearsal gates required by OT-21 through OT-26. The documented model-evaluation report is independently **FAIL — DO NOT PROMOTE**; it remains a hard release gate because the required advanced ranking has not yet cleared its synthetic evidence threshold.
 
+## RG-02 transparent-reveal frontend QA — 2026-08-19
+
+**Scope:** deterministic, post-gate fixture rendering only; no Firestore,
+Google OAuth, real roster account, or production deployment was used.
+
+- Added fixture coverage for broad leader, shared-first/dead heat,
+  no-consensus, shared shortlist, and wild-card/two-camp/split overlays. The
+  rendered contract keeps the 5/4/3/2/1 key, five personal top fives, the
+  `Outside top five` matrix label, and only stored-finalist plus
+  `need-more-research` decision choices. Legacy normalized, polarization,
+  confidence, and interval copy is absent.
+- Browser-harness review at 1703×822 and 390×844 found a real mobile defect:
+  the retained `screen-enter` transform made a fixed finalist drawer
+  page-relative. It was corrected so the detail sheet remains in the
+  viewport after the entrance ends. The review also reduced the verdict hero
+  scale and restored the required 20px desktop floor for visible verdict
+  labels.
+- Verified locally through the isolated Vite fixture route: no-consensus,
+  near-tie, fallback image, drawer open/close, final-decision dialog focus,
+  and reduced-motion (`animation-name: none`) states. Focus lands on “Not
+  yet” when the native confirmation dialog opens. An image load failure shows
+  the non-crediting “Photo unavailable” fallback.
+- Checks: focused `verdictScreen.test.tsx` (13 passing), `npm run typecheck`,
+  and `npm run build` passed. The normal Vite large-chunk warning remains
+  non-blocking and unchanged in nature.
+
+This is an RG-02 evidence record, **not** a release approval. The
+five-identity rehearsal, emulator/persistence proof, independent API audit,
+operator preflight, and advanced-model promotion remain separate gates.
+
 ## Transparent social-ballot audit — 2026-08-19
 
 **Review scope:** RG-01 against the persisted v2 snapshot reader, social tally,
