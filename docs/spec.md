@@ -267,7 +267,11 @@ if the user is occasionally asked what drove a particular decision.
 
 ## V1 approach
 
-Use regularized Bradley–Terry/Elo-like activity scores, then derive destination scores from an equal-weighted, shrinkage-adjusted activity portfolio. Calculate preference signals only from the eight canonical activity attributes.
+Use `bayes-attribute-shortlist-v1`: Bayesian logistic preference learning over
+only the eight canonical activity attributes. Derive destination utilities from
+an equal-weighted portfolio average. Posterior sampling stays server-private and
+serves adaptive selection/replay; the product presents a personal shortlist,
+not a certainty-bearing score.
 
 V1 must not estimate a free destination effect and a free activity effect for every card from a short session; that model is not identifiable at this data scale.
 
@@ -326,7 +330,10 @@ This lets the final recommendation explain itself.
 
 V1 uses every card in a destination portfolio equally, with unobserved cards shrunk toward the population baseline. Do not overweight a destination’s strongest card: the result should reflect its bundle of experiences, not one unusually vivid activity.
 
-Before the fixed roster uses the app for its one-shot decision, the portfolio scoring model must graduate to the hierarchical or regularized model with uncertainty and information-gain selection defined in the [one-trip roadmap](roadmap.md). Simulation and calibration must demonstrate improved top-five stability before it becomes the production default.
+Every traveler answers exactly 32 comparisons. The first 24 guarantee broad
+two-appearance destination coverage; questions 25–32 target eligible
+fifth/sixth-boundary distinctions. The app never claims that a threshold has
+proved a ranking certain.
 
 ---
 
@@ -520,15 +527,8 @@ For the current 24-destination, five-card portfolio:
 
 Nobody answers 4,560 questions.
 
-A useful target might be:
-
-- Minimum: **24 comparisons**
-- Typical: **28–35**
-- Maximum: **40**
-
-At ~5–8 seconds each, that still feels like a short game.
-
-The system should stop when destination-ranking uncertainty falls below a useful threshold.
+The fixed participant commitment is **32 comparisons**. At roughly 5–8 seconds
+each, it remains a short game while avoiding an opaque, variable stopping rule.
 
 ---
 
@@ -1141,7 +1141,7 @@ The MVP needs:
 - Destination-blind activity comparisons
 - Activity attribute tags
 - Information-gain-driven adaptive pair selection with coverage and fatigue safeguards
-- Hierarchical or regularized Bradley–Terry activity scoring with calibrated uncertainty
+- Bayesian attribute-only preference learning with private posterior sampling
 - Destination aggregation
 - 5 named users
 - Individual top-five result set
@@ -1156,7 +1156,7 @@ That alone is enough to make the concept work.
 
 # 46. Explicitly Out of Scope for This Trip
 
-Activity-specific editorial photography and restrained selection/loading/reveal motion were deliberately shipped in V3/V4. Hierarchical preference modeling, uncertainty intervals, and information-gain selection are required before this fixed group uses the app; they are not deferred feature work.
+Activity-specific editorial photography and restrained selection/loading/reveal motion were deliberately shipped in V3/V4. Bayesian learning and adaptive selection remain required for this fixed group, but the participant experience uses a fixed 32-choice shortlist rather than public uncertainty intervals or a certified-ranking claim.
 
 The following are intentionally excluded because this is a one-trip experience, not a product platform:
 

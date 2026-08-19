@@ -7,7 +7,7 @@ This is the operational status companion to the product specification. It record
 ## Shipped V1 foundation
 
 - Fixed five-person November 2026 trip, Google-authenticated roster, Firebase Hosting, Cloud Run API, and Firestore persistence.
-- 24 seeded destinations and 120 validated activity comparisons, with backend-owned deterministic scoring, pair selection, and 24–40 comparison stopping rules.
+- 24 seeded destinations and 120 validated activity comparisons, with a backend-owned fixed 32-choice Bayesian attribute shortlist and adaptive pair selection.
 - Destination-safe comparison responses: activity ID, title, description, and opaque local image path only.
 - Completion-gated atlas with named destinations, coordinates, real MapLibre map, galleries, and Unsplash credits; no personal or group result data before reveal.
 - Dan-controlled group reveal after every roster member is complete, with an
@@ -28,19 +28,19 @@ claims.
 
 ## Implemented but unreleased one-trip work
 
-The local build now includes the destination-free profile, completion-only waiting lobby, snapshot-backed personal and group result views, qualitative result explanations, group-finalist matrix, and one immutable post-reveal final decision. The transparent group result is the stored `5/4/3/2/1` ballot—not a normalized group score—and v2 snapshots are cross-field validated before they are served. An independent audit also closed the legacy-final-decision and stale-decision-read gaps in `fbae847`. The guarded count-only preflight/reset tooling in `4ce95f0` is unit-tested locally; it has not been run against production. These changes remain unreleased while the model and rehearsal gates below are open.
+The local build now includes the destination-free profile, completion-only waiting lobby, snapshot-backed personal and group result views, qualitative result explanations, group-finalist matrix, and one immutable post-reveal final decision. The transparent group result is the stored `5/4/3/2/1` ballot—not a normalized group score—and v2 snapshots are cross-field validated before they are served. An independent audit also closed the legacy-final-decision and stale-decision-read gaps in `fbae847`. The guarded count-only preflight/reset tooling in `4ce95f0` is unit-tested locally; it has not been run against production. These changes remain unreleased while the fixed-shortlist verification and rehearsal gates below are open.
 
 ## Remaining one-trip release gates
 
 These are product gaps, not documentation changes to make the requirements disappear.
 
-1. **Model promotion:** both the original `bt-hierarchical-laplace-v1` candidate and the compact `bt-hierarchical-laplace-v2-compact` candidate have failed closed. The v2 candidate converged on all 15,000 fits and achieved 94.20% aggregate 90% interval coverage, but produced 0 stable-top-five stops and did not certify the adaptive information-gain policy or comparison redaction in the evaluator. `1d2c084` adds a faithful, resumable full-policy harness: its 512-draw one-trajectory smoke and deterministic replay pass pair, coverage, and DTO-redaction guards, but the required 3,000-trajectory 200-seed audit and calibration review remain unrun (a measured multi-hour job). This is not promotion evidence. Production remains on the deterministic ranking path; see [model evaluation](model-evaluation.md) and ADR 0003.
-2. **Rehearsal:** The isolated Auth/Firestore Emulator now runs on this machine and verifies configuration, concurrent/stale pending claims, racing immutable reveal creation, persisted snapshot reload, immutable final-decision conflicts, and redacted v2-result serialization (seven tests, 2026-08-19). The remaining five-identity browser flow must be recorded against the selected promoted model.
-3. **Release verification:** The fixture-based desktop/mobile visual and accessibility review is complete locally. Complete the five-identity browser rehearsal against a promoted model before release. The independent social-ballot audit and Emulator persistence proof do not replace that gate. Production preflight must remain count-only and empty; any behavioral smoke test that starts a journey belongs in a separately provisioned disposable Firebase/GCP environment because the guarded production reset intentionally refuses started state.
+1. **Fixed-shortlist verification:** `bayes-attribute-shortlist-v1` is wired locally. Record deterministic 32-round replay, representative fit, coverage, boundary-selection, redaction, and snapshot-stability evidence before release. The completed complex-model audit remains historical evidence, not this model's gate; see [model evaluation](model-evaluation.md) and ADR 0003.
+2. **Rehearsal:** The isolated Auth/Firestore Emulator now verifies configuration, concurrent/stale pending claims, racing immutable reveal creation, persisted snapshot reload, immutable final-decision conflicts, and redacted v2-result serialization. The remaining five-identity browser flow must be recorded against the fixed-shortlist release candidate.
+3. **Release verification:** The fixture-based desktop/mobile visual and accessibility review is complete locally. Complete the five-identity browser rehearsal before release. Production preflight must remain count-only and empty; any behavioral smoke test that starts a journey belongs in a separately provisioned disposable Firebase/GCP environment because the guarded production reset intentionally refuses started state.
 
 ## Required one-trip inference work
 
-The current deterministic Elo-style model, coverage heuristic, and 24–40 stopping rule are a shipped development foundation, not the final model for the friends' actual one-shot decision. The hierarchical/regularized Bradley–Terry implementation, posterior intervals, information-gain selector, confidence-aware stopping logic, and deterministic evaluator now exist offline, but promotion is blocked by the documented evidence failures. This work remains in scope precisely because the group will not be asked to repeat the exercise. See the [one-trip delivery roadmap](roadmap.md).
+The release candidate is a deliberately small Bayesian attribute model: it learns from the eight canonical attributes, asks every traveler exactly 32 adaptive questions, and produces a personal trip shortlist. Posterior sampling is internal to selection; the public experience never claims certainty or a mathematically optimal group winner. The older Elo and hierarchical paths remain offline references only. See the [one-trip delivery roadmap](roadmap.md).
 
 ## Explicitly out of scope
 

@@ -1,6 +1,6 @@
 # One-trip release gates
 
-**Status:** Partially implemented and verified locally through `1d2c084`.
+**Status:** Partially implemented and verified locally; fixed-shortlist release candidate in progress.
 **Not a release approval.**
 
 Completed evidence: the independent v2 social-ballot audit/fail-closed fixes
@@ -8,15 +8,14 @@ Completed evidence: the independent v2 social-ballot audit/fail-closed fixes
 (`4ce95f0`), the active-top-k method research handoff (`95ea81c`), the
 seven-case Firestore Emulator persistence proof (`a785de3`), and the
 fixture-based desktop/mobile visual and accessibility review (`3f101e4`,
-`06551f8`). `1d2c084` supplies the resumable full-policy model-evidence
-harness and passing one-trajectory smoke, but not promotion evidence. The
-five-identity browser rehearsal, full individual-model promotion evaluation,
-and deployment remain open.
+`06551f8`). `1d2c084` supplies historical complex-model audit tooling. The
+release candidate is now the fixed 32-question Bayesian attribute shortlist;
+its bounded verification, five-identity browser rehearsal, and deployment
+remain open.
 
 This specification closes the remaining verification work for the transparent
-social ballot. It does not alter the hard individual-model promotion gate in
-[model evaluation](model-evaluation.md), nor does it authorize a deployment
-while that report remains **FAIL — DO NOT PROMOTE**.
+social ballot. It does not authorize a deployment while the fixed-shortlist
+verification and rehearsal gates below remain open.
 
 ## Release rule
 
@@ -26,9 +25,9 @@ model version:
 
 1. Social-ballot integrity, API redaction, emulator, browser, and visual QA
    pass.
-2. The advanced individual model has a separate documented promotion decision
-   in ADR 0003 after full adaptive-policy replay, posterior calibration, and
-   payload-redaction evaluation pass their predeclared thresholds.
+2. `bayes-attribute-shortlist-v1` passes its deterministic fixed-32 replay,
+   representative-fit, coverage, boundary-selection, redaction, and
+   snapshot-stability checks documented in ADR 0003.
 3. A production preflight confirms there is no open v1 reveal and the trip
    state is empty after the controlled reset.
 4. Cloud Run and Hosting deploy successfully after an empty count-only
@@ -157,18 +156,16 @@ pending-pair transaction cases. Run `npm run validate:seed`, `npm test`,
 `npm run typecheck`, `npm run build`, and `npm run test:emulator` before
 recording rehearsal success.
 
-## Model handoff, deployment, and smoke test
+## Fixed-shortlist verification, deployment, and smoke test
 
-The release manager may begin the individual-model handoff only after the
-social-reveal tests and rehearsal pass. The model owner must run the full
-200-seed adaptive-policy replay and posterior calibration evaluation using
-production draw configuration, evaluate comparison-payload redaction, and
-record exact commands, fixtures, seed digest, thresholds, results, and the
-pass/fail decision in `docs/model-evaluation.md` and ADR 0003. No threshold,
-draw count, fixture, or stopping-rule change may be made merely to convert a
-failure into a pass. Until ADR 0003 explicitly says **PROMOTED**, production
-continues to use `elo-coverage-v1` for development only and no real-trip
-deployment occurs.
+The model owner must record deterministic fixed-32 replays and representative
+clear, close, noisy, and divergent fixture results. The evidence must confirm
+zero fit failures, two appearances per destination by question 24, final-eight
+boundary selection when eligible, pair safety, strict comparison redaction,
+and stable persisted shortlists. Record exact commands, fixtures, seed digest,
+and pass/fail result in `docs/model-evaluation.md` and ADR 0003. No rule or
+fixture may be changed merely to convert a failure into a pass. Until that
+bounded verification passes, no real-trip deployment occurs.
 
 Once all gates are recorded as passed:
 

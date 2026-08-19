@@ -2,7 +2,7 @@
 
 This document describes the architecture for **Let's Go Somewhere**, separating the implemented V1 foundation, the committed but unreleased one-trip journey checkpoint, and the remaining release gates.
 
-**Current checkpoint (2026-08-19):** the local source includes the profile, completion-only waiting lobby, immutable v2 transparent social-ballot results, snapshot-bound final decisions, seed-version sealing, emulator configuration, and guarded count-only preflight/reset tooling described by the one-trip specification. The social snapshot is cross-field validated and independently audited; its seven-case Firestore Emulator proof and fixture-based visual review also pass locally. Those safeguards do not prove a production preflight or five-identity browser rehearsal. Production still uses `elo-coverage-v1`; the advanced hierarchical candidate remains offline-only because its OT-19 evaluation is explicitly fail-closed in [model-evaluation.md](model-evaluation.md). Do not infer production promotion from the presence of the model modules or additive DTOs.
+**Current checkpoint (2026-08-19):** the local release candidate includes the profile, completion-only waiting lobby, immutable v2 transparent social-ballot results, snapshot-bound final decisions, seed-version sealing, emulator configuration, guarded count-only preflight/reset tooling, and `bayes-attribute-shortlist-v1`. The social snapshot is cross-field validated and independently audited; its seven-case Firestore Emulator proof and fixture-based visual review also pass locally. The fixed 32-choice shortlist still needs its bounded verification and the five-identity rehearsal. The hosted production deployment has not yet been updated; do not infer a release from the local model modules or additive DTOs.
 
 The application presents users with repeated destination-blind, pairwise activity choices such as:
 
@@ -378,14 +378,12 @@ without rewriting the frontend or data layer.
 
 #### Required one-trip inference responsibilities
 
-Before the actual group run, add:
-
-- confidence intervals;
-- hierarchical models;
-- Bayesian inference;
-- explicit destination and activity latent effects;
-- uncertainty-driven information gain;
-- model versioning.
+For the actual group run, use Bayesian attribute inference, versioned private
+posterior sampling, coverage-aware adaptive selection, a fixed 32-question
+round, and an immutable personal shortlist. Free destination/activity latent
+effects and public uncertainty labels are deliberately excluded: they are not
+identifiable enough for this one short session and do not help the group’s
+social decision.
 
 ---
 
@@ -878,18 +876,12 @@ User experience-category preferences
 
 ---
 
-### Required one-trip inference upgrade
+### One-trip shortlist model
 
 Conceptually:
 
 ```text
-Utility(activity)
-=
-destination effect
-+
-activity effect
-+
-Σ(user category preference × activity attribute)
+Utility(activity) = Σ(user attribute preference × activity attribute)
 ```
 
 Pairwise probability:
@@ -902,7 +894,10 @@ exp(U(A))
 (exp(U(A)) + exp(U(B)))
 ```
 
-This model is required before the fixed roster makes its one-shot trip decision. It should retain a versioned deterministic baseline for replay, but production selection and results must use calibrated uncertainty rather than raw Elo-style scores alone.
+The model is `bayes-attribute-shortlist-v1`. It fits only the eight canonical
+attributes, samples its posterior privately for selection/replay, and derives a
+portfolio-average personal top five. It is a conversation starter, not a
+certified statistical ranking.
 
 ---
 
@@ -910,7 +905,10 @@ This model is required before the fixed roster makes its one-shot trip decision.
 
 The system should not sample random pairs indefinitely.
 
-The current coverage heuristic is a deployed foundation. Before the actual group run, it must be replaced with the information-gain policy and confidence-aware bounded stopping contract in [the one-trip roadmap](roadmap.md).
+The first 24 comparisons preserve coverage (each destination appears twice).
+Questions 25–32 use private posterior information to distinguish eligible
+destinations around the personal fifth/sixth boundary. The round ends after 32
+answers; it does not expose or wait for a confidence threshold.
 
 For every candidate pair, calculate an approximate information value.
 
@@ -1409,9 +1407,7 @@ Add infrastructure only when a demonstrated requirement justifies it.
 
 ### Required before the actual trip
 
-- hierarchical or regularized preference model;
-- calibrated uncertainty intervals;
-- information-gain comparison selection and a confidence-aware bounded stopping rule;
+- fixed-32 Bayesian attribute-shortlist verification (replay, fit, coverage, boundary selection, and redaction);
 - versioned result snapshots, deterministic simulations, Firestore-emulator, and five-person E2E rehearsal.
 
 ### Explicitly out of scope

@@ -2,7 +2,7 @@
 
 Revised with the Scrum Team on 2026-08-18. This is a plan to make one fixed five-person trip decision excellent and trustworthy. It is not a platform roadmap, and there is no assumed later V2 release to catch work that matters to this group.
 
-Current checkpoint: the participant journey, durable persistence, snapshot-backed reveal, and local UI are implemented and committed as `91dc81c`. The advanced model work is present offline but has not passed the fixed simulation gate; the hosted app therefore remains a V1 beta on the deterministic foundation. The remaining roadmap is release validation and model promotion work, not a request to build a future platform.
+Current checkpoint: the participant journey, durable persistence, snapshot-backed reveal, and local UI are implemented. The complex hierarchical candidate was audited and rejected for this one-shot product decision. The release candidate is `bayes-attribute-shortlist-v1`: a fixed 32-choice Bayesian attribute shortlist whose output feeds the transparent social ballot. The remaining roadmap is bounded shortlist verification and release rehearsal, not a request to build a future platform.
 
 ## Sprint 0 — Documentation and release truth
 
@@ -26,25 +26,25 @@ Existing seeded weather, travel effort, and any available rough logistics appear
 
 ## Sprint 2 — Make the inference worthy of one use
 
-**Goal:** replace the provisional heuristic with a validated, uncertainty-aware preference model before the friends play for real.
+**Goal:** replace the provisional heuristic with a bounded, intelligible Bayesian shortlist before the friends play for real.
 
 | Task | Work | Acceptance criteria |
 | --- | --- | --- |
 | MODEL-01 | Write the model ADR, fixed evaluation rubric, and versioned result snapshot contract. | Every result records the seed and ranking-model version needed for reproducibility. |
-| MODEL-02 | Implement a hierarchical or regularized Bradley–Terry model with activity, destination, and attribute effects. | Each traveler's ranking uses calibrated posterior preference estimates rather than only raw Elo-style scores. |
-| MODEL-03 | Calculate uncertainty/credible intervals for each traveler's destination outcomes and top-five boundary. | The selector and stopping rule can distinguish a settled personal shortlist from genuinely close calls without exposing posterior math in the social reveal. |
+| MODEL-02 | Implement Bayesian logistic fitting over the eight canonical attributes only. | Each traveler receives a useful personal shortlist without unidentifiable destination/activity residuals. |
+| MODEL-03 | Use private posterior draws for final-eight boundary-oriented pair selection. | Later questions focus on useful personal #5/#6 distinctions without exposing posterior math. |
 | MODEL-04 | Replace the coverage-only pair selector with an information-gain policy that balances uncertainty, destination coverage, diversity, and fatigue. | Later questions are measurably diagnostic, not merely unobserved. |
-| MODEL-05 | Replace the fixed heuristic stopping rule with a confidence-aware, bounded rule. | The round still has humane safeguards, but ends when the finalist boundary is stable rather than at an arbitrary exposure count. |
-| MODEL-06 | Run deterministic replay/simulation tests over representative synthetic preference profiles. | The upgraded model must improve finalist stability at equal or fewer choices; retain the current model as a reproducible baseline, not the production default. |
+| MODEL-05 | Commit every traveler to exactly 32 questions. | The round is predictable and never implies an opaque certainty threshold. |
+| MODEL-06 | Run deterministic replay/fixture tests over representative preference shapes. | The shortlist path must remain deterministic, coverage-safe, redacted, and stable after persistence/reload. |
 
-The user experience remains legible: the progress counter remains bounded, the app can ask a few additional discriminating questions when needed, and post-reveal language may say “clear favorite” or “close call.” It must not expose raw posterior math or turn the game into a statistics lesson.
+The user experience remains legible: every traveler sees `N of 32 choices`, then observational profile language and a post-reveal trip shortlist. It must not expose raw posterior math, confidence labels, or turn the game into a statistics lesson.
 
 ## Sprint 3 — Rehearse and safeguard the actual trip
 
 **Goal:** prove this single run survives ordinary failures and is usable by every friend.
 
 - Firestore-emulator coverage for roster mapping, persistence across restart, pending-pair atomicity, duplicate/stale submissions, advanced-model result calculation, and reveal authorization.
-- Authenticated browser E2E rehearsal across five test identities: resume, dynamic stopping, atlas gate, waiting lobby, organizer reveal, personal results, and final gut check.
+- Authenticated browser E2E rehearsal across five test identities: resume, fixed 32-round completion, atlas gate, waiting lobby, organizer reveal, personal results, and final gut check.
 - Automated redaction/media/map checks: 120 activity assets, 24 three-photo galleries, credits/alts, safe comparison payloads, and map/list synchronization.
 - One concise operator runbook: deploy, smoke test, export the Firestore state, recover from a failed test run, and perform a controlled reset before any participant starts.
 - Focus, keyboard, mobile, reduced-motion, map-fallback, and image-fallback review. Address the existing bundle/WebGL risks only where they affect this one run.
@@ -62,4 +62,4 @@ The following are consciously not being deferred to a product roadmap; they are 
 
 `Sprint 1 → Sprint 2 → Sprint 3 → play the real trip`
 
-The current deployment remains a **V1 beta**. It is ready for the actual one-shot decision only when all three sprints pass: a complete emotional/social flow, uncertainty-aware and information-gain-driven ranking, and a five-person rehearsal with recovery guidance.
+The current deployment remains a **V1 beta**. It is ready for the actual one-shot decision only when all three sprints pass: a complete emotional/social flow, a verified fixed-round Bayesian shortlist, and a five-person rehearsal with recovery guidance.

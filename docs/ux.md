@@ -496,7 +496,7 @@ Same structure and visual weight.
 
 ### Milestone Micro-Toasts (Gamified Feedback)
 
-Progress copy moves from “Finding your trip rhythm” to “You’re on a roll” and “Almost there — just a few gut calls left.” The live counter and bar express the real minimum/maximum envelope rather than a fixed total.
+Progress copy moves from “Finding your trip rhythm” to “You’re on a roll” and “Almost there — just a few gut calls left.” The live counter and bar truthfully say `N of 32 choices`; the game never suggests it is calculating certainty.
 
 ## Example
 
@@ -1218,7 +1218,7 @@ Provide the second major payoff: what the five people collectively prefer.
 transparent points reveal below. It shows all five travelers' personal top
 fives, the stored published tally, evidence-backed social overlap/divergence
 notes, and the immutable post-reveal decision. It is not release-approved:
-the browser rehearsal and advanced individual-model promotion remain open.
+the browser rehearsal and fixed-shortlist verification remain open.
 Raw activity choices remain private.
 
 ## Required information

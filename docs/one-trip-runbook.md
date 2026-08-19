@@ -29,7 +29,7 @@ Use five isolated Auth Emulator identities mapped to Dan, John, Matt, Peter, and
 - character/account mismatch is clear and recoverable;
 - refresh during a round resumes the current unexpired pair;
 - stale and duplicate submissions do not append twice;
-- progress is honest at 24–40 and the selected model is the promoted version;
+- progress truthfully reads `N of 32 choices` and the selected model is `bayes-attribute-shortlist-v1`;
 - completion reaches profile, atlas, and completion-only waiting states;
 - map failure leaves the named destination list/gallery usable;
 - Dan can open the reveal only after all five are complete;
@@ -41,7 +41,7 @@ Capture screenshots outside the repository and record the browser, viewport, com
 
 ## Deploying a verified release
 
-Only after model promotion, emulator/E2E, visual QA, and independent review pass:
+Only after fixed-shortlist verification, emulator/E2E, visual QA, and independent review pass:
 
 ```sh
 npm run validate:seed

@@ -1,8 +1,22 @@
 # OT-19 model evaluation report
 
-**Status: FAIL — DO NOT PROMOTE.** The production ranking remains
-`elo-coverage-v1`; `bt-hierarchical-laplace-v1` and `information-gain-v1` are
-offline-only.
+**Status: historical complex-candidate evidence — not the release gate.**
+
+The completed adaptive-policy audit rejected the hierarchical candidate for
+this one-trip release. Its final result over 3,000 trajectories was: zero fit
+failures, strict comparison redaction and pair guardrails passed, 84.38%
+two-appearance coverage by question 24, 47 stable stops, 27.9% exact top-five
+recovery, and 60.0% fifth/sixth-boundary recovery. Those outcomes do not
+support a statistically certified or confidence-driven stopping experience.
+
+ADR 0003 therefore adopts `bayes-attribute-shortlist-v1` with exactly 32
+questions. This report is retained as an honest record of why the complex
+candidate is offline-only; it neither promotes nor blocks the smaller
+fixed-round release path. The new release gate is deterministic fixed-32
+verification, redaction, snapshot stability, rehearsal, and smoke testing.
+
+`bt-hierarchical-laplace-v1`, `bt-hierarchical-laplace-v2-compact`, and
+`information-gain-v1` remain offline-only reference implementations.
 
 ## Completed run: initial v1 candidate
 

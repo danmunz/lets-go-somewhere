@@ -18,7 +18,7 @@ This repository is the content source of truth for the fixed five-person trip. T
 | Profile, waiting, results, verdict, and decision copy | `frontend/src/screens/` and `frontend/src/components/` | Screen-specific post-completion and post-reveal language. Raw activity choices must never be rendered here. |
 | Typography, colors, spacing, cards, map, roster, and motion styling | `design-system/` and `frontend/src/app.css` | Use design tokens and existing component classes before adding a one-off rule. Respect reduced motion and 44px touch targets. |
 | Logo, roster art, and approved non-destination illustrations | `design-system/assets/` and `assets/images/` | Replace only with approved transparent artwork. Traveler art never belongs in destination-blind activity cards. |
-| Model labels, progress phases, and confidence copy | `backend/src/model/stopping.ts`, `backend/src/model/profile.ts`, and `frontend/src/main.tsx` | Change the model contract and UI copy together; do not imply certainty the model has not earned. |
+| Model labels, 32-round progress, and shortlist copy | `backend/src/model/shortlist.ts`, `backend/src/model/profile.ts`, and `frontend/src/main.tsx` | Change the model contract and UI copy together; do not imply certainty or a mathematically final verdict. |
 
 ## Common edits
 

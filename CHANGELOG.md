@@ -6,6 +6,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Changed
+
+- Replaced the one-trip production ranking path with `bayes-attribute-shortlist-v1`: exactly 32 adaptive, destination-blind comparisons over the eight canonical activity attributes.
+- Reframed individual results as a personal trip shortlist and removed public confidence, interval, fit-strength, and early-completion language.
+- Recorded the policy version in new immutable social-reveal snapshots; the transparent 5/4/3/2/1 group tally is unchanged.
+- Superseded the complex hierarchical-model promotion gate with bounded fixed-shortlist verification while retaining its completed audit as historical evidence.
+
 ### Added
 
 - Initial product documentation, implementation scaffold, and destination/activity seed data.
@@ -21,7 +28,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - An offline, regularized preference-model candidate with posterior uncertainty, information-gain selection, confidence-aware stopping, deterministic fixtures, and a fail-closed promotion report.
 - A repeatable Auth/Firestore Emulator transaction suite that verifies atomic concurrent submissions and stale-offer protection against the real repository adapter.
 - A deterministic adaptive-policy audit runner that exercises information-gain selection on generated trajectories instead of only a frozen baseline schedule.
-- A resumable, input-fingerprinted full-policy evidence harness that uses the real fit, information-gain selector, 512-draw posterior/stopping path, and strict comparison-DTO redaction audit. Its smoke result is evidence only; the complete model promotion audit remains blocked.
+- A resumable, input-fingerprinted full-policy evidence harness for the complex candidate. Its completed audit is retained as historical rejection evidence, not a release gate for the fixed-round shortlist.
 
 ### Changed
 
@@ -32,5 +39,5 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Tightened the final reveal so it opens only after the whole five-person roster finishes; it exposes each participant's full inferred top five rather than raw choices.
 - Added immutable v2 social-ballot snapshot validation, stale-decision fail-closed handling, and a guarded count-only one-trip preflight/reset operator tool. These are locally tested safeguards, not a completed production preflight, browser rehearsal, or deployment approval.
 - Reconciled deployment, delivery, implementation, and review documents with the shipped Firebase/Cloud Run/Firestore release; documented the remaining one-trip completion gaps separately from platform work that is out of scope.
-- Marked the advanced-model candidate as unreleased: its first synthetic 200-seed promotion evaluation did not meet the predeclared evidence gate, so production remains on the existing verified ranking until recalibration succeeds.
+- Marked the advanced-model candidate as unreleased after its audit did not support a certified-ranking claim; ADR 0003 now selects the smaller fixed-round shortlist release path instead of pursuing recalibration.
 - Moved the isolated Firestore Emulator to port 8081 to avoid the local service that occupies 8080, and made the emulator test runner architecture-explicit on Apple Silicon.
