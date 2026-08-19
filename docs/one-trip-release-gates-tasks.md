@@ -2,11 +2,12 @@
 
 **Source:** [one-trip release-gates specification](one-trip-release-gates-spec.md) at commit `194123f`.
 
-**Status:** partially complete. RG-01 passed in `fbae847`; RG-03 passed in
-`4ce95f0`; RG-04 passed in `a785de3`; and RG-06 has research handoff in
-`95ea81c`, but its full evaluation remains blocked. RG-02, RG-05, RG-06b,
-RG-07 final reconciliation, and RG-08 remain open. This board is an execution
-order, not release approval.
+**Status:** partially complete. RG-01 passed in `fbae847`; RG-02 passed
+fixture-based visual/accessibility review in `3f101e4` and `06551f8`; RG-03
+passed in `4ce95f0`; RG-04 passed in `a785de3`; and RG-06 has research plus a
+resumable evidence harness in `95ea81c` and `1d2c084`, but its full evaluation
+remains blocked. RG-05, RG-06b, RG-07 final reconciliation, and RG-08 remain
+open. This board is an execution order, not release approval.
 **Hard stop:** deployment and the real five-person trip remain blocked until every required evidence task below passes against one immutable commit, seed digest, and selected model version. A failed task is recorded as failed; its thresholds, snapshot facts, and real-trip state must not be changed to make it pass.
 
 ## Delivery rules

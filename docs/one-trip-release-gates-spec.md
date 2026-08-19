@@ -1,14 +1,17 @@
 # One-trip release gates
 
-**Status:** Partially implemented and verified locally through `a785de3`.
+**Status:** Partially implemented and verified locally through `1d2c084`.
 **Not a release approval.**
 
 Completed evidence: the independent v2 social-ballot audit/fail-closed fixes
 (`fbae847`), guarded preflight/reset implementation and focused tests
-(`4ce95f0`), the active-top-k method research handoff (`95ea81c`), and the
-seven-case Firestore Emulator persistence proof (`a785de3`). The frontend
-visual/accessibility fixtures, five-identity browser rehearsal, full
-individual-model promotion evaluation, and deployment remain open.
+(`4ce95f0`), the active-top-k method research handoff (`95ea81c`), the
+seven-case Firestore Emulator persistence proof (`a785de3`), and the
+fixture-based desktop/mobile visual and accessibility review (`3f101e4`,
+`06551f8`). `1d2c084` supplies the resumable full-policy model-evidence
+harness and passing one-trajectory smoke, but not promotion evidence. The
+five-identity browser rehearsal, full individual-model promotion evaluation,
+and deployment remain open.
 
 This specification closes the remaining verification work for the transparent
 social ballot. It does not alter the hard individual-model promotion gate in
