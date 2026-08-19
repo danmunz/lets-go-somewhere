@@ -63,12 +63,66 @@ export function buildPersonalResultsResponse(
 ): PersonalResultsResponse {
   if (snapshot.schemaVersion !== 2) throw new Error('This legacy reveal must be read through its legacy result path.');
   const summary = snapshot.users[user].personalResults;
+  return buildPersonalResults({
+    user,
+    modelVersion: snapshot.modelVersion,
+    snapshotId: snapshot.snapshotId,
+    profile: snapshot.users[user].profile,
+    ranking: summary.topFive.map((result) => ({ id: result.id, rank: result.rank, explanation: result.explanation })),
+    destinations,
+  });
+}
+
+/**
+ * Builds the caller-only shortlist available as soon as their 32nd choice is
+ * saved. It uses the same deterministic analysis and explanation seeds that
+ * are sealed into the later group snapshot; it never reads another traveler.
+ */
+export function buildCurrentPersonalResultsResponse(
+  user: RosterUser,
+  comparisons: readonly Comparison[],
+  destinations: readonly Destination[],
+  activities: readonly Activity[],
+): PersonalResultsResponse {
+  if (!isShortlistComplete(comparisons)) throw new Error('A personal shortlist requires 32 completed choices.');
+  const shortlist = analyzeShortlist(activities, comparisons, user);
+  const encounteredActivityIds = comparisons.flatMap((comparison) => [comparison.activityA, comparison.activityB]);
+  return buildPersonalResults({
+    user,
+    modelVersion: SHORTLIST_MODEL_VERSION,
+    profile: buildPreferenceProfile(shortlist.fit, `${user}:profile`),
+    ranking: shortlist.analysis.ranking.slice(0, 5).map(({ id }, index) => ({
+      id,
+      rank: index + 1,
+      explanation: buildDestinationExplanation({
+        fit: shortlist.fit,
+        destinationId: id,
+        encounteredActivityIds,
+        seed: `${user}:explanation:${id}`,
+        config: shortlistModelConfig,
+      }),
+    })),
+    destinations,
+  });
+}
+
+type PersonalResultBuildInput = Readonly<{
+  user: RosterUser;
+  modelVersion: string;
+  snapshotId?: string;
+  profile: import('@lgs/shared').PreferenceProfile;
+  ranking: readonly { id: string; rank: number; explanation: import('@lgs/shared').PersonalResult['explanation'] }[];
+  destinations: readonly Destination[];
+}>;
+
+function buildPersonalResults(input: PersonalResultBuildInput): PersonalResultsResponse {
+  const { modelVersion, snapshotId, profile, ranking, destinations } = input;
   const destinationsById = new Map(destinations.map((destination) => [destination.id, destination]));
   return personalResultsResponseSchema.parse({
-    snapshotId: snapshot.snapshotId,
-    modelVersion: snapshot.modelVersion,
-    profile: snapshot.users[user].profile,
-    results: summary.topFive.map((result) => {
+    ...(snapshotId ? { snapshotId } : {}),
+    modelVersion,
+    profile,
+    results: ranking.map((result) => {
       const destination = destinationForResult(result.id, destinationsById);
       return {
       rank: result.rank,

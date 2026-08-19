@@ -11,9 +11,9 @@ import jamesAvatar from '../../assets/images/james_cutout.png';
 import johnAvatar from '../../assets/images/john_cutout.png';
 import mattAvatar from '../../assets/images/matt_cutout.png';
 import peterAvatar from '../../assets/images/peter_cutout.png';
-import { AtlasMap } from './AtlasMap.js';
+import { AtlasExplorer } from './AtlasExplorer.js';
 import { ApiError, createApiClient, routeIntentForApiError, type ApiAuthentication, type OneTripApiClient } from './api.js';
-import { AppStateNotice, CompletedTransition, MediaImage, TravelEffortKey } from './components/index.js';
+import { AppStateNotice, CompletedTransition, JourneyNav, MediaImage, TravelEffortKey, type JourneyDestination } from './components/index.js';
 import { getRestoredGoogleToken, signInWithGoogle } from './firebase.js';
 import { MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
@@ -33,32 +33,37 @@ const rosterKey = 'lgs-selected-traveler';
 const travelerById = (id: RosterUser) => travelers.find((traveler) => traveler.id === id)!;
 const travelerName = (id: RosterUser) => travelerById(id).name;
 const progressMessage = (count: number) => count < 8 ? 'Finding your trip rhythm.' : count < 18 ? 'You’re on a roll.' : count < 28 ? 'Almost there — just a few gut calls left.' : 'Final gut calls. Your shortlist is nearly ready.';
+const journeyHash: Record<JourneyDestination, string> = { profile: 'rhythm', shortlist: 'shortlist', atlas: 'atlas', waiting: 'crew', verdict: 'reveal' };
+const journeyDestinationFromHash = (): JourneyDestination | undefined => (Object.entries(journeyHash).find(([, hash]) => `#${hash}` === window.location.hash)?.[0] as JourneyDestination | undefined);
+const activeJourneyDestination = (screen: AppScreen): JourneyDestination | undefined => {
+  if (screen === 'profile') return 'profile';
+  if (screen === 'my-results') return 'shortlist';
+  if (screen === 'atlas') return 'atlas';
+  if (screen === 'waiting') return 'waiting';
+  if (screen === 'verdict') return 'verdict';
+  return undefined;
+};
 
 function Ambient() { return <div className="ambient-field" aria-hidden="true"><MeshGradient colors={['#d4924d', '#4b7eb2', '#c04f3d', '#6d8c4a']} distortion={.7} swirl={.25} speed={.12} style={{ width: '100%', height: '100%' }} /></div>; }
 function Avatar({ id, large = false, className = '' }: { id: RosterUser; large?: boolean; className?: string }) { return <img className={`avatar-art ${large ? 'avatar-art--large' : ''} ${className}`} src={travelerById(id).image} alt="" />; }
 function storedTraveler(): RosterUser | undefined { const value = typeof window === 'undefined' ? null : window.localStorage.getItem(rosterKey); return travelers.some((traveler) => traveler.id === value) ? value as RosterUser : undefined; }
 
-function AtlasScreen({ destinations, user, onOpenWaiting }: { destinations: AtlasDestination[]; user: RosterUser; onOpenWaiting: () => void }) {
-  const [activeId, setActiveId] = useState(destinations[0]?.id ?? '');
-  const [galleryIndex, setGalleryIndex] = useState(0);
-  const destination = destinations.find((item) => item.id === activeId);
-  const selectDestination = (id: string) => { setActiveId(id); setGalleryIndex(0); };
-  return <main className="atlas-page screen-enter">
-    <header className="atlas-toolbar"><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" /><div><p className="eyebrow">Atlas unlocked</p><b>Every place is still in play.</b></div><div className="traveler-chip"><Avatar id={user} />{travelerName(user)}</div></header>
-    <section className="atlas-map-stage" aria-label="Destination atlas"><AtlasMap destinations={destinations} activeId={activeId} onSelect={selectDestination} />
-      {destination && <aside className="atlas-drawer" aria-labelledby="atlas-destination-title"><button onClick={() => setActiveId('')} aria-label="Close destination details">×</button><p className="eyebrow">Now exploring</p><h1 id="atlas-destination-title">{destination.name}</h1><p className="country">{destination.country}</p><p>{destination.tagline}</p><div className="atlas-facts"><div><span>November</span><b>{destination.novemberWeather}</b></div><div><span>Travel effort</span><b>{destination.travelFriction}/5</b><small>1 = easy route · 5 = big expedition</small></div></div><div className="atlas-filmstrip" aria-label={`${destination.name} photo gallery`}>{destination.gallery.map((photo, index) => <button key={photo.path} className={index === galleryIndex ? 'is-active' : undefined} onClick={() => setGalleryIndex(index)} aria-label={`Show photo ${index + 1} of ${destination.name}`}><MediaImage src={photo.path} alt={index === galleryIndex ? photo.alt : ''} fallbackLabel="Photo unavailable" /></button>)}</div><p className="atlas-credit">Photo by <a href={destination.gallery[galleryIndex]?.photographerUrl} target="_blank" rel="noreferrer">{destination.gallery[galleryIndex]?.photographerName}</a> on Unsplash</p></aside>}
-    </section>
-    <section className="atlas-list atlas-list--v4" aria-label="Browse destinations">{destinations.map((item) => <button key={item.id} onClick={() => selectDestination(item.id)} aria-pressed={activeId === item.id}><MediaImage src={item.gallery[0]?.path} alt="" fallbackLabel="Photo unavailable" /><b>{item.name}</b><small>{item.country}</small></button>)}</section>
-    <section className="reveal-callout"><div><p className="eyebrow">Still sealed</p><h2>The choices are doing their quiet work.</h2><p>Browse freely. The crew’s rankings stay sealed until everyone is ready.</p></div><div><TravelEffortKey /><button className="lgs-button lgs-button--primary" onClick={onOpenWaiting}>See the crew’s progress</button></div></section>
-  </main>;
+function AtlasScreen({ destinations, user, onOpenWaiting, onOpenProfile }: { destinations: AtlasDestination[]; user: RosterUser; onOpenWaiting: () => void; onOpenProfile: () => void }) {
+  return <AtlasExplorer destinations={destinations} user={user} travelerName={travelerName} avatarSrc={travelerById(user).image} onOpenWaiting={onOpenWaiting} onOpenProfile={onOpenProfile} />;
 }
 
 function App() {
   const [screen, setScreen] = useState<AppScreen>('welcome');
   const [user, setUser] = useState<RosterUser>(); const [token, setToken] = useState<string>(); const [selected, setSelected] = useState<RosterUser>(); const [spinning, setSpinning] = useState<RosterUser>();
   const [next, setNext] = useState<NextComparisonResponse>(); const [profile, setProfile] = useState<PreferenceProfile>(); const [atlas, setAtlas] = useState<AtlasDestination[]>([]); const [status, setStatus] = useState<GroupStatus>(); const [results, setResults] = useState<TransparentGroupResultsResponse>(); const [myResults, setMyResults] = useState<Awaited<ReturnType<OneTripApiClient['getPersonalResults']>>>();
-  const [picked, setPicked] = useState(''); const [toast, setToast] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [booting, setBooting] = useState(true); const bootstrapOnce = useRef(false);
+  const [picked, setPicked] = useState(''); const [toast, setToast] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [booting, setBooting] = useState(true); const bootstrapOnce = useRef(false); const handledJourneyHash = useRef('');
   const api = useMemo(() => user ? createApiClient({ user, token }) : undefined, [token, user]);
+  const setJourneyHash = useCallback((destination: JourneyDestination, replace = false) => {
+    const hash = `#${journeyHash[destination]}`;
+    if (window.location.hash === hash) return;
+    handledJourneyHash.current = hash;
+    window.history[replace ? 'replaceState' : 'pushState'](null, '', hash);
+  }, []);
 
   const handleRouteError = useCallback(async (reason: unknown, source: Parameters<typeof routeIntentForApiError>[1]) => {
     const message = reason instanceof Error ? reason.message : 'We lost the trail for a moment. Please try again.';
@@ -70,7 +75,7 @@ function App() {
     else if (intent === 'show-access-error') { setScreen('character'); setError('That Google account is not on this trip roster. Choose the traveler that matches your account.'); }
     else setError(message);
   }, []);
-  const loadProfile = useCallback(async (client: OneTripApiClient) => { try { const response = await client.getProfile(); setProfile(response.profile); setScreen('profile'); } catch (reason) { await handleRouteError(reason, 'profile'); } }, [handleRouteError]);
+  const loadProfile = useCallback(async (client: OneTripApiClient, updateHash = true) => { try { const response = await client.getProfile(); setProfile(response.profile); setScreen('profile'); if (updateHash) setJourneyHash('profile', true); } catch (reason) { await handleRouteError(reason, 'profile'); } }, [handleRouteError, setJourneyHash]);
   const loadComparison = useCallback(async (client: OneTripApiClient) => { try { const response = await client.getNextComparison(); setNext(response); setScreen(response.complete ? 'completed-transition' : 'comparison'); } catch (reason) { await handleRouteError(reason, 'comparison'); } }, [handleRouteError]);
   const enterJourney = useCallback(async (authentication: ApiAuthentication) => {
     const client = createApiClient(authentication); setBusy(true); setError('');
@@ -83,24 +88,52 @@ function App() {
 
   const signIn = async () => { if (!selected) return; try { await enterJourney({ user: selected, token: import.meta.env.PROD ? await signInWithGoogle() : undefined }); } catch (reason) { setError(reason instanceof Error ? reason.message : 'Google sign-in failed.'); setBusy(false); } };
   const choose = async (winner: string) => { if (!api || !next || next.complete || picked) return; setPicked(winner); setError(''); try { await api.submitComparison({ activityA: next.activityA.id, activityB: next.activityB.id, winner }); window.setTimeout(() => { setPicked(''); void loadComparison(api); }, 180); } catch (reason) { setPicked(''); await handleRouteError(reason, 'comparison'); } };
-  const openAtlas = async () => { if (!api) return; setBusy(true); setError(''); try { const response = await api.getAtlas(); setAtlas(response.destinations); setScreen('atlas'); } catch (reason) { await handleRouteError(reason, 'atlas'); } finally { setBusy(false); } };
+  const openAtlas = async (updateHash = true) => { if (!api) return; setBusy(true); setError(''); try { const response = await api.getAtlas(); setAtlas(response.destinations); setScreen('atlas'); if (updateHash) setJourneyHash('atlas'); } catch (reason) { await handleRouteError(reason, 'atlas'); } finally { setBusy(false); } };
   const refreshStatus = useCallback(async () => { if (!api) return; try { const response = await api.getGroupStatus(); setStatus(response); return response; } catch (reason) { await handleRouteError(reason, 'group-status'); throw reason; } }, [api, handleRouteError]);
-  const openWaiting = async () => { const refreshed = await refreshStatus(); if (refreshed) setScreen('waiting'); };
-  const openVerdict = async () => { if (!api) return; setBusy(true); setError(''); try { setResults(await api.getGroupResults()); setScreen('verdict'); } catch (reason) { await handleRouteError(reason, 'group-results'); await refreshStatus().catch(() => undefined); } finally { setBusy(false); } };
+  const openWaiting = async (updateHash = true) => { const refreshed = await refreshStatus(); if (refreshed) { setScreen('waiting'); if (updateHash) setJourneyHash('waiting'); } };
+  const openVerdict = async (updateHash = true) => { if (!api) return; setBusy(true); setError(''); try { setResults(await api.getGroupResults()); setScreen('verdict'); if (updateHash) setJourneyHash('verdict'); } catch (reason) { await handleRouteError(reason, 'group-results'); await refreshStatus().catch(() => undefined); } finally { setBusy(false); } };
   const reveal = async () => { if (!api) return; setBusy(true); setError(''); try { await api.openReveal(); await openVerdict(); } catch (reason) { await handleRouteError(reason, 'group-status'); await refreshStatus().catch(() => undefined); } finally { setBusy(false); } };
-  const openMyResults = async () => { if (!api) return; setBusy(true); setError(''); try { setMyResults(await api.getPersonalResults()); setScreen('my-results'); } catch (reason) { await handleRouteError(reason, 'personal-results'); await refreshStatus().catch(() => undefined); } finally { setBusy(false); } };
+  const openMyResults = async (updateHash = true) => { if (!api) return; setBusy(true); setError(''); try { setMyResults(await api.getPersonalResults()); setScreen('my-results'); if (updateHash) setJourneyHash('shortlist'); } catch (reason) { await handleRouteError(reason, 'personal-results'); await refreshStatus().catch(() => undefined); } finally { setBusy(false); } };
+  const navigateJourney = useCallback((destination: JourneyDestination, updateHash = true) => {
+    if (destination === 'profile') {
+      if (profile) { setScreen('profile'); if (updateHash) setJourneyHash('profile'); }
+      else if (api) void loadProfile(api, updateHash);
+      return;
+    }
+    if (destination === 'shortlist') { void openMyResults(updateHash); return; }
+    if (destination === 'atlas') { void openAtlas(updateHash); return; }
+    if (destination === 'waiting') { void openWaiting(updateHash); return; }
+    void openVerdict(updateHash);
+  }, [api, loadProfile, openAtlas, openMyResults, openVerdict, openWaiting, profile, setJourneyHash]);
+  useEffect(() => {
+    if (!api || !profile) return;
+    const restoreFromHash = () => {
+      if (window.location.hash === handledJourneyHash.current) return;
+      handledJourneyHash.current = window.location.hash;
+      const destination = journeyDestinationFromHash();
+      if (destination) navigateJourney(destination, false);
+    };
+    restoreFromHash();
+    window.addEventListener('popstate', restoreFromHash);
+    window.addEventListener('hashchange', restoreFromHash);
+    return () => { window.removeEventListener('popstate', restoreFromHash); window.removeEventListener('hashchange', restoreFromHash); };
+  }, [api, navigateJourney, profile]);
   const saveFinalDecision = async (choice: FinalDecisionChoice): Promise<FinalDecision> => { if (!api) throw new Error('Sign in again before saving your next step.'); try { const response = await api.recordFinalDecision(choice); if (!response.decision) throw new Error('The saved decision was missing from the response.'); return response.decision; } catch (reason) { if (reason instanceof ApiError && routeIntentForApiError(reason, 'final-decision') === 'use-recorded-decision') { const existing = await api.getFinalDecision(); if (existing.decision) return existing.decision; } throw reason; } };
   const selectTraveler = (id: RosterUser) => { if (spinning) return; setSelected(id); setSpinning(id); setToast(`${travelerName(id)} is ready to roll.`); window.setTimeout(() => setSpinning(undefined), 750); window.setTimeout(() => setToast(''), 1800); };
   const notice = error ? <div className="app-notice-overlay"><AppStateNotice tone="error" title="A quick detour">{error}</AppStateNotice></div> : null;
+  const currentJourney = activeJourneyDestination(screen);
+  const journeyNav = user && profile && currentJourney
+    ? <JourneyNav active={currentJourney} revealOpen={Boolean(results || status?.revealOpen)} onNavigate={(destination) => navigateJourney(destination)} />
+    : null;
   if (booting) return <main className="one-trip-screen"><AppStateNotice tone="loading" title="Finding your saved route">Checking whether your traveler has an unfinished journey.</AppStateNotice></main>;
   if (screen === 'welcome') return <main className="welcome-shell screen-enter"><Ambient /><section className="welcome"><img src={logoUrl} alt="Let's Go Somewhere" className="logo" /><p className="eyebrow">Five travelers. One real answer.</p><h1>Let the trip<br /><em>choose itself.</em></h1><p className="lede">A destination-blind game for deciding where your group should go. Choose the experiences that pull you in; we keep the places secret until it counts.</p><div className="how-it-works"><span><b>01</b> Pick your traveler</span><span><b>02</b> Make gut-call choices</span><span><b>03</b> Explore the contenders</span></div><button className="lgs-button lgs-button--primary welcome-cta" onClick={() => setScreen('character')}>Meet the crew →</button></section>{notice}</main>;
   if (screen === 'character') return <main className="character-shell character-shell--spin screen-enter"><header className="topbar"><button className="back-button" onClick={() => setScreen('welcome')} aria-label="Back to welcome">←</button><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" /><span className="character-step">Step 1 of 2</span></header><section className="character-selection" aria-labelledby="character-title"><div className="character-intro"><p className="eyebrow">Choose your traveler</p><h1 id="character-title">Who’s making<br />the calls?</h1><p className="lede">Hover for a little hello, then pick the traveler who matches your Google account.</p></div><div className="roster-heading"><span>Meet the crew</span><b>{selected ? 'Traveler locked in' : 'Pick one to begin'}</b></div><div className="traveler-roster" role="group" aria-label="Choose your traveler">{travelers.map((traveler) => <button key={traveler.id} className={`traveler traveler--${traveler.accent} ${selected === traveler.id ? 'traveler--selected' : ''} ${spinning === traveler.id ? 'traveler--spinning' : ''}`} onClick={() => selectTraveler(traveler.id)} aria-pressed={selected === traveler.id} disabled={Boolean(spinning) && spinning !== traveler.id}><span className="traveler-stage"><i className="traveler-shadow" /><Avatar id={traveler.id} large className="traveler-figure" /></span><span className="traveler-label"><strong>{traveler.name}</strong><small>{traveler.role}</small></span><span className="traveler-check" aria-hidden="true">✓</span></button>)}</div><p className="selection-toast" role="status" aria-live="polite">{toast ? `✦ ${toast}` : 'Choose a traveler to unlock your route.'}</p></section><footer className="character-action"><span>{selected ? `${travelerName(selected)} selected` : 'Your character stays with you through the reveal.'}</span><button className="lgs-button lgs-button--primary" disabled={!selected || Boolean(spinning) || busy} onClick={() => void signIn()}>{busy ? 'Checking your route…' : selected ? `Continue as ${travelerName(selected)}` : 'Choose your traveler'} →</button></footer>{notice}</main>;
   if (screen === 'completed-transition') return <main className="one-trip-screen"><CompletedTransition complete={Boolean(profile)} />{busy && <p className="topo-loader">Reading the shape of your choices…</p>}{notice}</main>;
-  if (screen === 'profile' && profile) return <>{<ProfileScreen profile={profile} onOpenAtlas={() => void openAtlas()} onOpenWaiting={() => void openWaiting()} focusHeading />}{notice}</>;
-  if (screen === 'atlas' && user) return <>{<AtlasScreen destinations={atlas} user={user} onOpenWaiting={() => void openWaiting()} />}{notice}</>;
-  if (screen === 'waiting' && status && user) return <>{<WaitingScreen status={status} user={user} travelerName={travelerName} onRefresh={refreshStatus} onBackToAtlas={() => void openAtlas()} onOpenReveal={() => void reveal()} onOpenVerdict={() => void openVerdict()} focusHeading />}{notice}</>;
-  if (screen === 'verdict' && results && user) return <>{<VerdictScreen results={results} currentUser={user} travelerName={travelerName} avatarFor={(id) => travelerById(id).image} onOpenMyResults={() => void openMyResults()} onRecordDecision={saveFinalDecision} />}{notice}</>;
-  if (screen === 'my-results' && myResults) return <>{<MyResultsScreen results={myResults} onBackToVerdict={() => void openVerdict()} />}{notice}</>;
+  if (screen === 'profile' && profile) return <>{journeyNav}<ProfileScreen profile={profile} onOpenAtlas={() => void openAtlas()} onOpenWaiting={() => void openWaiting()} onOpenMyResults={() => void openMyResults()} revealOpen={Boolean(results || status?.revealOpen)} focusHeading />{notice}</>;
+  if (screen === 'atlas' && user) return <>{journeyNav}<AtlasScreen destinations={atlas} user={user} onOpenWaiting={() => void openWaiting()} onOpenProfile={() => navigateJourney('profile')} />{notice}</>;
+  if (screen === 'waiting' && status && user) return <>{journeyNav}<WaitingScreen status={status} user={user} travelerName={travelerName} onRefresh={refreshStatus} onBackToAtlas={() => void openAtlas()} onOpenReveal={() => void reveal()} onOpenVerdict={() => void openVerdict()} focusHeading />{notice}</>;
+  if (screen === 'verdict' && results && user) return <>{journeyNav}<VerdictScreen results={results} currentUser={user} travelerName={travelerName} avatarFor={(id) => travelerById(id).image} onOpenMyResults={() => void openMyResults()} onRecordDecision={saveFinalDecision} />{notice}</>;
+  if (screen === 'my-results' && myResults) return <>{journeyNav}<MyResultsScreen results={myResults} onBack={() => navigateJourney(results ? 'verdict' : 'profile')} backLabel={results ? 'Back to the group reveal' : 'Back to my trip rhythm'} />{notice}</>;
   if (screen !== 'comparison') return <main className="one-trip-screen"><AppStateNotice tone={error ? 'error' : 'loading'} title={error ? 'That route needs a moment' : 'Preparing your route'}>{error || 'Loading the right place in your trip.'}</AppStateNotice></main>;
   const activities = next && !next.complete ? [next.activityA, next.activityB] : [];
   const progress = next && !next.complete ? next.progress : { comparisons: 0, minimum: 32, maximum: 32, estimatedCompletion: 0 };

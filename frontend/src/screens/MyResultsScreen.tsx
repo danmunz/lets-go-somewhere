@@ -2,15 +2,17 @@ import type { PersonalResultsResponse } from '@lgs/shared';
 import { MediaImage } from '../components/MediaImage.js';
 import { TravelEffortKey } from '../components/TravelEffortKey.js';
 
-type Props = { results: PersonalResultsResponse; onBackToVerdict: () => void };
+type Props = { results: PersonalResultsResponse; onBack: () => void; backLabel: string };
 
-/** Post-gate-only presentation; it has no ranking or explanation calculation. */
-export function MyResultsScreen({ results, onBackToVerdict }: Props) {
+/** Caller-only shortlist; it never contains another traveler or the group ballot. */
+export function MyResultsScreen({ results, onBack, backLabel }: Props) {
+  const revealed = Boolean(results.snapshotId);
   return (
     <main className="one-trip-screen my-results-screen" aria-labelledby="my-take-title">
-      <p className="eyebrow">My trip shortlist</p>
+      <p className="eyebrow">{revealed ? 'My trip shortlist' : 'Your private trip shortlist'}</p>
       <h1 id="my-take-title">The places that fit your calls.</h1>
-      <p className="lede">This is a conversation starter drawn from the choices you made—not a final verdict. It opens only after the group envelope.</p>
+      <p className="lede">These are the five places most aligned with the experiences you chose. Use them as a conversation starter, not a final verdict.</p>
+      {!revealed && <p className="my-results-screen__privacy-note">This is yours alone for now. The crew ballot and everyone else’s top five stay sealed until Dan opens the group reveal.</p>}
       <section className="personal-results-grid" aria-label="Your top five places">
         {results.results.map((result) => <article className="personal-result-card" key={result.id}>
           <MediaImage src={result.imageUrl} alt={`A view from ${result.name}`} fallbackLabel="Photo unavailable" />
@@ -26,7 +28,7 @@ export function MyResultsScreen({ results, onBackToVerdict }: Props) {
         </article>)}
       </section>
       <TravelEffortKey />
-      <button className="lgs-button lgs-button--secondary" onClick={onBackToVerdict}>Back to the verdict</button>
+      <button className="lgs-button lgs-button--secondary" onClick={onBack}>{backLabel}</button>
     </main>
   );
 }

@@ -400,7 +400,9 @@ export type FinalDecision = z.infer<typeof finalDecisionRecordSchema>;
 
 export const personalResultsResponseSchema = z
   .object({
-    snapshotId: z.string().min(1),
+    // A completed traveler may read their own shortlist before the shared
+    // envelope opens. The immutable snapshot id appears only after reveal.
+    snapshotId: z.string().min(1).optional(),
     modelVersion: z.string().min(1),
     confidence: resultConfidenceSchema.optional(),
     profile: preferenceProfileSchema,

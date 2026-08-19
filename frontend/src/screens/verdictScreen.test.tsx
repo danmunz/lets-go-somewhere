@@ -84,7 +84,15 @@ describe('transparent social reveal', () => {
   });
 
   it('renders personal results with post-gate place imagery and concise, non-raw-choice explanation', () => {
-    const markup = renderToStaticMarkup(<MyResultsScreen results={personalFixture} onBackToVerdict={() => undefined} />);
+    const markup = renderToStaticMarkup(<MyResultsScreen results={personalFixture} onBack={() => undefined} backLabel="Back to the group reveal" />);
     expect(markup).toContain('A view from Place 1'); expect(markup).toContain('Why it rose'); expect(markup).not.toContain('activity-by-activity');
+  });
+
+  it('labels a completed caller-only shortlist as private until an immutable reveal snapshot exists', () => {
+    const { snapshotId: _snapshotId, ...privateResults } = personalFixture;
+    const markup = renderToStaticMarkup(<MyResultsScreen results={privateResults} onBack={() => undefined} backLabel="Back to my trip rhythm" />);
+    expect(markup).toContain('Your private trip shortlist');
+    expect(markup).toContain('The crew ballot and everyone else’s top five stay sealed');
+    expect(markup).not.toContain('Everyone’s top five');
   });
 });

@@ -29,6 +29,7 @@ import {
   buildFinalDecisionResponse,
   buildGroupResultsResponse,
   buildGroupStatusResponse,
+  buildCurrentPersonalResultsResponse,
   buildPersonalResultsResponse,
   buildProfileResponse,
   withRevealState,
@@ -145,7 +146,12 @@ app.post('/v1/reveal', async (context) => {
 app.get('/v1/results/me', async (context) => {
   const user = context.get('user') as RosterUser, comparisons = await getComparisons(user);
   if (!isShortlistComplete(comparisons)) return context.json({ code: 'completion-required', error: 'Finish the preference game first.' }, 409);
-  if (!await isRevealOpen()) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
+  // A completed traveler can inspect only their own model-generated shortlist.
+  // The shared ballot, other travelers' shortlists, and social insights remain
+  // locked until Dan opens the immutable reveal snapshot.
+  if (!await isRevealOpen()) {
+    return context.json(buildCurrentPersonalResultsResponse(user, comparisons, destinations, activities));
+  }
   const snapshot = await getRevealSnapshot();
   if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
   assertRevealSnapshotSeedVersionCompatible(snapshot);

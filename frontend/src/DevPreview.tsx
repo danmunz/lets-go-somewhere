@@ -59,10 +59,10 @@ function PreviewComparison() {
 export function DevPreview() {
   const [page, setPage] = useState<PreviewPage>('comparison');
   const body = page === 'comparison' ? <PreviewComparison />
-    : page === 'profile' ? <ProfileScreen profile={profile} onOpenAtlas={() => setPage('atlas')} onOpenWaiting={() => setPage('waiting')} />
+    : page === 'profile' ? <ProfileScreen profile={profile} onOpenAtlas={() => setPage('atlas')} onOpenWaiting={() => setPage('waiting')} onOpenMyResults={() => setPage('shortlist')} />
       : page === 'atlas' ? <PreviewAtlas />
         : page === 'waiting' || page === 'ready' ? <WaitingScreen status={{ revealOpen: false, allComplete: page === 'ready', updatedAt: '2026-08-19T00:00:00.000Z', members: ['dan', 'james', 'john', 'matt', 'peter'].map((user, index) => ({ user: user as RosterUser, complete: page === 'ready' || index < 3 })) }} user="dan" travelerName={(user) => fixtureTravelerNames[user]} onRefresh={() => undefined} onBackToAtlas={() => setPage('atlas')} onOpenReveal={() => setPage('verdict')} />
           : page === 'verdict' ? <VerdictScreen results={verdict} currentUser="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarFor={(user) => avatarByUser[user]} onOpenMyResults={() => setPage('shortlist')} onRecordDecision={async (choice) => ({ user: 'dan', choice, createdAt: '2026-08-19T00:00:00.000Z' })} />
-            : <MyResultsScreen results={myResults} onBackToVerdict={() => setPage('verdict')} />;
+            : <MyResultsScreen results={myResults} onBack={() => setPage('verdict')} backLabel="Back to the group reveal" />;
   return <><nav aria-label="Local preview screens" style={{ position: 'fixed', zIndex: 100, top: 12, right: 12, display: 'flex', flexWrap: 'wrap', gap: 6, maxWidth: 560, padding: 8, borderRadius: 12, background: '#1f1b16eB', boxShadow: '0 4px 18px #0006' }}>{pages.map(([id, label]) => <button key={id} onClick={() => setPage(id)} aria-pressed={page === id} style={{ fontSize: 14, minHeight: 36, padding: '6px 10px', border: '1px solid #f3e9dd', borderRadius: 7, color: '#1f1b16', background: page === id ? '#f9bd45' : '#f3e9dd' }}>{label}</button>)}</nav>{body}</>;
 }
