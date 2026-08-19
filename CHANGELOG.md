@@ -24,6 +24,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Replaced the normalized-score/polarization group recommendation with the approved transparent `5/4/3/2/1` top-five points tally, including visible tie handling and social overlap/divergence presentation rules.
 - Clarified the fixed five-person V1 scope, Google-authenticated roster, group reveal embargo, destination-blind activity-photo cards, and display-only practical context.
 - Aligned documentation precedence, design-system references, and seed/schema examples for implementation.
 - Updated the reveal embargo: completed participants may explore named candidate destinations and general trip context, while every personal and group outcome remains hidden until the group reveal.

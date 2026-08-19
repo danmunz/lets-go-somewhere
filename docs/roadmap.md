@@ -6,7 +6,9 @@ Current checkpoint: the participant journey, durable persistence, snapshot-backe
 
 ## Sprint 0 — Documentation and release truth
 
-**Status: complete.** The reconciliation commit records the production Firebase/Cloud Run/Firestore setup, the accepted comparison-photography and post-completion-atlas tradeoff, the group-ranking rule, and the implementation gaps that remain.
+**Status: complete.** The reconciliation records the production Firebase/Cloud
+Run/Firestore setup, the accepted comparison-photography and post-completion
+atlas tradeoff, and the approved transparent group-tally rule.
 
 ## Sprint 1 — Complete the human story
 
@@ -17,7 +19,7 @@ Current checkpoint: the participant journey, durable persistence, snapshot-backe
 | ONE-01 | Build the destination-free preference-profile beat from `/v1/profile`. | A completed traveler sees an evidence-grounded description of their tastes before entering the atlas. |
 | ONE-02 | Build the five-character waiting lobby from `/v1/group-status`; use polling and explicit refresh, not realtime infrastructure. | It conveys completion-only roster state without leaking preferences. |
 | ONE-03 | Build personal post-gate results and concise explanation primitives from `/v1/results/me`. | A traveler can understand their own top results without seeing anyone else's raw choices. |
-| ONE-04 | Enrich the verdict with a consensus/polarization key, finalist context, and a safe group-finalist rank view. | The social result explains what agreement and a close call mean, including under reduced motion. |
+| ONE-04 | Replace normalized group scoring with the approved 5/4/3/2/1 top-five tally, full personal top-fives, and evidence-backed overlap/divergence views. | The score rule, ranks, ties, camps, wild cards, and no-consensus state are visible without raw activity choices or hidden group math. |
 | ONE-05 | Add one immutable post-reveal group decision: choose a finalist or `need-more-research`. | It never alters the blind ranking, exposes no activity-by-activity choices, and gives the group a clear next conversation. |
 
 Existing seeded weather, travel effort, and any available rough logistics appear only as labelled finalist context. There is no separate practical score or live airfare integration.
@@ -29,8 +31,8 @@ Existing seeded weather, travel effort, and any available rough logistics appear
 | Task | Work | Acceptance criteria |
 | --- | --- | --- |
 | MODEL-01 | Write the model ADR, fixed evaluation rubric, and versioned result snapshot contract. | Every result records the seed and ranking-model version needed for reproducibility. |
-| MODEL-02 | Implement a hierarchical or regularized Bradley–Terry model with activity, destination, and attribute effects. | Individual and group results use calibrated posterior preference estimates rather than only raw Elo-style scores. |
-| MODEL-03 | Calculate uncertainty/credible intervals for destination outcomes and the group-finalist boundary. | The API and UI can distinguish a clear favorite from a genuinely close call without pretending to know more than the data supports. |
+| MODEL-02 | Implement a hierarchical or regularized Bradley–Terry model with activity, destination, and attribute effects. | Each traveler's ranking uses calibrated posterior preference estimates rather than only raw Elo-style scores. |
+| MODEL-03 | Calculate uncertainty/credible intervals for each traveler's destination outcomes and top-five boundary. | The selector and stopping rule can distinguish a settled personal shortlist from genuinely close calls without exposing posterior math in the social reveal. |
 | MODEL-04 | Replace the coverage-only pair selector with an information-gain policy that balances uncertainty, destination coverage, diversity, and fatigue. | Later questions are measurably diagnostic, not merely unobserved. |
 | MODEL-05 | Replace the fixed heuristic stopping rule with a confidence-aware, bounded rule. | The round still has humane safeguards, but ends when the finalist boundary is stable rather than at an arbitrary exposure count. |
 | MODEL-06 | Run deterministic replay/simulation tests over representative synthetic preference profiles. | The upgraded model must improve finalist stability at equal or fewer choices; retain the current model as a reproducible baseline, not the production default. |

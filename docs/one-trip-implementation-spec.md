@@ -15,7 +15,8 @@ The current product boundary remains in force:
 - During comparisons, return only an activity ID, title, description, and opaque local image path. Destination names, countries, flags, coordinates, maps, ranks, scores, source credits, and destination IDs must never cross that API boundary.
 - Activity photography is an accepted soft cue. It must match the activity and have no visible credit or location metadata until the completion-gated atlas.
 - After a traveler completes, they may view the named but unranked atlas. Their own result, all other travelers’ outcomes, and all group outcomes remain sealed until every roster member completes and Dan opens the reveal.
-- The group reveal exposes group top five and each person’s top three only. It never exposes activity-by-activity choices or comparison history.
+- The group reveal exposes the crew's published top-five tally and every
+  person's top five, never activity-by-activity choices or comparison history.
 - The final decision is a post-reveal social input. It never changes blind choices, the model, or the group ranking.
 - The fixed roster is `dan`, `james`, `john`, `matt`, and `peter`. There are no invitations, groups, organizer console, content editor, practical-score engine, live logistics integration, or multi-trip support.
 
@@ -96,18 +97,18 @@ type PersonalResult = {
 };
 
 type GroupFinalist = {
-  rank: number;
+  rank: number; // a shared rank is allowed when published tiebreaks are exhausted
   id: string;
   name: string;
   country: string;
   imageUrl: string;
-  groupScore: number; // presentation scale, never described as probability
-  interval: { low: number; high: number };
-  consensus: 'broad-consensus' | 'mixed' | 'polarized';
+  points: number;
+  firstPlaceVotes: number;
+  topFiveSupporters: RosterUser[];
   context: { novemberWeather: string; travelFriction: number };
 };
 
-type FinalistRank = { user: RosterUser; rank: number | '6+' };
+type FinalistRank = { user: RosterUser; rank: 1 | 2 | 3 | 4 | 5 | 'outside-top-five' };
 
 type FinalDecisionChoice = string | 'need-more-research';
 type FinalDecision = {
@@ -117,7 +118,10 @@ type FinalDecision = {
 };
 ```
 
-`PersonalResult.interval` and `GroupFinalist.interval` are needed by rendering and tests, but the UI must not label them "probability", "percent chance", or a precision claim. API contracts may instead omit interval values from compact list responses and provide only confidence labels; do not invent a second client-side calculation.
+Individual result intervals remain private implementation evidence and may inform
+individual confidence copy. The group tally contract has no group interval,
+score normalization, or consensus classification; the UI must not invent a
+second client-side calculation.
 
 ### 3.2 Firestore layout
 
@@ -315,18 +319,17 @@ Extend `GET /v1/results/group` to read only the immutable reveal snapshot. It re
 type GroupResultsResponse = {
   snapshotId: string;
   modelVersion: string;
-  confidence: ResultConfidence;
   group: GroupFinalist[]; // exactly five, stable ordered
   members: Array<{
     user: RosterUser;
-    topThree: Array<{ rank: 1 | 2 | 3; id: string; name: string; imageUrl: string }>;
+    topFive: Array<{ rank: 1 | 2 | 3 | 4 | 5; id: string; name: string; imageUrl: string }>;
   }>;
   finalistRanks: Array<{
     destinationId: string; // one of group top five only
     ranks: FinalistRank[]; // rank 1–5, otherwise 6+
   }>;
   insights: Array<{
-    kind: 'consensus' | 'close-call' | 'polarization';
+    kind: 'shared-destination' | 'split-destination' | 'shared-theme' | 'contrasting-themes';
     title: string;
     body: string;
   }>;
@@ -336,23 +339,35 @@ type GroupResultsResponse = {
 
 Interpretation rules:
 
-- `clear-favorite`: posterior probability group rank 1 is at least 0.75 **and** posterior probability it outranks the runner-up is at least 0.85.
-- `close-call`: either condition fails. The UI says the group has a “close call,” not that it lacks a winner.
-- Per-finalist consensus is based on normalized per-user posterior score dispersion and worst ordinal rank across posterior draws. Tune the exact threshold only through the fixed simulation rubric. Values must be tested and documented in the model ADR; do not tune against a real user’s results.
-- Provide only one insight per kind and only if it meets its documented threshold. Never generate awards, dark horses, or claims unsupported by the stored model.
+- Each member contributes `5, 4, 3, 2, 1` points for personal ranks one through
+  five. Lower ranks contribute zero.
+- Destinations order by total points, then first-place votes, then total
+  top-five supporters. If all three values tie, they receive a shared displayed
+  rank.
+- Insights must be derived only from persisted top-five ranks and controlled
+  profile themes: shared destination (two+ supporters), strong shared
+  destination (three+ supporters), split destination (two+ supporters and
+  two+ outside-top-five placements), or shared/contrasting profile themes.
+  Omit unsupported observations; never generate an award or infer raw choice
+  history.
 
 #### UI
 
 The existing verdict becomes an explanatory social scene, not a dashboard.
 
 - Keep winning destination photography, top-five progressive reveal, and traveler cutouts.
-- Add a compact “How to read this” key:
-  - “Broad consensus: the destination works across the crew.”
-  - “Mixed: a good fit, with more variation.”
-  - “Close call: the model sees finalists that are genuinely near each other.”
-- Add a top-five “crew read” matrix. Rows are the five finalists; columns are the five traveler cutouts; cells show `#1`–`#5` or `6+`. It is post-reveal only and must not expose raw card choices.
-- Add a finalist detail drawer with cover photo, group label, weather, and travel-effort key (“1 = easier journey; 5 = bigger expedition; neither is a recommendation”). Do not add airfare, live travel time, a practical score, or an auto-book CTA.
-- Avoid a claim such as “without leaving anyone behind” unless the computed consensus criterion passes. Use the returned insight copy instead.
+- Add an always-visible “How points work” key: ranks one through five contribute
+  `5, 4, 3, 2, 1`; lower ranks contribute zero. Explain the two visible
+  tiebreaks and that an unresolved tie remains tied.
+- Add a top-five “crew read” matrix. Rows are the five scored destinations;
+  columns are the five traveler cutouts; cells show `#1`–`#5` or `outside top
+  five`. It is post-reveal only and must not expose raw card choices.
+- Add image-led personal top-five cards for every traveler and a finalist detail
+  drawer with cover photo, points, supporters, weather, and travel-effort key
+  (“1 = easier journey; 5 = bigger expedition; neither is a recommendation”).
+- Show no-consensus, two-camp, wild-card, near-tie, and split-destination
+  states as ordinary social outcomes. Do not use a hidden penalty, a group
+  posterior claim, or a claim that every person agrees.
 - Reduced-motion mode shows the complete ordered result immediately and removes auto-advancing/rotating scenes.
 
 ### ONE-05: Immutable post-reveal final decision
@@ -465,7 +480,7 @@ With 152 parameters, a dense `152 × 152` precision matrix is small enough for a
 
 The model must be deterministic for the same activity ordering, comparisons, config, and seed. Use a small seeded PRNG (for example Mulberry32 plus a deterministic Box–Muller normal sampler) rather than `Math.random()`.
 
-### 5.3 Destination, individual, and group outcomes
+### 5.3 Destination and individual outcomes
 
 Destination utility is the equal-weighted mean of all activity utilities in its seeded portfolio:
 
@@ -475,14 +490,16 @@ U_d = mean(u_i for every seeded activity i in destination d)
 
 This prevents a destination with more cards or one flashy card from gaining an unearned advantage. For each posterior draw, calculate all `U_d`, then rank. Compute the user’s model-scale destination interval from the 5th/95th percentiles of its draw values.
 
-For a group draw:
+For the group reveal, take each completed user's inferred ordered top five and
+apply the fixed `5, 4, 3, 2, 1` tally. Order by points, then first-place votes,
+then number of top-five supporters; retain a shared rank if still tied. This
+does not consume posterior draw values or normalize one person's utility scale
+against another's.
 
-1. Draw one posterior parameter vector for every completed user with a deterministic independent sub-seed (`snapshotSeed:user`).
-2. Calculate each user’s `U_d` and min–max normalize across the same 24 destinations in that draw. If range is numerically zero, use all `0.5` values and record a model warning.
-3. Calculate `meanPreference`, population standard deviation `polarization`, and `groupScore = meanPreference - 0.25 × polarization`.
-4. Rank the 24 group scores, preserving lexical destination-ID tiebreaking only for exact numeric ties.
-
-Store summary draws/quantiles needed for results, not raw parameter covariance, in result snapshots. The immutable snapshot must include selected top five, each user top five/top three, top-five membership probability, rank-one probability, rank-five boundary probability, group intervals, consensus labels, profile facts, and a non-sensitive diagnostics object (`converged`, iterations, warnings, draw count).
+Store individual summary evidence needed for safe personal results, plus the
+immutable personal top fives, tally totals, supporter sets, visible rank matrix,
+and evidence-backed social insights. Do not persist raw parameter covariance or
+expose raw comparison choices.
 
 ### 5.4 Calibrated uncertainty and copy
 
@@ -490,8 +507,6 @@ Use posterior draws for user-facing confidence categories:
 
 - Individual `clear-shape`: the current top-five set appears in at least 80% of posterior draws and the fifth-versus-sixth score margin is positive in at least 85%.
 - Individual `close-call`: otherwise, including a forced maximum stop.
-- Group `clear-favorite`: criteria defined in ONE-04 above.
-- Group `close-call`: otherwise.
 
 The UI only shows controlled language:
 

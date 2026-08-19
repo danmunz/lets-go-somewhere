@@ -19,7 +19,10 @@ comparison complete → profile → atlas (unranked) ↔ waiting
 - **Profile always precedes the first atlas entry.** It is destination-free.
 - **The atlas is completion-gated but not result-gated.** It may name destinations, show maps, galleries, and credits, but it must say that every place is still in play and may not imply an order or fit.
 - **Personal results, the crew-read matrix, final decision, and all preference explanations are post-reveal only.** The reveal is open only after all five complete and Dan opens it.
-- Never expose raw cards, raw activity selections, comparison histories, model parameters, score values, interval values, or another person's individual result beyond their post-reveal top three and the permitted finalist-rank matrix.
+- Never expose raw cards, raw activity selections, comparison histories, model
+  parameters, normalized utilities, interval values, or another person's
+  individual result beyond their post-reveal top five and the permitted
+  finalist-rank matrix.
 - Comparison cards remain destination blind. These screens must not be repurposed to show character art on a blind card or any destination metadata before completion.
 
 ### Typography, contrast, and motion baseline
@@ -163,15 +166,11 @@ Use human language such as **Strong match**, **A close contender**, and the API'
 
 The existing verdict remains a dramatic shared reveal: large cover photography, the title **The verdict**, top-five progression, and traveler cutouts. Add content in progressive layers so it stays a scene rather than turning into analytics UI.
 
-1. **Hero / winner:** retain the winner photo and an image wash that meets contrast. Display group confidence copy beneath the winner name; use **Clear favorite** or **Close call** exactly as returned, supported by a sentence. Do not display numerical confidence.
-2. **How to read this:** a compact, always-visible key after the opening result:
-   - **Broad consensus** — “This destination works across the crew.”
-   - **Mixed** — “A good fit, with more variation across the crew.”
-   - **Close call** — “The model sees finalists that are genuinely near each other.”
-   Use icon + label + text; do not use color-only meaning.
-3. **Top five:** retain image-led rank cards. A card's label is returned consensus text. Selecting a card opens the finalist-detail drawer; it does not rearrange the list or suggest voting.
-4. **Crew read:** place after top five as a card-like `table`, not a decorative grid. Rows are finalists in group order; column headers contain each traveler cutout and visible name; cells read `#1`–`#5` or `6+`. A screen-reader caption states: **“How each traveler ranked the group’s five finalists after the reveal.”** Never put a color scale alone in cells.
-5. **Crew top threes:** retain current individual top-three cards; they show only named place, rank, and cover image. These are post-gate only.
+1. **Hero / points leader:** retain the winner photo and an image wash that meets contrast. Label it **The crew's strongest shared pull** and state its points, first-place votes, and top-five supporters. A near tie never receives a false “winner” claim.
+2. **How points work:** an always-visible compact key says `#1 = 5 … #5 = 1; outside a top five = 0`, followed by the two tiebreaks. Use icon + label + text; do not use color-only meaning.
+3. **Top five:** retain image-led cards. Each shows points, first-place votes, and supporter cutouts; an unresolved tie is visibly shared. Selecting a card opens the finalist-detail drawer without rearranging the list or suggesting voting.
+4. **Crew read:** place after top five as a card-like `table`, not a decorative grid. Rows are finalists in tally order; column headers contain each traveler cutout and visible name; cells read `#1`–`#5` or `outside top five`. A screen-reader caption states: **“How each traveler ranked the crew's scored destinations after the reveal.”** Never put a color scale alone in cells.
+5. **Everyone's maps:** show five personal top-five cards, with each traveler's cutout, rank, place, and cover image. These are post-gate only.
 6. **Decision call:** follows the matrix and detail content, never precedes the top five.
 
 #### Finalist detail drawer
@@ -260,4 +259,3 @@ No automatic animation may delay a CTA, obscure text, or prevent reading a resul
 - [ ] Desktop visible text honours the 20px floor; mobile meets readable-body and 44px target requirements.
 - [ ] Keyboard focus is conspicuous; dialogs trap and restore focus; all dynamic state has the specified live-region treatment.
 - [ ] Reduced-motion, network, auth, 403/409/423, map, and image fallback states preserve a useful path forward.
-

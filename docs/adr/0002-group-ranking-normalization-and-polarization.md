@@ -1,5 +1,8 @@
 # ADR 0002: Aggregate normalized preferences with a polarization penalty
 
+> **Status: Superseded by ADR 0004.** Retained only as historical context for
+> snapshots created before the approved transparent social-ballot reveal.
+
 **Status:** Accepted — 2026-08-18
 
 ## Context

@@ -978,42 +978,20 @@ Practical factors should not contaminate destination-blind comparison questions.
 
 ---
 
-## 11. Group Ranking
+## 11. Group Reveal Tally
 
-Each user first receives an individual normalized destination model.
+The individual inference engine produces each roster member's ordered top five.
+The immutable reveal snapshot converts those five ballots into the sole group
+ordering: rank one through five receive `5, 4, 3, 2, 1` points and every other
+destination receives zero. The API persists each finalist's point total,
+first-place count, top-five supporters, the visible per-member placements, and
+evidence-backed social insights. Equal totals resolve by first-place votes,
+then top-five appearances; otherwise the shared rank is retained.
 
-Example:
-
-```text
-Dan
-Antigua     1.00
-Quito       0.92
-Medellín    0.76
-
-Mike
-Quito       1.00
-Antigua     0.96
-Medellín    0.83
-```
-
-Group-level metrics should include:
-
-- mean normalized preference;
-- average ordinal rank;
-- worst individual rank;
-- variance / polarization.
-
-A simple group score may initially be:
-
-```text
-groupScore
-=
-meanPreference
--
-polarizationPenalty
-```
-
-This should favor a destination everyone likes over one that some members love and others strongly dislike.
+This boundary is intentional: individual Bayesian/uncertainty-aware modeling
+is retained for efficient personal preference elicitation, while the group
+result is a readable social ballot rather than normalized utility aggregation,
+variance, or a polarization penalty.
 
 ---
 

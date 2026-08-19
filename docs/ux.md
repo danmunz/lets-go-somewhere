@@ -1214,7 +1214,10 @@ Make the waiting screen itself socially useful by making it easy to prod the hol
 
 Provide the second major payoff: what the five people collectively prefer.
 
-**Implementation status:** the shipped verdict presents a winning cover image, group top five, a consensus/polarization cue, and every traveler's top three. The fuller matrix, group awards, practical constraints, sharing, detailed destination view, and final decision actions below remain planned work.
+**Implementation status:** the current local verdict is being replaced by the
+transparent points reveal below. It will show all five travelers' personal top
+fives, the published tally, social overlap/divergence notes, and the immutable
+post-reveal decision. Raw activity choices remain private.
 
 ## Required information
 
@@ -1222,19 +1225,23 @@ Provide the second major payoff: what the five people collectively prefer.
 
 > **The verdict**
 
-### Consensus winner
+### Crew points leader
 
 Large visual treatment.
 
 > **#1 Antigua, Guatemala**
 
-### Group ranking
+### Crew scoreboard
 
-All destinations.
+Show the five destinations with the highest fixed top-five tally, their point
+total, first-place-vote count, and supporter avatars. Explain the rule in
+place: `#1 = 5 points … #5 = 1 point; outside a top five = 0`.
 
 ### Per-person rankings (with Micro-Avatars)
 
-For top candidates, displaying each traveler's micro-avatar badge:
+For the five-scoreboard destinations, display each traveler's ordinal placement
+(`#1` through `#5`, or `outside top five`) with a micro-avatar badge. Also show
+each traveler's complete personal top five as an image-led character card.
 
 | Traveler | Antigua | Quito | Guanajuato |
 |---|---:|---:|---:|
@@ -1244,18 +1251,27 @@ For top candidates, displaying each traveler's micro-avatar badge:
 | 🏔️ **Matt** | #1 | #4 | #2 |
 | 📷 **Peter** | #3 | #2 | #6 |
 
-### Group insights
+### Shared threads and divergences
 
-- Consensus favorite
-- Most universally liked
-- Most polarizing
-- Dark horse
-- Strongest veto
-- Shared experience preference
+Generate only evidence-backed observations. The reveal may identify a shared
+destination (two or more top-five placements), a strong shared destination
+(three or more), a split destination (at least two top-five placements and at
+least two people outside the top five), or shared/contrasting profile themes.
+It must show the named ranks that support the statement and omit a category
+when no evidence exists.
 
-Example:
+Preference-shape presentation is a success criterion:
 
-> **Apparently all five of you want to climb a volcano.**
+- A broad leader is framed as “the crew's strongest shared pull.”
+- Near leaders are presented as a “shared shortlist,” not visually exaggerated
+  as decisive ranks.
+- A personal #1 with no support is celebrated as that traveler's “personal
+  wild card,” without inflating its group standing.
+- Two camps are shown as two trip moods with their supporting avatars.
+- No top-five overlap is framed as “a true group decision”; show every #1 and
+  center the final discussion action rather than inventing consensus.
+- An unresolved published tally tie stays a tie and receives side-by-side
+  treatment.
 
 ### Practical constraints
 
@@ -1290,11 +1306,11 @@ Allow the group to understand why a particular destination ranks where it does.
 
 For a destination:
 
-### Overall group rank
+### Crew tally placement
 
 ### Each user's individual rank
 
-### Preference distribution
+### Visible rank distribution
 
 Example:
 
@@ -1306,9 +1322,11 @@ Alex      95
 Sam       88
 ```
 
-### Polarization
+### Social read
 
-**Very low**
+Show supporter avatars and the plain-language rank pattern, such as “ranked
+#1 by Dan and James; outside Peter's top five.” Do not calculate or display a
+polarization score.
 
 ### Activities
 

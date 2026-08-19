@@ -10,14 +10,20 @@ This is the operational status companion to the product specification. It record
 - 24 seeded destinations and 120 validated activity comparisons, with backend-owned deterministic scoring, pair selection, and 24–40 comparison stopping rules.
 - Destination-safe comparison responses: activity ID, title, description, and opaque local image path only.
 - Completion-gated atlas with named destinations, coordinates, real MapLibre map, galleries, and Unsplash credits; no personal or group result data before reveal.
-- Dan-controlled group reveal after every roster member is complete, with group top five and each member's post-reveal top three.
+- Dan-controlled group reveal after every roster member is complete, with a
+  public top-five points scoreboard and each member's post-reveal top five.
 - Responsive character-select, comparison, atlas, and result surfaces with keyboard focus and reduced-motion behavior.
 
 ## Intentional V3/V4 product decisions
 
 Destination photography is permitted during comparisons as a deliberately accepted soft geographic cue. The experience still withholds destination names, countries, flags, airport codes, maps, ranks, scores, coordinates, and credit metadata during play. Photography, mapping, and credits become available only in the completion-gated atlas.
 
-The current reveal exposes group top five and each traveler's top three, never raw activity-by-activity choices. Group order is derived from normalized individual destination scores minus the documented polarization penalty.
+The group reveal is intentionally a transparent social ballot: each person's
+inferred ranks one through five contribute `5, 4, 3, 2, 1` points, lower ranks
+contribute zero, and published ties remain ties if first-place and top-five
+count tiebreaks cannot resolve them. It exposes no raw activity-by-activity
+choices, normalized utilities, polarization penalties, or group confidence
+claims.
 
 ## Implemented but unreleased one-trip work
 

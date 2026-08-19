@@ -953,63 +953,35 @@ Example:
 
 # 37. Group Ranking
 
-After all five travelers complete the game, aggregate their models.
-
-Each user should first have their destination scores normalized.
-
-Example:
-
-```text
-Dan
-Antigua  1.00
-Quito    0.91
-Lima     0.63
-...
-
-Alex
-Quito    1.00
-Antigua  0.95
-Lima     0.72
-...
-```
-
-Then compute group metrics.
+After all five travelers complete the game, use each person's inferred
+destination order as an explicit, social ballot. The individual preference
+model remains responsible for learning that order from blind comparisons; the
+group reveal does **not** build a second synthetic group utility model.
 
 ---
 
 # 38. Group Scoring
 
-Recommended group calculations:
+The one-trip tally is fixed, visible, and deliberately simple:
 
-### Mean preference score
+| Personal rank | Points |
+| --- | ---: |
+| #1 | 5 |
+| #2 | 4 |
+| #3 | 3 |
+| #4 | 2 |
+| #5 | 1 |
+| Below #5 | 0 |
 
-Overall appeal.
+Add those points across the five fixed roster members and order destinations
+by total. A tie is resolved by more first-place votes, then more top-five
+appearances. If those are still tied, retain a shared rank rather than apply a
+hidden mathematical tiebreaker.
 
-### Average rank
-
-Simple and understandable.
-
-### Worst individual rank
-
-Useful for identifying veto risk.
-
-### Variance
-
-Useful for identifying polarization.
-
-The group winner should favor destinations that everyone likes rather than destinations that two people love and two people hate.
-
-A possible group score:
-
-```text
-Group score
-=
-Mean preference
--
-Polarization penalty
-```
-
-The penalty can be tuned.
+This is a transparent conversation aid, not a claim that the points leader is
+an objectively optimal group recommendation. Normalized scores, a
+polarization penalty, and group-level confidence intervals are not part of the
+public group result.
 
 ---
 
@@ -1019,9 +991,9 @@ Example:
 
 > # THE VERDICT
 
-## 🥇 Antigua
+## 🥇 Antigua — 17 crew points
 
-**Everyone ranked it in their top 4.**
+**Four people placed it in their top five; two made it their first pick.**
 
 ```text
 Dan       #1
@@ -1034,11 +1006,11 @@ Sam       #3
 Then:
 
 ```text
-1. Antigua
-2. Quito
-3. Guanajuato
-4. Medellín
-5. Lima
+1. Antigua — 17 points
+2. Quito — 15 points
+3. Guanajuato — 12 points
+4. Medellín — 10 points
+5. Lima — 9 points
 ...
 ```
 
