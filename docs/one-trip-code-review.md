@@ -53,3 +53,48 @@ Consequently the same opened envelope can show a group verdict from one immutabl
 ## Release-readiness assessment
 
 **Code-review findings resolved; release remains blocked.** Run the emulator and five-identity rehearsal gates required by OT-21 through OT-26. The documented model-evaluation report is independently **FAIL — DO NOT PROMOTE**; it remains a hard release gate because the required advanced ranking has not yet cleared its synthetic evidence threshold.
+
+## Transparent social-ballot audit — 2026-08-19
+
+**Review scope:** RG-01 against the persisted v2 snapshot reader, social tally,
+result DTOs, result routes, and final-decision repository. This review was
+performed independently of the social-ballot implementation.
+
+### Confirmed findings
+
+#### BUG-004 — Legacy reveals could accept a new final decision
+
+**Priority:** Must-Fix
+**Resolution:** Resolved in the RG-01 audit change set.
+**Files:** `backend/src/app.ts`, `backend/tests/release-audit.test.ts`
+
+The legacy safe-fail policy covered personal and group result routes, but not
+the final-decision GET/POST routes. A valid persisted v1 reveal could therefore
+create a new discussion decision despite the documented read-only migration
+policy. Both endpoints now perform the snapshot seed/version check and return
+the same non-revealing `temporarily-unavailable` response for v1 without
+writing a decision.
+
+#### BUG-005 — A persisted decision was not bound on read to the open snapshot
+
+**Priority:** Must-Fix
+**Resolution:** Resolved in the RG-01 audit change set.
+**Files:** `backend/src/store.ts`, `backend/src/app.ts`, `backend/tests/release-audit.test.ts`
+
+Although decision creation used the current snapshot's finalist list, a
+corrupted or stale `lgsV4FinalDecisions/{user}` document could later be read
+without confirming its `snapshotId` or choice still matched the open reveal.
+Repository reads and repeat-write conflict checks now validate both facts. Any
+inconsistency fails closed through a non-revealing 503 route response.
+
+### Evidence
+
+- Focused audit suite: `npm test -- --run backend/tests/release-audit.test.ts backend/tests/store.test.ts backend/tests/final-decision.test.ts backend/tests/results/social-ballot.test.ts` — **33 tests passed**.
+- `npm run typecheck` — passed.
+- `git diff --check` — passed.
+
+The audit confirms that malformed v2 tallies, stale final decisions, and valid
+v1 final-decision attempts fail safely. The preflight/reset guard, Firestore
+emulator persistence proof, browser rehearsal, and individual-model promotion
+remain separate unfinished release gates; this audit does not authorize a
+deployment.

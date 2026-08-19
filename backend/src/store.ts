@@ -609,6 +609,23 @@ function choiceIsAllowed(snapshot: StoredRevealSnapshot, choice: FinalDecisionCh
 }
 
 /**
+ * A final-decision document is only meaningful for the one immutable reveal
+ * it names.  Validate that relationship again on every read so manually
+ * corrupted or stale persisted data cannot be rendered as part of a newer
+ * reveal.
+ */
+function readDecisionForSnapshot(user: RosterUser, value: unknown, snapshot: StoredRevealSnapshot): StoredFinalDecision {
+  const decision = readStoredFinalDecision(user, value);
+  if (decision.snapshotId !== snapshot.snapshotId) {
+    throw new StoreDataError(`Invalid persisted final decision for ${user}: snapshot ID must match the open reveal.`);
+  }
+  if (!choiceIsAllowed(snapshot, decision.choice)) {
+    throw new StoreDataError(`Invalid persisted final decision for ${user}: choice is not allowed by the open reveal.`);
+  }
+  return decision;
+}
+
+/**
  * Records a traveler's post-reveal discussion stance exactly once. The choice
  * is validated against the stored snapshot rather than a caller's current
  * ranking so it cannot alter the blind result or drift after reveal.
@@ -654,7 +671,7 @@ export const createFinalDecision = async (user: RosterUser, value: FinalDecision
     ]);
     if (!snapshotResult.exists) throw new StoreDataError(`Reveal references missing result snapshot ${state.snapshotId}.`);
     const snapshot = readStoredRevealSnapshot(state.snapshotId, snapshotResult.data());
-    const existing = existingResult.exists ? readStoredFinalDecision(user, existingResult.data()) : undefined;
+    const existing = existingResult.exists ? readDecisionForSnapshot(user, existingResult.data(), snapshot) : undefined;
     const decision = create(snapshot, existing, new Date().toISOString());
     transaction.create(finalDecisionDocument(user), decision);
     return decision;
@@ -665,9 +682,12 @@ export const createFinalDecision = async (user: RosterUser, value: FinalDecision
 export const getFinalDecision = async (user: RosterUser): Promise<StoredFinalDecision | undefined> => {
   const snapshot = await getRevealSnapshot();
   if (!snapshot) return undefined;
-  if (!shouldUseFirestore()) return memoryFinalDecisions.get(user);
+  if (!shouldUseFirestore()) {
+    const decision = memoryFinalDecisions.get(user);
+    return decision ? readDecisionForSnapshot(user, decision, snapshot) : undefined;
+  }
   const document = await finalDecisionDocument(user).get();
-  return document.exists ? readStoredFinalDecision(user, document.data()) : undefined;
+  return document.exists ? readDecisionForSnapshot(user, document.data(), snapshot) : undefined;
 };
 
 export const getAllFinalDecisions = async (): Promise<StoredFinalDecision[]> => {
@@ -675,7 +695,7 @@ export const getAllFinalDecisions = async (): Promise<StoredFinalDecision[]> => 
   if (!snapshot) return [];
   if (!shouldUseFirestore()) return ROSTER.flatMap((user) => {
     const decision = memoryFinalDecisions.get(user);
-    return decision ? [decision] : [];
+    return decision ? [readDecisionForSnapshot(user, decision, snapshot)] : [];
   });
   return (await Promise.all(ROSTER.map((user) => getFinalDecision(user)))).flatMap((decision) => decision ? [decision] : []);
 };
@@ -695,6 +715,11 @@ export const __storeTest = {
   getMemoryUserDocument(user: RosterUser): RawUserDocument | undefined { return memoryUsers.get(user); },
   getMemoryRevealState(): StoredRevealState { return structuredClone(memoryRevealState); },
   getMemorySnapshot(snapshotId: string): VersionedResultSnapshot | undefined { return memoryResultSnapshots.get(snapshotId); },
+  setMemoryRevealSnapshot(snapshotId: string, value: VersionedResultSnapshot, openedAt = new Date().toISOString()) {
+    memoryResultSnapshots.set(snapshotId, value);
+    memoryRevealState = { open: true, openedAt, snapshotId };
+  },
   getMemoryFinalDecision(user: RosterUser): StoredFinalDecision | undefined { return memoryFinalDecisions.get(user); },
+  setMemoryFinalDecision(user: RosterUser, value: StoredFinalDecision) { memoryFinalDecisions.set(user, value); },
   setCurrentSeedVersion(version: string | undefined) { testSeedVersionOverride = version; },
 };

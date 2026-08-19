@@ -35,6 +35,14 @@ import {
 } from './dto/one-trip.js';
 
 export const app = new Hono<{ Variables: { user: RosterUser } }>();
+app.onError((error, context) => {
+  // Persisted snapshot or decision corruption must fail closed without
+  // returning schema internals, document IDs, or comparison information.
+  if (error instanceof StoreDataError) {
+    return context.json({ code: 'temporarily-unavailable', error: 'This trip data is temporarily unavailable. Ask the organizer for help.' }, 503);
+  }
+  return context.json({ code: 'temporarily-unavailable', error: 'The trip is temporarily unavailable. Please try again shortly.' }, 503);
+});
 app.get('/health', (context) => context.json({ ok: true }));
 app.use('*', async (context, next) => {
   const user = await authenticate(context.req.header('Authorization'), context.req.header('X-Demo-User'));
@@ -167,6 +175,10 @@ app.get('/v1/results/group', async (context) => {
 app.get('/v1/final-decision', async (context) => {
   const snapshot = await getRevealSnapshot();
   if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
+  assertRevealSnapshotSeedVersionCompatible(snapshot);
+  if (snapshot.schemaVersion === 1) {
+    return context.json({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' }, 503);
+  }
   const user = context.get('user') as RosterUser;
   return context.json(buildFinalDecisionResponse(await getFinalDecision(user), await getAllFinalDecisions()));
 });
@@ -176,6 +188,12 @@ app.post('/v1/final-decision', async (context) => {
   try { body = await context.req.json(); } catch { return context.json({ code: 'invalid-request', error: 'Final decision body must be JSON.' }, 400); }
   const parsed = finalDecisionRequestSchema.safeParse(body);
   if (!parsed.success) return context.json({ code: 'invalid-request', error: 'Choose a finalist or need-more-research.' }, 400);
+  const snapshot = await getRevealSnapshot();
+  if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
+  assertRevealSnapshotSeedVersionCompatible(snapshot);
+  if (snapshot.schemaVersion === 1) {
+    return context.json({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' }, 503);
+  }
   const user = context.get('user') as RosterUser;
   try {
     const decision = await createFinalDecision(user, parsed.data.choice);
