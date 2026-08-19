@@ -428,6 +428,150 @@ export const groupResultsResponseSchema = z
   .strict();
 export type GroupResultsResponse = z.infer<typeof groupResultsResponseSchema>;
 
+/**
+ * Version 2 is the transparent social ballot.  These contracts deliberately
+ * live alongside the v1 response during migration: an already-open v1 reveal
+ * remains readable, while new reveal creation may only use the v2 snapshot.
+ */
+export const socialBallotRankSchema = z.union([z.number().int().min(1).max(5), z.literal('outside-top-five')]);
+export type SocialBallotRank = z.infer<typeof socialBallotRankSchema>;
+
+const exactlyFiveUniqueIds = (value: readonly string[]) =>
+  value.length === 5 && new Set(value).size === 5;
+
+export const socialBallotTopFiveSchema = z
+  .array(z.string().min(1))
+  .length(5)
+  .refine(exactlyFiveUniqueIds, 'A top-five ballot must contain five distinct destination IDs.');
+
+export const socialBallotUserSchema = z
+  .object({
+    topFive: socialBallotTopFiveSchema,
+    // These are controlled labels derived from the existing preference
+    // profile, never free-form explanations of an individual comparison.
+    profileThemes: z.array(z.string().min(1)).min(1).max(5),
+  })
+  .strict();
+export type SocialBallotUser = z.infer<typeof socialBallotUserSchema>;
+
+export const socialBallotUsersSchema = z
+  .object({
+    dan: socialBallotUserSchema,
+    james: socialBallotUserSchema,
+    john: socialBallotUserSchema,
+    matt: socialBallotUserSchema,
+    peter: socialBallotUserSchema,
+  })
+  .strict();
+export type SocialBallotUsers = z.infer<typeof socialBallotUsersSchema>;
+
+export const transparentGroupFinalistSchema = z
+  .object({
+    // This is a displayed rank. It may be shared when every published
+    // tiebreaker is equal; it is not an ordinal array index.
+    rank: z.number().int().min(1).max(5),
+    id: z.string().min(1),
+    points: z.number().int().min(0).max(25),
+    firstPlaceVotes: z.number().int().min(0).max(ROSTER_USERS.length),
+    topFiveSupporters: z.array(rosterUserSchema).max(ROSTER_USERS.length),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (new Set(value.topFiveSupporters).size !== value.topFiveSupporters.length) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Top-five supporters must be unique.' });
+    }
+  });
+export type TransparentGroupFinalist = z.infer<typeof transparentGroupFinalistSchema>;
+
+export const transparentFinalistRankRowSchema = z
+  .object({
+    destinationId: z.string().min(1),
+    ranks: z
+      .array(
+        z
+          .object({ user: rosterUserSchema, rank: socialBallotRankSchema })
+          .strict(),
+      )
+      .length(ROSTER_USERS.length),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (!hasEveryRosterUserExactlyOnce(value.ranks)) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Each finalist row must include every roster user once.' });
+    }
+  });
+export type TransparentFinalistRankRow = z.infer<typeof transparentFinalistRankRowSchema>;
+
+export const groupDisplayModeSchema = z.enum(['broad-leader', 'near-tie', 'no-consensus', 'shared-shortlist']);
+export type GroupDisplayMode = z.infer<typeof groupDisplayModeSchema>;
+
+export const groupInsightSchema = z
+  .object({
+    kind: z.enum([
+      'shared-destination',
+      'strong-shared-destination',
+      'split-destination',
+      'shared-theme',
+      'contrasting-themes',
+      'two-camps',
+      'wild-card',
+    ]),
+    title: z.string().min(1),
+    body: z.string().min(1),
+    destinationIds: z.array(z.string().min(1)).min(1).max(2).optional(),
+    users: z.array(rosterUserSchema).min(1).max(ROSTER_USERS.length),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (new Set(value.users).size !== value.users.length) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Insight users must be unique.' });
+    }
+  });
+export type GroupInsight = z.infer<typeof groupInsightSchema>;
+
+export const transparentGroupResultsResponseSchema = z
+  .object({
+    snapshotId: z.string().min(1),
+    modelVersion: z.string().min(1),
+    displayMode: groupDisplayModeSchema,
+    group: z
+      .array(transparentGroupFinalistSchema.and(
+        z.object({
+          name: z.string().min(1),
+          country: z.string().min(1),
+          imageUrl: localMediaPathSchema,
+          context: resultContextSchema,
+        }).strict(),
+      ))
+      .length(5),
+    members: z
+      .array(
+        z
+          .object({
+            user: rosterUserSchema,
+            topFive: z
+              .array(
+                z
+                  .object({
+                    rank: z.number().int().min(1).max(5),
+                    id: z.string().min(1),
+                    name: z.string().min(1),
+                    imageUrl: localMediaPathSchema,
+                  })
+                  .strict(),
+              )
+              .length(5),
+          })
+          .strict(),
+      )
+      .length(ROSTER_USERS.length),
+    finalistRanks: z.array(transparentFinalistRankRowSchema).length(5),
+    insights: z.array(groupInsightSchema).max(3),
+    decisions: z.array(finalDecisionRecordSchema).max(ROSTER_USERS.length),
+  })
+  .strict();
+export type TransparentGroupResultsResponse = z.infer<typeof transparentGroupResultsResponseSchema>;
+
 export const modelDiagnosticsSchema = z
   .object({
     converged: z.boolean(),
@@ -516,6 +660,58 @@ export const resultSnapshotSchema = z
   })
   .strict();
 export type ResultSnapshot = z.infer<typeof resultSnapshotSchema>;
+
+/** Explicit name for the immutable legacy reader. New snapshots must not use it. */
+export const legacyResultSnapshotSchema = resultSnapshotSchema;
+export type LegacyResultSnapshot = ResultSnapshot;
+
+export const transparentGroupBallotSchema = z
+  .object({
+    finalists: z.array(transparentGroupFinalistSchema).length(5),
+    finalistRanks: z.array(transparentFinalistRankRowSchema).length(5),
+    displayMode: groupDisplayModeSchema,
+    insights: z.array(groupInsightSchema).max(3),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    const finalistIds = value.finalists.map((finalist) => finalist.id);
+    if (new Set(finalistIds).size !== finalistIds.length) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'A social ballot must store five distinct finalists.' });
+    }
+    const matrixIds = value.finalistRanks.map((row) => row.destinationId);
+    if (matrixIds.length !== finalistIds.length || matrixIds.some((id) => !finalistIds.includes(id))) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: 'Finalist rank rows must exactly match stored finalists.' });
+    }
+  });
+export type TransparentGroupBallot = z.infer<typeof transparentGroupBallotSchema>;
+
+/**
+ * The only persisted shape valid for new social-ballot creation.  The legacy
+ * v1 reader above is intentionally not part of this creation schema.
+ */
+export const transparentResultSnapshotSchema = z
+  .object({
+    schemaVersion: z.literal(2),
+    modelVersion: z.string().min(1),
+    seedVersion: z.string().regex(/^[a-f0-9]{64}$/i, 'Seed version must be a SHA-256 digest.'),
+    inputDigest: z.string().regex(/^[a-f0-9]{64}$/i, 'Input digest must be a SHA-256 digest.'),
+    createdAt: z.string().datetime({ offset: true }),
+    users: socialBallotUsersSchema,
+    group: transparentGroupBallotSchema,
+  })
+  .strict();
+export type TransparentResultSnapshot = z.infer<typeof transparentResultSnapshotSchema>;
+
+/** Reads an immutable snapshot of either era; callers must branch on schemaVersion. */
+export const resultSnapshotReaderSchema = z.discriminatedUnion('schemaVersion', [
+  legacyResultSnapshotSchema,
+  transparentResultSnapshotSchema,
+]);
+export type VersionedResultSnapshot = z.infer<typeof resultSnapshotReaderSchema>;
+
+/** New snapshot writes are v2-only. */
+export const resultSnapshotCreationSchema = transparentResultSnapshotSchema;
+export type ResultSnapshotCreation = z.infer<typeof resultSnapshotCreationSchema>;
 
 export const apiErrorCodeSchema = z.enum([
   'unauthorized',
