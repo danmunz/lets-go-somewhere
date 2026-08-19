@@ -21,6 +21,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - An offline, regularized preference-model candidate with posterior uncertainty, information-gain selection, confidence-aware stopping, deterministic fixtures, and a fail-closed promotion report.
 - A repeatable Auth/Firestore Emulator transaction suite that verifies atomic concurrent submissions and stale-offer protection against the real repository adapter.
 - A deterministic adaptive-policy audit runner that exercises information-gain selection on generated trajectories instead of only a frozen baseline schedule.
+- A resumable, input-fingerprinted full-policy evidence harness that uses the real fit, information-gain selector, 512-draw posterior/stopping path, and strict comparison-DTO redaction audit. Its smoke result is evidence only; the complete model promotion audit remains blocked.
 
 ### Changed
 
