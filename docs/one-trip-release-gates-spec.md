@@ -138,8 +138,8 @@ The rehearsal must prove:
 - selection/account mismatch is recoverable; each identity can resume an
   unexpired pending pair after refresh; stale and duplicate submissions do
   not append twice;
-- progress is truthful from the 24-answer minimum through the selected
-  bounded stopping result; completion reaches profile, atlas, and waiting
+- progress truthfully advances from `0 of 32 choices` through `32 of 32
+  choices`; completion reaches profile, atlas, and waiting
   without leaking personal or group ranks;
 - the atlas works with map/list synchronization and remains usable under its
   documented map/image fallback;
