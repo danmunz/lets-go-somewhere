@@ -43,7 +43,9 @@ Treat these files as product content: activity wording must preserve destination
 
 1. `npm install`
 2. `npm run validate:seed && npm test && npm run typecheck && npm run build`
-3. In one terminal run `npm run dev -w backend`; in another run `npm run dev -w frontend`.
+3. For a local demo, run `LGS_TEST_MODE=demo PORT=8788 npm run dev -w backend`, then `LGS_API_ORIGIN=http://127.0.0.1:8788 npm run dev -w frontend` in another terminal. The demo adapter is local-only and is rejected on Cloud Run.
+
+For a no-data visual walkthrough, open `http://127.0.0.1:5173/?fixture=trip-preview`. Its screen picker previews choice cards, profile, atlas, partial/all-five waiting states, reveal, and a personal shortlist without calling the API or recording choices. It is excluded from production builds.
 
 Production uses Firebase Google sign-in and Firestore-backed responses; local development may use the explicitly non-production identity adapter. See [docs/deployment.md](docs/deployment.md) for the deployed environment and release checks.
 

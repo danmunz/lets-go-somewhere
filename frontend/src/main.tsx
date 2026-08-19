@@ -17,6 +17,7 @@ import { AppStateNotice, CompletedTransition, MediaImage, TravelEffortKey } from
 import { getRestoredGoogleToken, signInWithGoogle } from './firebase.js';
 import { MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
+import { DevPreview } from './DevPreview.js';
 import type { AppScreen } from './types.js';
 import './app.css';
 
@@ -113,7 +114,9 @@ const fixtureAvatar = (id: RosterUser) => travelerById(id).image;
 // Local visual-QA route only. It uses deterministic, post-gate fixture data
 // and is excluded from production behavior by the Vite DEV guard above.
 const root = createRoot(document.getElementById('root')!);
-if (fixtureMode === 'transparent-reveal') {
+if (fixtureMode === 'trip-preview') {
+  root.render(<DevPreview />);
+} else if (fixtureMode === 'transparent-reveal') {
   const displayMode = fixtureOverlay === 'near-tie' ? 'near-tie' : fixtureOverlay === 'no-consensus' ? 'no-consensus' : fixtureOverlay === 'broad-leader' ? 'broad-leader' : 'shared-shortlist';
   const socialOverlay = fixtureOverlay === 'wild-card' || fixtureOverlay === 'two-camps' || fixtureOverlay === 'split' ? fixtureOverlay : undefined;
   root.render(<VerdictScreen results={createVerdictFixture(displayMode, socialOverlay)} currentUser="dan" travelerName={(id) => fixtureTravelerNames[id]} avatarFor={fixtureAvatar} onOpenMyResults={() => undefined} onRecordDecision={async (choice) => ({ user: 'dan', choice, createdAt: '2026-08-19T00:00:00.000Z' })} />);
