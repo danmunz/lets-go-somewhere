@@ -20,6 +20,8 @@ export const atlasMapInset = (isCompact: boolean) => isCompact
   ? { top: 64, right: 24, bottom: 360, left: 24 }
   : { top: 76, right: 480, bottom: 76, left: 360 };
 
+export const atlasHasExpectedMarkerCount = (markerCount: number, destinationCount: number) => markerCount === destinationCount;
+
 export function atlasFallbackShouldTakeFocus(failure: AtlasMapFailure): boolean {
   return failure.retryAttempted;
 }
@@ -38,6 +40,7 @@ export function AtlasMap({ destinations, activeId, onSelect }: Props) {
   const initializedActiveId = useRef<string | undefined>(undefined);
   const [failure, setFailure] = useState<AtlasMapFailure | null>(null);
   const [ready, setReady] = useState(false);
+  const [markerCount, setMarkerCount] = useState(0);
   const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => { onSelectRef.current = onSelect; }, [onSelect]);
@@ -55,26 +58,37 @@ export function AtlasMap({ destinations, activeId, onSelect }: Props) {
       const compact = window.matchMedia?.('(max-width: 1023px)').matches ?? false;
       instance.fitBounds(bounds, { padding: atlasMapInset(compact), maxZoom: 4.2, duration: 0 });
     };
+    const addMarkers = (instance: MapLibreMap) => {
+      destinations.forEach((destination) => {
+        if (markers.current.has(destination.id)) return;
+        const element = document.createElement('button');
+        element.type = 'button';
+        element.className = ATLAS_MARKER_CLASS;
+        element.dataset.destinationId = destination.id;
+        element.setAttribute('aria-label', `Explore ${destination.name}${destination.country ? `, ${destination.country}` : ''}`);
+        element.innerHTML = '<span aria-hidden="true">✦</span>';
+        element.addEventListener('click', () => onSelectRef.current(destination.id));
+        const marker = new maplibregl.Marker({ element, anchor: 'bottom' })
+          .setLngLat([destination.coordinates.longitude, destination.coordinates.latitude])
+          .addTo(instance);
+        markers.current.set(destination.id, marker);
+      });
+      setMarkerCount(markers.current.size);
+    };
     try {
       const instance = new maplibregl.Map({ container: container.current, style: 'https://tiles.openfreemap.org/styles/liberty', center: [-72, 22], zoom: 2.5, cooperativeGestures: true });
       map.current = instance;
       instance.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+      // Markers are independent of the basemap style. Adding them immediately means a
+      // slow style load cannot leave the explorer looking empty once the map is visible.
+      addMarkers(instance);
       instance.on('error', () => { if (!styleLoaded) showFallback(); });
       container.current.addEventListener('webglcontextlost', showFallback, { once: true });
       instance.on('load', () => {
         styleLoaded = true;
         if (loadTimer) window.clearTimeout(loadTimer);
-        destinations.forEach((destination) => {
-          const element = document.createElement('button');
-          element.type = 'button';
-          element.className = ATLAS_MARKER_CLASS;
-          element.dataset.destinationId = destination.id;
-          element.setAttribute('aria-label', `Explore ${destination.name}${destination.country ? `, ${destination.country}` : ''}`);
-          element.innerHTML = '<span aria-hidden="true">✦</span>';
-          element.addEventListener('click', () => onSelectRef.current(destination.id));
-          const marker = new maplibregl.Marker({ element, anchor: 'bottom' }).setLngLat([destination.coordinates.longitude, destination.coordinates.latitude]).addTo(instance);
-          markers.current.set(destination.id, marker);
-        });
+        addMarkers(instance);
+        if (!atlasHasExpectedMarkerCount(markers.current.size, destinations.length)) { showFallback(); return; }
         initializedActiveId.current = activeId;
         setReady(true);
         requestAnimationFrame(() => { instance.resize(); fitAll(instance); });
@@ -88,6 +102,7 @@ export function AtlasMap({ destinations, activeId, onSelect }: Props) {
       observer?.disconnect();
       markers.current.forEach((marker) => marker.remove());
       markers.current.clear();
+      setMarkerCount(0);
       map.current?.remove();
       map.current = undefined;
     };
@@ -111,5 +126,8 @@ export function AtlasMap({ destinations, activeId, onSelect }: Props) {
     <button className="lgs-button lgs-button--secondary" onClick={() => { setFailure(null); setRetryKey((key) => key + 1); }}>{atlasFallbackCopy.retry}</button>
     <p className="atlas-map-fallback__attribution">{atlasFallbackCopy.attribution}</p>
   </section>;
-  return <div ref={container} className="atlas-map-real" role="region" aria-label="Interactive map of all candidate destinations" aria-busy={!ready} />;
+  return <>
+    <div ref={container} className="atlas-map-real" role="region" aria-label="Interactive map of all candidate destinations" aria-busy={!ready} data-marker-count={markerCount} />
+    {ready && <p className="screen-reader-status" role="status" aria-live="polite">{markerCount} places are on the map.</p>}
+  </>;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { atlasFallbackCopy, atlasFallbackShouldTakeFocus, atlasMapInset } from './AtlasMap.js';
+import { atlasFallbackCopy, atlasFallbackShouldTakeFocus, atlasHasExpectedMarkerCount, atlasMapInset } from './AtlasMap.js';
 
 describe('atlas fallback contract', () => {
   it('keeps a calm recovery explanation, retry path, and required attribution', () => {
@@ -18,5 +18,10 @@ describe('atlas fallback contract', () => {
   it('reserves map space for the always-visible explorer panels', () => {
     expect(atlasMapInset(false)).toMatchObject({ left: 360, right: 480 });
     expect(atlasMapInset(true)).toMatchObject({ bottom: 360 });
+  });
+
+  it('fails closed rather than presenting a map with missing destination markers', () => {
+    expect(atlasHasExpectedMarkerCount(24, 24)).toBe(true);
+    expect(atlasHasExpectedMarkerCount(23, 24)).toBe(false);
   });
 });
