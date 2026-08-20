@@ -206,7 +206,7 @@ Your answer records a conversation stance. It will not change the blind result.
 | Authentication expired | “Sign back in to continue. Your progress is saved.” + **Sign in with Google** | alert; primary receives focus only after a user action fails |
 | `409` duplicate/stale decision | treat returned stored decision as success; lock and render it | polite recorded-decision announcement; no error treatment |
 | `409` stale comparison elsewhere | return to game/resume state with “That choice was already saved. Here’s your next call.” | polite status; no data-loss dialog |
-| `423` sealed personal/group result | route to waiting, not an error page: “The envelope is still sealed. See who’s ready.” | polite announcement; focus `WaitingScreen h1` on an intentional direct navigation |
+| `423` sealed group result or reveal | route to waiting, not an error page: “The envelope is still sealed. See who’s ready.” A completed caller’s own shortlist remains available. | polite announcement; focus `WaitingScreen h1` on an intentional direct navigation |
 | `403` profile/atlas pre-completion | return to comparison/resume: “Finish your current round to unlock this.” | alert after attempted navigation; focus primary resume action |
 | `403` non-Dan reveal attempt | waiting with “The crew is ready. Dan opens the envelope.” | polite, no disabled reveal button |
 | map/WebGL/tile failure | `AtlasFallback` list + drawer, attribution, **Try map again** | status; preserve focus unless retry explicitly fails |

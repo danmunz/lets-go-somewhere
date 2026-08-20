@@ -580,7 +580,7 @@ Their task is simply:
 
 Destination names are hidden during preference collection because they create bias.
 
-Historical product direction: a completed traveler would see only their preference profile until the whole roster completed. The shipped V3/V4 product intentionally changed that timing: an individual may browse an unranked named atlas after completion, while personal and group outcomes remain sealed until all five are complete and Dan opens the reveal gate. See [implementation status](implementation-status.md).
+Historical product direction: a completed traveler would see only their preference profile until the whole roster completed. The current one-trip flow intentionally changes that timing: an individual may browse an unranked named atlas and privately view only their own shortlist after completion; other travelers’ and group outcomes remain sealed until all five are complete and Dan opens the reveal gate. See [implementation status](implementation-status.md).
 
 This is not secrecy for its own sake.
 

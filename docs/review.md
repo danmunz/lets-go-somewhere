@@ -11,6 +11,6 @@ This was the original local implementation review. Its former Firebase/Auth/Fire
 
 ## Current release validation
 
-The deployed app now includes Firebase Google authentication, Firestore-backed comparison and reveal persistence, Cloud Run, Firebase Hosting, activity-specific editorial media, a completion-gated map atlas, and a group-results API. The current automated suite covers deterministic ranking and API boundaries in the local adapter. Before the actual one-shot run, Firestore-emulator/authenticated five-person E2E coverage and the uncertainty-aware ranking validation in the [one-trip roadmap](roadmap.md) remain required.
+The deployed app now includes Firebase Google authentication, Firestore-backed comparison and reveal persistence, Cloud Run, Firebase Hosting, activity-specific editorial media, a completion-gated map atlas, caller-only private shortlists, and a group-results API. The current automated suite covers fixed-32 shortlist determinism and API boundaries in the local adapter. Before the actual one-shot run, the five-identity browser rehearsal, disposable-environment smoke, and final visual/accessibility review remain required.
 
 Use [implementation status](implementation-status.md) for the current gaps and release boundary.

@@ -260,7 +260,7 @@ Create a `waiting` screen reachable from the profile and atlas. It has a five-ch
 
 #### API
 
-`GET /v1/results/me` requires the caller’s completion and an open reveal snapshot. It returns only that caller’s own five results, profile summary, model version, and confidence.
+`GET /v1/results/me` requires the caller’s completion. Before Dan opens the reveal it returns only the caller’s private five-place shortlist, safe profile summary, and model version; it has no `snapshotId`, group data, confidence, or raw-choice history. After reveal, it serializes the same caller’s immutable stored result and includes its snapshot identity.
 
 ```json
 {

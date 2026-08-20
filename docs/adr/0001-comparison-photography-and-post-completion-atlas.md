@@ -13,10 +13,10 @@ That made comparison cards feel abstract and gave a completed traveler little to
 - Comparison cards may use locally hosted, activity-specific editorial photography as a deliberately accepted soft geographic cue.
 - During comparison, API responses may contain only activity ID, title, description, and opaque local image path. They must not contain a destination name, country, flag, airport code, coordinate, map data, score, rank, or photo-credit metadata.
 - Once a traveler has completed their own comparisons, they may browse an unranked named atlas with destination context, real map placement, galleries, and photo credits.
-- Personal and group ranking, scores, preference explanations, and another traveler's choices remain sealed until every fixed-roster participant completes and Dan opens the reveal gate.
+- A completed traveler may privately see only their own model-generated top five, with a clear request not to share it before the group is ready. Every other traveler’s ranking, all group results, scores, social insights, and raw choices remain sealed until every fixed-roster participant completes and Dan opens the reveal gate.
 
 ## Consequences
 
 Photography can make an activity more legible and enjoyable, but it can also create geographic-recognition bias. That bias is accepted intentionally; explicit destination branding and results remain protected by the API contracts and completion/reveal gates.
 
-The atlas is a discovery surface, not a recommendation surface. Its UI must not imply that a selected map pin, gallery item, or list position reflects any person's preference.
+The atlas is a discovery surface, not a recommendation surface. Its UI must state that it is the full unranked candidate set; a selected map pin, gallery item, or list position must not imply any person's preference.
