@@ -9,7 +9,7 @@ const destinations: AtlasDestination[] = ['first', 'second'].map((id, index) => 
 describe('AtlasExplorer', () => {
   it('keeps browse controls, the selected inspector, and the sealed-ranking rule together', () => {
     const markup = renderToStaticMarkup(<AtlasExplorer destinations={destinations} user="dan" travelerName={() => 'Dan'} onOpenWaiting={() => undefined} onOpenProfile={() => undefined} />);
-    expect(markup).toContain('All 24 places');
+    expect(markup).toContain('All 2 places');
     expect(markup).toContain('This is the full candidate set—not your ranking.');
     expect(markup).toContain('First Place');
     expect(markup).toContain('Your private shortlist is ready for you.');
