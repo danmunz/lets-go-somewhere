@@ -19,6 +19,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   sensory and cultural detail so each choice better conveys the specific
   experience at stake.
 
+- Published the activity-content update to Cloud Run revision
+  `lgs-api-00008-4np`; its post-deploy health check and count-only production
+  preflight passed with no trip data started.
+
 - Fixed the trip-briefing help return so it clears `#how-it-works`; refreshing
   after returning to a choice no longer reopens the briefing.
 
