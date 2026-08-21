@@ -1,4 +1,5 @@
 import { useEffect, useRef, type CSSProperties } from 'react';
+import logoUrl from '../../../design-system/assets/logo.png';
 
 export type BriefingTraveler = {
   id: string;
@@ -55,7 +56,9 @@ export function HowItWorksScreen({ travelers, required = false, backLabel, onBac
     <header className="briefing-topbar">
       <button className="briefing-back" type="button" onClick={onBack}>← <span>{backLabel}</span></button>
       <p className="eyebrow">Trip briefing · before you begin</p>
-      <span className="briefing-topbar__seal" aria-hidden="true">32</span>
+      <span className="briefing-topbar__logo" aria-hidden="true">
+        <img src={logoUrl} alt="" />
+      </span>
     </header>
 
     <section className="briefing-intro">

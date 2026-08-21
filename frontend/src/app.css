@@ -4014,18 +4014,34 @@
 .briefing-back:focus-visible {
   color: var(--color-terra);
 }
-.briefing-topbar__seal {
+.briefing-topbar__logo {
+  position: relative;
   justify-self: end;
-  display: grid;
-  width: 46px;
-  height: 46px;
-  place-items: center;
-  border: 2px solid var(--color-night);
+  display: block;
+  width: clamp(94px, 8vw, 122px);
+  height: clamp(94px, 8vw, 122px);
+  border-bottom: 2px solid color-mix(in srgb, var(--color-night) 42%, transparent);
+}
+.briefing-topbar__logo::before {
+  position: absolute;
+  z-index: -1;
+  right: 3px;
+  bottom: 3px;
+  width: 78%;
+  height: 30px;
   border-radius: 50%;
-  background: var(--color-amber);
-  font-family: var(--font-display);
-  font-size: 24px;
-  transform: rotate(9deg);
+  background: color-mix(in srgb, var(--color-amber) 54%, transparent);
+  content: "";
+  transform: rotate(-4deg);
+}
+.briefing-topbar__logo img {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 5px 0 rgba(31, 27, 22, 0.18));
+  transform: rotate(-2deg);
 }
 .briefing-intro {
   display: grid;
@@ -4431,6 +4447,15 @@
   }
   .briefing-topbar > .eyebrow {
     display: none;
+  }
+  .briefing-topbar__logo {
+    width: 78px;
+    height: 78px;
+  }
+  .briefing-topbar__logo img {
+    right: 0;
+    bottom: 0;
+    width: 100%;
   }
   .briefing-intro {
     display: block;
