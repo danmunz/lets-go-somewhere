@@ -19,6 +19,8 @@ for (const destination of destinations) {
   for (const image of destination.gallery) if (!mediaPathExists(image.path)) throw new Error(`Missing gallery image: ${image.path}`);
 }
 for (const activity of activities) {
+  const descriptionWords = activity.description.trim().split(/\s+/).filter(Boolean).length;
+  if (descriptionWords < 10 || descriptionWords > 20) throw new Error(`${activity.id} description must be 10–20 words; found ${descriptionWords}`);
   if (!activity.imageUrl || !mediaPathExists(activity.imageUrl)) throw new Error(`Missing activity image: ${activity.id}`);
   if (!activity.imageUrl.startsWith('/media/cards/')) throw new Error(`Activity image path must remain opaque: ${activity.id}`);
 }

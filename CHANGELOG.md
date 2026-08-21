@@ -15,6 +15,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Expanded the content-management guide with the released briefing, fixed-round
   progress, durable navigation, private-shortlist, atlas, and reset boundaries.
 
+- Rewrote all 120 blind activity descriptions with concise, destination-safe
+  sensory and cultural detail so each choice better conveys the specific
+  experience at stake.
+
 - Fixed the trip-briefing help return so it clears `#how-it-works`; refreshing
   after returning to a choice no longer reopens the briefing.
 

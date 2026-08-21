@@ -7,7 +7,7 @@ This repository is the content source of truth for the fixed five-person trip. T
 | Content | File or directory | What to edit |
 | --- | --- | --- |
 | Destination names, countries, taglines, practical context, coordinates, galleries | `seed/destinations.json` | One destination record. Keep `id` stable; update `gallery`, coordinates, weather, travel effort, and editorial copy together. |
-| Blind comparison titles, descriptions, and eight preference attributes | `seed/activities.json` | One activity record. Keep `id` and `destinationId` stable. Do not put a place name, country, flag, airport code, or explicit location clue in the title or description. |
+| Blind comparison titles, descriptions, and eight preference attributes | `seed/activities.json` | One activity record. Keep `id` and `destinationId` stable. Descriptions should be 10–20 words, grounded in distinctive sensory or cultural detail, while withholding place names, countries, flags, airport codes, and explicit location labels. |
 | Activity-card image credits and alt text | `seed/activity-media.json` | The private credit catalog keyed by activity ID. `sourceUrl`, photographer, profile URL, and alt text stay out of comparison API responses. |
 | Public optimized activity-card images | `frontend/public/media/cards/` | The local opaque image path referenced by `activities.json`. Do not add credit text or destination IDs to filenames. |
 | Public destination gallery images | `frontend/public/media/destinations/` (or the current gallery path recorded in the destination seed) | Three local optimized images per destination. Keep the seed path, alt text, and credit metadata synchronized. |
@@ -28,8 +28,9 @@ This repository is the content source of truth for the fixed five-person trip. T
 1. Edit the matching record in `seed/activities.json`.
 2. If the image changes, update its opaque `imageUrl` and the matching private record in `seed/activity-media.json`.
 3. Put the optimized local image in `frontend/public/media/cards/`.
-4. Check that the wording describes an experience rather than advertising a destination. Geographic recognition is an accepted soft cue, but explicit names and metadata are not.
-5. Run `npm run validate:seed`, `npm test`, and `npm run build`.
+4. Keep the description between 10 and 20 words. Include one or two specific details—an ingredient, material, sound, landscape feature, ritual, or architectural texture—so a traveler can judge the actual activity rather than a generic category.
+5. Check that the wording describes an experience rather than advertising a destination. Geographic recognition is an accepted soft cue, but explicit names and metadata are not.
+6. Run `npm run validate:seed`, `npm test`, and `npm run build`.
 
 ### Change a destination or atlas gallery
 
@@ -65,7 +66,7 @@ npm run build
 git diff --check
 ```
 
-Seed validation checks the 24 destinations, 120 activities, destination references, integer attributes, local media paths, three-image galleries, coordinates, alt text, and private credit metadata. Tests cover destination-blind serializers, gate behavior, ranking determinism, and frontend fallbacks. The released production deployment and one-trip reset/reveal procedure are in [deployment.md](deployment.md) and the [one-trip runbook](one-trip-runbook.md). Do not use the guarded reset after a participant has started; it intentionally refuses that operation.
+Seed validation checks the 24 destinations, 120 activities, destination references, 10–20 word activity descriptions, integer attributes, local media paths, three-image galleries, coordinates, alt text, and private credit metadata. Tests cover destination-blind serializers, gate behavior, ranking determinism, and frontend fallbacks. The released production deployment and one-trip reset/reveal procedure are in [deployment.md](deployment.md) and the [one-trip runbook](one-trip-runbook.md). Do not use the guarded reset after a participant has started; it intentionally refuses that operation.
 
 ## What is not editable through content files
 
