@@ -19,14 +19,14 @@ export function FinalistMatrix({ finalists, ranks, travelerName, currentUser, on
     <section className="finalist-matrix" aria-labelledby="finalist-matrix-title">
       <div className="finalist-matrix__heading">
         <div>
-          <p className="eyebrow">The evidence</p>
-          <h2 id="finalist-matrix-title">How every traveler placed the shared shortlist.</h2>
+          <p className="eyebrow">Everyone’s picks</p>
+          <h2 id="finalist-matrix-title">Where each person put these five places.</h2>
         </div>
-        <p>#1–#5 are personal placements. <strong>Outside top five</strong> means only that a place did not make that traveler’s shortlist—it is not a no vote.</p>
+        <p>#1–#5 are personal placements. <strong>Outside top five</strong> means that place did not make someone’s top five—it is not a no vote.</p>
       </div>
-      <div className="finalist-matrix__scroll" tabIndex={0} aria-label="Scrollable crew rank table">
+      <div className="finalist-matrix__scroll" tabIndex={0} aria-label="Scrollable group ranking table">
         <table>
-          <caption>Each traveler’s personal placement for the five published group finalists.</caption>
+          <caption>Each person’s placement for these five places.</caption>
           <thead>
             <tr>
               <th scope="col">Finalist</th>

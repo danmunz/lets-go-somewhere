@@ -13,12 +13,12 @@ import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFix
 
 type PreviewPage = 'how-it-works' | 'comparison' | 'profile' | 'atlas' | 'waiting' | 'ready' | 'verdict' | 'shortlist';
 const pages: readonly [PreviewPage, string][] = [
-  ['how-it-works', 'How it works'], ['comparison', 'Choice cards'], ['profile', 'Profile'], ['atlas', 'Atlas'], ['waiting', 'Waiting'], ['ready', 'All five'], ['verdict', 'Reveal'], ['shortlist', 'My shortlist'],
+  ['how-it-works', 'How it works'], ['comparison', 'Choice cards'], ['profile', 'What I liked'], ['atlas', 'All 24 places'], ['waiting', 'Who’s finished'], ['ready', 'All five'], ['verdict', 'Reveal'], ['shortlist', 'My top five'],
 ];
 const avatarByUser: Record<RosterUser, string> = { dan: danAvatar, james: jamesAvatar, john: johnAvatar, matt: mattAvatar, peter: peterAvatar };
 const profile: PreferenceProfile = {
-  headline: 'Your trip rhythm is taking shape.',
-  synthesis: 'You kept gravitating toward big landscapes, local texture, and a little surprise.',
+  headline: 'What your choices had in common.',
+  synthesis: 'You often picked big landscapes, local texture, and a little surprise.',
   dimensions: [
     { key: 'adventure', label: 'Big adventures', strength: 'strong', direction: 'drawn-to' },
     { key: 'culture', label: 'Local texture', strength: 'strong', direction: 'drawn-to' },
@@ -44,12 +44,12 @@ const myResults: PersonalResultsResponse = {
   })),
 };
 
-function PreviewAtlas() {
-  return <AtlasExplorer destinations={atlasDestinations} user="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarSrc={danAvatar} onOpenWaiting={() => undefined} onOpenProfile={() => undefined} />;
+function PreviewAtlas({ onOpenWaiting, onOpenProfile }: { onOpenWaiting: () => void; onOpenProfile: () => void }) {
+  return <AtlasExplorer destinations={atlasDestinations} user="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarSrc={danAvatar} onOpenWaiting={onOpenWaiting} onOpenProfile={onOpenProfile} />;
 }
 
 function PreviewComparison() {
-  return <main className="game-shell screen-enter"><header className="game-topbar"><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" /><div className="turn-meta"><img className="avatar-art" src={danAvatar} alt="" />Dan’s turn</div></header><section className="game-heading"><p className="eyebrow">Preview choice card</p><div className="game-title-row"><h1>Which calls to you?</h1><span><NumberFlow value={17} /> answered</span></div><div className="game-progress"><i style={{ width: '53%' }} /></div><p className="progress-message">You’re on a roll. <b>17 of 32 choices</b></p></section><section className="choice-stage"><button className="choice-card choice-card--0"><i className="choice-photo" style={{ backgroundImage: 'url(/media/cards/001.webp)' }} /><i className="choice-photo-wash" /><span className="choice-pick">I’d rather… ↗</span><span className="choice-copy"><strong>Wake before sunrise for a ridge-line hike</strong><small>Follow a quiet trail until the horizon turns gold.</small></span></button><button className="choice-card choice-card--1"><i className="choice-photo" style={{ backgroundImage: 'url(/media/cards/002.webp)' }} /><i className="choice-photo-wash" /><span className="choice-pick">I’d rather… ↗</span><span className="choice-copy"><strong>Spend the afternoon in a tiny market</strong><small>Try whatever looks great and let the streets set the pace.</small></span></button></section><div className="or-divider"><span />OR<span /></div></main>;
+  return <main className="game-shell screen-enter"><header className="game-topbar"><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" /><div className="turn-meta"><img className="avatar-art" src={danAvatar} alt="" />Dan’s turn</div></header><section className="game-heading"><p className="eyebrow">Preview choice card</p><div className="game-title-row"><h1>Which sounds better?</h1><span><NumberFlow value={17} /> picked</span></div><div className="game-progress"><i style={{ width: '53%' }} /></div><p className="progress-message">You’re on a roll. <b>17 of 32 choices</b></p></section><section className="choice-stage"><button className="choice-card choice-card--0"><i className="choice-photo" style={{ backgroundImage: 'url(/media/cards/001.webp)' }} /><i className="choice-photo-wash" /><span className="choice-pick">I’d rather… ↗</span><span className="choice-copy"><strong>Wake before sunrise for a ridge-line hike</strong><small>Follow a quiet trail until the horizon turns gold.</small></span></button><button className="choice-card choice-card--1"><i className="choice-photo" style={{ backgroundImage: 'url(/media/cards/002.webp)' }} /><i className="choice-photo-wash" /><span className="choice-pick">I’d rather… ↗</span><span className="choice-copy"><strong>Spend the afternoon in a tiny market</strong><small>Try whatever looks great and let the streets set the pace.</small></span></button></section><div className="or-divider"><span />OR<span /></div></main>;
 }
 
 /** Development-only visual journey navigator. It never calls the API or stores a choice. */
@@ -58,7 +58,7 @@ export function DevPreview() {
   const body = page === 'how-it-works' ? <HowItWorksScreen travelers={Object.entries(avatarByUser).map(([id, image]) => ({ id, name: fixtureTravelerNames[id as RosterUser], image }))} required backLabel="Back to character selection" onBack={() => setPage('comparison')} onStartChoices={() => setPage('comparison')} />
     : page === 'comparison' ? <PreviewComparison />
     : page === 'profile' ? <ProfileScreen profile={profile} onOpenAtlas={() => setPage('atlas')} onOpenWaiting={() => setPage('waiting')} onOpenMyResults={() => setPage('shortlist')} />
-      : page === 'atlas' ? <PreviewAtlas />
+      : page === 'atlas' ? <PreviewAtlas onOpenWaiting={() => setPage('waiting')} onOpenProfile={() => setPage('profile')} />
         : page === 'waiting' || page === 'ready' ? <WaitingScreen status={{ revealOpen: false, allComplete: page === 'ready', updatedAt: '2026-08-19T00:00:00.000Z', members: ['dan', 'james', 'john', 'matt', 'peter'].map((user, index) => ({ user: user as RosterUser, complete: page === 'ready' || index < 3 })) }} user="dan" travelerName={(user) => fixtureTravelerNames[user]} onRefresh={() => undefined} onBackToAtlas={() => setPage('atlas')} onOpenReveal={() => setPage('verdict')} />
           : page === 'verdict' ? <VerdictScreen results={verdict} currentUser="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarFor={(user) => avatarByUser[user]} onOpenMyResults={() => setPage('shortlist')} onRecordDecision={async (choice) => ({ user: 'dan', choice, createdAt: '2026-08-19T00:00:00.000Z' })} />
             : <MyResultsScreen results={myResults} onBack={() => setPage('verdict')} backLabel="Back to the group reveal" />;

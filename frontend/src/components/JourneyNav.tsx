@@ -7,10 +7,10 @@ type Props = {
 };
 
 const preRevealItems: readonly [JourneyDestination, string][] = [
-  ['profile', 'My trip rhythm'],
+  ['profile', 'What I liked'],
   ['shortlist', 'My top five'],
   ['atlas', 'Trip atlas'],
-  ['waiting', 'Crew status'],
+  ['waiting', 'Who’s finished'],
 ];
 
 /** Stable post-completion navigation. Server gates remain the authority. */

@@ -60,7 +60,7 @@ export function HowItWorksScreen({ travelers, required = false, backLabel, onBac
 
     <section className="briefing-intro">
       <p className="eyebrow">How this trip game works</p>
-      <h1 id="how-it-works-title" ref={headingRef} tabIndex={-1}>Pick what sounds fun.<br /><em>Find your way there together.</em></h1>
+      <h1 id="how-it-works-title" ref={headingRef} tabIndex={-1}>Pick what sounds fun.<br /><em>See what the group likes.</em></h1>
       <p>There are no wrong answers and no place names while you play. Just pick the experiences you like more.</p>
     </section>
 
@@ -82,12 +82,12 @@ export function HowItWorksScreen({ travelers, required = false, backLabel, onBac
       <li className="briefing-step briefing-step--taste">
         <span className="briefing-step__number">03</span>
         <TasteGlyphs />
-        <div className="briefing-step__copy"><p className="eyebrow">The part behind the curtain</p><h2>We learn what you like</h2><p>Behind the scenes, the game notices patterns in the experiences you pick: big adventures, local food, old places, time outside, city energy, and more.</p><p className="briefing-step__math"><b>A small Bayesian model</b> updates its best guess about what you enjoy after every choice. It looks for patterns in your taste—it does not make the decision for you.</p></div>
+        <div className="briefing-step__copy"><p className="eyebrow">What happens behind the scenes</p><h2>We notice what you like</h2><p>As you pick, the game notices patterns: big adventures, local food, old places, time outside, city energy, and more.</p><p className="briefing-step__math"><b>A small learning model</b> updates after every choice. It looks for patterns in what you enjoy; it does not choose the trip for you.</p></div>
       </li>
       <li className="briefing-step briefing-step--ranking">
         <span className="briefing-step__number">04</span>
         <RouteGlyphs />
-        <div className="briefing-step__copy"><p className="eyebrow">A fair look at every option</p><h2>Your ranking becomes clear</h2><p>You’ll make 32 choices. The first 24 give every possible trip a fair look. The last eight help sort out the places closest to your personal top five.</p><p className="briefing-step__note">After your round, you can see your own private top five. Keep it to yourself until the rest of the crew finishes.</p></div>
+        <div className="briefing-step__copy"><p className="eyebrow">A fair look at every option</p><h2>Your top five takes shape</h2><p>You’ll make 32 choices. The first 24 give every possible trip a fair look. The last eight help sort out the places closest to your personal top five.</p><p className="briefing-step__note">After your round, you can see your own private top five. Keep it to yourself until everyone else finishes.</p></div>
       </li>
       <li className="briefing-step briefing-step--reveal">
         <span className="briefing-step__number">05</span>
@@ -96,7 +96,7 @@ export function HowItWorksScreen({ travelers, required = false, backLabel, onBac
           <div className="briefing-envelope"><span>✉</span><b>open when<br />all five finish</b></div>
           <div className="briefing-points-board">{[5, 4, 3, 2, 1].map((points) => <span key={points}>{points}</span>)}</div>
         </div>
-        <div className="briefing-step__copy"><p className="eyebrow">The envelope opens last</p><h2>The group’s rankings are revealed</h2><p>Once all five people finish, Dan opens the envelope. You’ll see everybody’s top five, where the group agrees, where it splits, and a simple 5/4/3/2/1 points board to guide the conversation.</p><p className="briefing-step__closing">The app helps everyone discover what they like. The five of you choose the trip.</p></div>
+        <div className="briefing-step__copy"><p className="eyebrow">The envelope opens last</p><h2>See how the group voted</h2><p>Once all five people finish, Dan opens the envelope. You’ll see everybody’s top five, where the group agrees, where it splits, and a simple 5/4/3/2/1 tally to guide the conversation.</p><p className="briefing-step__closing">The app helps everyone discover what they like. The five of you choose the trip.</p></div>
       </li>
     </ol>
 

@@ -8,7 +8,7 @@ export function CompletedTransition({ complete = false }: Props) {
   return (
     <section className="completed-transition" role="status" aria-live="polite" aria-atomic="true">
       <p className="eyebrow">Choices complete</p>
-      <h1>{complete ? 'Okay. We know your type.' : 'Looking for the shape of your trip…'}</h1>
+      <h1>{complete ? 'Your choices are in.' : 'Putting your choices together…'}</h1>
     </section>
   );
 }

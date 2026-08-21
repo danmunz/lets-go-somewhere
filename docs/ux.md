@@ -462,7 +462,7 @@ Same structure and visual weight.
 
 ### Milestone Micro-Toasts (Gamified Feedback)
 
-Progress copy moves from “Finding your trip rhythm” to “You’re on a roll” and “Almost there — just a few gut calls left.” The live counter and bar truthfully say `N of 32 choices`; the game never suggests it is calculating certainty.
+Progress copy moves from “Start with your first instinct” to “You’re on a roll” and “Almost there — just a few quick picks left.” The live counter and bar truthfully say `N of 32 choices`; the game never suggests it is calculating certainty.
 
 ## Example
 

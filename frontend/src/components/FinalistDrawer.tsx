@@ -16,7 +16,7 @@ export function FinalistDrawer({ finalist, onClose, onChoose, decisionRecorded }
       <button className="finalist-drawer__close" onClick={onClose} aria-label="Close finalist details">×</button>
       <MediaImage className="finalist-drawer__image" src={finalist.imageUrl} alt={`A view from ${finalist.name}`} fallbackLabel="Photo unavailable" />
       <div className="finalist-drawer__body">
-        <p className="eyebrow">#{finalist.rank} on the published ballot · {finalist.points} points</p>
+        <p className="eyebrow">#{finalist.rank} in the group tally · {finalist.points} points</p>
         <h2 id="finalist-drawer-title">{finalist.name}</h2>
         <p className="finalist-drawer__country">{finalist.country}</p>
         <dl>

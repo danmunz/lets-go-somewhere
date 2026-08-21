@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Completed a platform-wide layout, typography, plain-language, and interaction polish pass. The post-completion journey now consistently uses “What you liked,” “Your top five,” “All 24 places,” “Who’s finished,” and “How the group voted,” while retaining the existing privacy gates and ranking behavior.
+
 All notable changes to this project will be documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

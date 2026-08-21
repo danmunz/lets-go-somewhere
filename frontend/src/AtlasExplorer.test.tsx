@@ -10,9 +10,9 @@ describe('AtlasExplorer', () => {
   it('keeps browse controls, the selected inspector, and the sealed-ranking rule together', () => {
     const markup = renderToStaticMarkup(<AtlasExplorer destinations={destinations} user="dan" travelerName={() => 'Dan'} onOpenWaiting={() => undefined} onOpenProfile={() => undefined} />);
     expect(markup).toContain('All 2 places');
-    expect(markup).toContain('This is the full candidate set—not your ranking.');
+    expect(markup).toContain('Explore every place that was in the running. This is not your ranking.');
     expect(markup).toContain('First Place');
-    expect(markup).toContain('Your private shortlist is ready for you.');
+    expect(markup).toContain('Your own top five is ready.');
     expect(markup).toContain('Open larger photo of First Place');
   });
 

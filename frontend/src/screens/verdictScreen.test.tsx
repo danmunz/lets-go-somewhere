@@ -23,14 +23,14 @@ const renderVerdict = (results = resultFixture) => renderToStaticMarkup(<Verdict
 describe('transparent social reveal', () => {
   it.each(verdictFixtureModes)('renders the deterministic %s visual-QA fixture without legacy group math', (mode) => {
     const markup = renderVerdict(createVerdictFixture(mode));
-    expect(markup).toContain('How the crew ballot works');
+    expect(markup).toContain('Every top five counts.');
     expect(markup).toContain('5 points');
     expect(markup).toContain('Outside top five');
     expect(markup).not.toMatch(/normalized|polarization|group confidence|interval/i);
   });
   it('shows the published key, five personal maps, matrix language, and immutable next step', () => {
     const markup = renderVerdict();
-    expect(markup).toContain('How the crew ballot works');
+    expect(markup).toContain('Every top five counts.');
     expect(markup).toContain('Outside top five');
     expect(markup).toContain('Everyone’s top five.');
     expect(markup).toContain('Locked in: champion Place 1.');
@@ -40,7 +40,7 @@ describe('transparent social reveal', () => {
 
   it('renders no-consensus as five first instincts without crowning an arithmetic leader', () => {
     const markup = renderVerdict({ ...resultFixture, displayMode: 'no-consensus' });
-    expect(markup).toContain('No automatic consensus—this is a true group decision.');
+    expect(markup).toContain('No clear group favorite yet.');
     expect(markup).toContain('Dan’s #1'); expect(markup).toContain('Peter’s #1');
     expect(markup).not.toContain('The crew has a clear shared pull');
   });
@@ -65,7 +65,7 @@ describe('transparent social reveal', () => {
     expect(actionLabels).toEqual(['Oaxaca', 'Antigua', 'Madeira', 'Kyoto', 'Lofoten']);
     expect(markup).toContain('Need more research');
     expect(markup).toContain('aria-label="Open place details for Oaxaca"');
-    expect(markup).toContain('aria-label="Scrollable crew rank table"');
+    expect(markup).toContain('aria-label="Scrollable group ranking table"');
     expect(markup).toContain('tabindex="0"');
   });
 
@@ -85,14 +85,14 @@ describe('transparent social reveal', () => {
 
   it('renders personal results with post-gate place imagery and concise, non-raw-choice explanation', () => {
     const markup = renderToStaticMarkup(<MyResultsScreen results={personalFixture} onBack={() => undefined} backLabel="Back to the group reveal" />);
-    expect(markup).toContain('A view from Place 1'); expect(markup).toContain('Why it rose'); expect(markup).not.toContain('activity-by-activity');
+    expect(markup).toContain('A view from Place 1'); expect(markup).toContain('Why it fits'); expect(markup).not.toContain('activity-by-activity');
   });
 
   it('labels a completed caller-only shortlist as private until an immutable reveal snapshot exists', () => {
     const { snapshotId: _snapshotId, ...privateResults } = personalFixture;
-    const markup = renderToStaticMarkup(<MyResultsScreen results={privateResults} onBack={() => undefined} backLabel="Back to my trip rhythm" />);
-    expect(markup).toContain('Your private trip shortlist');
-    expect(markup).toContain('The crew ballot and everyone else’s top five stay sealed');
+    const markup = renderToStaticMarkup(<MyResultsScreen results={privateResults} onBack={() => undefined} backLabel="Back to what I liked" />);
+    expect(markup).toContain('Your private top five');
+    expect(markup).toContain('The group’s results and everyone else’s top five stay hidden');
     expect(markup).not.toContain('Everyone’s top five');
   });
 });

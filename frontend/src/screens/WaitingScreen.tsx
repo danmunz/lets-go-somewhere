@@ -146,16 +146,16 @@ export function WaitingScreen({
 
   const canOpenReveal = status.allComplete && !status.revealOpen && user === 'dan';
   const stateCopy = status.revealOpen
-    ? 'The verdict is open.'
+    ? 'The group results are ready.'
     : status.allComplete
-      ? (user === 'dan' ? 'The crew is ready. Open the group reveal.' : 'The crew is ready. Dan opens the envelope.')
-      : 'Every place is still in play. We’ll open the envelope once everyone is ready.';
+      ? (user === 'dan' ? 'Everyone is finished. You can open the group reveal.' : 'Everyone is finished. Dan will open the envelope.')
+      : 'Everyone is choosing on their own. The envelope opens after all five people finish.';
 
   return (
     <main className="one-trip-screen waiting-screen screen-enter" aria-labelledby="waiting-title">
       <section className="waiting-screen__intro">
-        <p className="eyebrow">The crew is gathering</p>
-        <h1 id="waiting-title" ref={headingRef} tabIndex={-1}>Your calls are in.<br />The crew is gathering at the map.</h1>
+        <p className="eyebrow">Who’s finished</p>
+        <h1 id="waiting-title" ref={headingRef} tabIndex={-1}>You’re done.<br />Here’s who has finished too.</h1>
         <p className="lede" data-testid="group-status">{stateCopy}</p>
       </section>
       <ul className="crew-roster" aria-label="Crew completion status">
@@ -173,15 +173,15 @@ export function WaitingScreen({
       </ul>
       <div className="one-trip-actions">
         <button className="lgs-button lgs-button--secondary" onClick={() => void refreshStatus('manual')} disabled={isRefreshing}>
-          {isRefreshing ? 'Refreshing crew status' : 'Refresh crew status'}
+          {isRefreshing ? 'Checking who’s finished' : 'Check who’s finished'}
         </button>
         <button className="lgs-button lgs-button--secondary" onClick={() => void copyNudge()}>Copy a nudge</button>
-        <button className="lgs-button lgs-button--secondary" onClick={onBackToAtlas}>Back to the unranked atlas</button>
+        <button className="lgs-button lgs-button--secondary" onClick={onBackToAtlas}>Back to all 24 places</button>
         {canOpenReveal && onOpenReveal && <button className="lgs-button lgs-button--primary" onClick={onOpenReveal}>Open the group reveal</button>}
         {status.revealOpen && onOpenVerdict && <button className="lgs-button lgs-button--primary" onClick={onOpenVerdict}>See the verdict</button>}
       </div>
       {refreshError && <p className="waiting-screen__error" role="alert">{refreshError}</p>}
-      <p className="waiting-screen__updated">Crew readiness only — no choices, rankings, or timestamps are shared here.</p>
+      <p className="waiting-screen__updated">This page only shows who has finished. Nobody’s picks or rankings are shared here.</p>
       <p className="screen-reader-status" role="status" aria-live="polite">{announcement}</p>
       <p className="screen-reader-status" role="status" aria-live="polite">{nudgeStatus}</p>
     </main>

@@ -16,13 +16,13 @@ describe('pre-game how-it-works briefing', () => {
     const markup = renderToStaticMarkup(<HowItWorksScreen travelers={travelers} required backLabel="Back to character selection" onBack={() => undefined} onStartChoices={() => undefined} />);
     expect(markup).toContain('Dan picked 24 possible trips');
     expect(markup).toContain('You pick your favorites');
-    expect(markup).toContain('A small Bayesian model');
-    expect(markup).toContain('The group’s rankings are revealed');
+    expect(markup).toContain('A small learning model');
+    expect(markup).toContain('See how the group voted');
     expect(markup).toContain('Start my 32 choices');
     expect(markup).not.toContain('Oaxaca');
     expect(markup).not.toContain('Mexico');
     expect(markup).not.toContain('confidence');
-    expect(markup).not.toContain('Your private trip shortlist is ready');
+    expect(markup).not.toContain('Your private top five is ready');
   });
 
   it('requires the briefing only before the first saved choice', () => {

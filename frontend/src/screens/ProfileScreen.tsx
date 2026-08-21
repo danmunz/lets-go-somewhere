@@ -11,7 +11,7 @@ type Props = {
   focusHeading?: boolean;
 };
 
-const strengthCopy = { strong: 'You often chose', present: 'Also came through', open: 'Part of your mix' } as const;
+const strengthCopy = { strong: 'You often picked', present: 'You also picked', open: 'Also in the mix' } as const;
 const directionCopy = {
   'drawn-to': (label: string) => `When a choice included ${label}, you tended to choose it.`,
   'less-drawn-to': (label: string) => `Choices centered on ${label} came up less often in your picks.`,
@@ -31,16 +31,16 @@ export function ProfileScreen({ profile, onOpenAtlas, onOpenWaiting, onOpenMyRes
   return (
     <main className="one-trip-screen profile-screen screen-enter" aria-labelledby="profile-title">
       <section className="profile-screen__intro">
-        <p className="eyebrow">Your trip rhythm</p>
-        <h1 id="profile-title" ref={headingRef} tabIndex={-1}>Here’s what your choices suggest you enjoy.</h1>
-        <p className="lede">Across 32 anonymous experience matchups, these themes appeared most often in the options you picked. They describe the kinds of days that appeal to you—not a final destination verdict.</p>
+      <p className="eyebrow">What you liked</p>
+      <h1 id="profile-title" ref={headingRef} tabIndex={-1}>What your choices had in common.</h1>
+      <p className="lede">You picked between 32 anonymous travel experiences. These cards show the kinds of moments you chose most often—not a final answer about where to go.</p>
       </section>
-      <ol className="profile-explainer" aria-label="How this page works"><li><b>1</b>You picked experiences</li><li><b>2</b>We noticed recurring themes</li><li><b>3</b>Your top five is ready to explore</li></ol>
+      <ol className="profile-explainer" aria-label="How this page works"><li><b>1</b>You picked experiences</li><li><b>2</b>We noticed what kept coming up</li><li><b>3</b>Your top five is ready</li></ol>
       <aside className={`private-shortlist-status ${revealOpen ? 'private-shortlist-status--revealed' : ''}`} aria-label="Your personal shortlist status">
-        <p className="eyebrow">{revealOpen ? 'The envelope is open' : 'Your private trip shortlist is ready'}</p>
-        <strong>{revealOpen ? 'Your top five is now part of the crew conversation.' : 'You can explore your own top five now.'}</strong>
-        <span>{revealOpen ? 'The group ballot and everyone’s rankings are available in the group reveal.' : 'Keep it to yourself for now—the group ballot and everyone else’s rankings stay sealed until the crew finishes and Dan opens the reveal.'}</span>
-        <button className="lgs-button lgs-button--secondary" onClick={onOpenMyResults}>{revealOpen ? 'See my top five' : 'Explore my private shortlist'}</button>
+        <p className="eyebrow">{revealOpen ? 'The envelope is open' : 'Your private top five is ready'}</p>
+        <strong>{revealOpen ? 'Your top five is now part of the group conversation.' : 'You can see your own top five now.'}</strong>
+        <span>{revealOpen ? 'You can now see how the group voted and everyone’s top five.' : 'Please keep it private for now. Everyone else’s picks stay hidden until all five people finish and Dan opens the envelope.'}</span>
+        <button className="lgs-button lgs-button--secondary" onClick={onOpenMyResults}>See my top five</button>
       </aside>
       <ul className="profile-tiles">
         {profile.dimensions.map((dimension, index) => <li key={dimension.key} className={`profile-tile profile-tile--${dimension.strength} profile-tile--accent-${index % 4}`}>
@@ -51,7 +51,7 @@ export function ProfileScreen({ profile, onOpenAtlas, onOpenWaiting, onOpenMyRes
       </ul>
       <div className="one-trip-actions">
         <button className="lgs-button lgs-button--primary" onClick={onOpenAtlas}>Open the trip atlas</button>
-        <button className="lgs-button lgs-button--secondary" onClick={onOpenWaiting}>See the crew’s progress</button>
+        <button className="lgs-button lgs-button--secondary" onClick={onOpenWaiting}>See who’s finished</button>
       </div>
       <p className="screen-reader-status" role="status" aria-live="polite">Your preference profile is ready.</p>
     </main>

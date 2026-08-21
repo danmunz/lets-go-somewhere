@@ -771,7 +771,7 @@ The intended V1 profile is a destination-free recognition beat that explains wha
 
 The accepted V3/V4 flow permits a completed participant to open the unranked named atlas before the group reveal. That does not retire this profile requirement: it should be added before or alongside atlas entry without implying a destination ranking. See [implementation status](implementation-status.md) for the current gap.
 
-Use the plain-language `Your trip rhythm` explanation: it describes recurring qualities in the anonymous experiences a traveler chose, not a destination or a final answer. It leads to their private, caller-only top five.
+Use the plain-language **What you liked** explanation: it describes recurring qualities in the anonymous experiences a traveler chose, not a destination or a final answer. It leads to their private, caller-only **Your top five**.
 
 ---
 

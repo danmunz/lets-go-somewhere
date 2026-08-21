@@ -12,9 +12,9 @@ export function howItWorksBackLabel(screen: AppScreen): string {
     welcome: 'welcome',
     character: 'character selection',
     comparison: 'your choices',
-    profile: 'your trip rhythm',
+    profile: 'what you liked',
     atlas: 'the trip atlas',
-    waiting: 'crew status',
+    waiting: 'who’s finished',
     verdict: 'the group reveal',
     'my-results': 'your top five',
   };
