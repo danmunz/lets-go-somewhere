@@ -108,6 +108,18 @@ do not use the reset command as a release cleanup shortcut.
 
 Before anyone starts, run the dedicated count-only preflight against an explicitly selected project. It uses Application Default Credentials and refuses to inspect when the credential-selected project differs from the command target. It never prints document bodies, comparisons, addresses, or tokens.
 
+If the preflight reports that Application Default Credentials are unavailable or
+that their selected project differs from the target, set them up explicitly for
+this project before retrying:
+
+```sh
+gcloud auth application-default login --project lets-go-somewhere-3549f
+```
+
+This opens Google's consent flow for the operator's account; it does not change
+Cloud Run, Firebase Hosting, Firestore data, or the saved default project for
+the regular `gcloud` CLI. Re-run the count-only command below afterwards.
+
 ```sh
 npm run preflight:one-trip -- --project lets-go-somewhere-3549f
 ```

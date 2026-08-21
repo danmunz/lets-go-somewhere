@@ -13,6 +13,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   required both before and after deploy; reset is documented only for confirmed
   untouched pre-start debris, never as a smoke-test cleanup mechanism.
 
+- Documented the safe Application Default Credentials recovery path for the
+  count-only production preflight, including explicit project scoping without
+  changing deployment configuration or trip data.
+
 - Reconciled the one-trip runbook with ADR 0003: the old hierarchical model remains historical rejection evidence, while the bounded verification gate belongs to `bayes-attribute-shortlist-v1` and its fixed 32-choice policy.
 
 - Made the completed caller’s personal top five available privately before the group reveal, while preserving the embargo on every other traveler’s result and the group ballot.
