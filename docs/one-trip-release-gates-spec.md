@@ -1,6 +1,6 @@
 # One-trip release gates
 
-**Status:** Partially implemented and verified locally; fixed-shortlist release candidate in progress.
+**Status:** Partially implemented and verified locally; fixed-shortlist verification and authenticated five-identity API rehearsal pass, while the literal browser record, disposable smoke, deployment, and final preflight remain.
 **Not a release approval.**
 
 Completed evidence: the independent v2 social-ballot audit/fail-closed fixes
@@ -9,13 +9,14 @@ Completed evidence: the independent v2 social-ballot audit/fail-closed fixes
 seven-case Firestore Emulator persistence proof (`a785de3`), and the
 fixture-based desktop/mobile visual and accessibility review (`3f101e4`,
 `06551f8`). `1d2c084` supplies historical complex-model audit tooling. The
-release candidate is now the fixed 32-question Bayesian attribute shortlist;
-its bounded verification, five-identity browser rehearsal, and deployment
+release candidate is now the fixed 32-question Bayesian attribute shortlist.
+Its bounded verification passed in `271867d`; authenticated API rehearsal
+passed in `f205caa`. The literal five-identity browser record and deployment
 remain open.
 
 This specification closes the remaining verification work for the transparent
-social ballot. It does not authorize a deployment while the fixed-shortlist
-verification and rehearsal gates below remain open.
+social ballot. It does not authorize a deployment while the literal browser,
+disposable-smoke, and final release gates below remain open.
 
 ## Release rule
 

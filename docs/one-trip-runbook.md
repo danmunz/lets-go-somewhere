@@ -1,6 +1,6 @@
 # One-trip operator runbook
 
-**Status:** partially rehearsed. The isolated Auth/Firestore Emulator transaction suite and the authenticated five-identity API rehearsal pass locally; literal browser screenshots plus final release verification remain gates. This document contains procedures, not evidence that the full release has passed.
+**Status:** partially rehearsed. The isolated Auth/Firestore Emulator transaction suite and authenticated five-identity API rehearsal pass locally; a literal browser pass has covered roster, briefing, one blind comparison, help return, and desktop/mobile atlas fallback. The complete five-identity visual record, disposable smoke, deployment, and second production preflight remain gates. This document contains procedures, not evidence that the full release has passed.
 
 ## Before touching the real trip
 

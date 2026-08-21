@@ -8,6 +8,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Fixed the trip-briefing help return so it clears `#how-it-works`; refreshing
+  after returning to a choice no longer reopens the briefing.
+
 - Tightened the one-trip release procedure: Cloud Run deployment now names the
   source, project, and region explicitly; production's count-only preflight is
   required both before and after deploy; reset is documented only for confirmed
