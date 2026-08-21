@@ -62,4 +62,4 @@ The following are consciously not being deferred to a product roadmap; they are 
 
 `Sprint 1 → Sprint 2 → Sprint 3 → play the real trip`
 
-The current deployment remains a **V1 beta**. It is ready for the actual one-shot decision only when all three sprints pass: a complete emotional/social flow, a verified fixed-round Bayesian shortlist, and a five-person rehearsal with recovery guidance.
+The production release is ready for the actual one-shot decision: the emotional/social flow, fixed-round Bayesian shortlist verification, and five-identity authenticated rehearsal are complete. No real trip has started; preserve the documented preflight and snapshot safeguards when it does.

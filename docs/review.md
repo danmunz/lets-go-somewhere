@@ -1,6 +1,6 @@
 # V1 baseline implementation review — historical
 
-This was the original local implementation review. Its former Firebase/Auth/Firestore deployment blocker is resolved and the document is retained as a baseline rather than a statement of current release status. The current one-trip code review is [one-trip-code-review.md](one-trip-code-review.md); its three must-fix findings are resolved, while model promotion and authenticated rehearsal remain open.
+This was the original local implementation review. Its former Firebase/Auth/Firestore deployment blocker is resolved and the document is retained as a baseline rather than a statement of current release status. The current one-trip code review is [one-trip-code-review.md](one-trip-code-review.md); its must-fix findings are resolved. The released model is the fixed-32 Bayesian shortlist, and the authenticated rehearsal is complete.
 
 ## Resolved during review
 
@@ -11,6 +11,6 @@ This was the original local implementation review. Its former Firebase/Auth/Fire
 
 ## Current release validation
 
-The deployed app now includes Firebase Google authentication, Firestore-backed comparison and reveal persistence, Cloud Run, Firebase Hosting, activity-specific editorial media, a completion-gated map atlas, caller-only private shortlists, and a group-results API. The current automated suite covers fixed-32 shortlist determinism and API boundaries in the local adapter. Before the actual one-shot run, the five-identity browser rehearsal, disposable-environment smoke, and final visual/accessibility review remain required.
+The deployed app includes Firebase Google authentication, Firestore-backed comparison and reveal persistence, Cloud Run, Firebase Hosting, activity-specific editorial media, a completion-gated map atlas, caller-only private shortlists, and a group-results API. The fixed-32 shortlist verification, authenticated five-identity Emulator rehearsal, focused literal-browser flow, disposable-environment smoke, visual/accessibility review, and final production preflight have passed.
 
 Use [implementation status](implementation-status.md) for the current gaps and release boundary.

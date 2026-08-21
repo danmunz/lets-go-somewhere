@@ -1,6 +1,6 @@
 # V1 implementation specification
 
-**Reconciliation note (2026-08-18):** the local one-trip checkpoint now implements the profile, waiting, snapshot-backed results, immutable final decision, transactional persistence, seed-version binding, and emulator configuration described by the completion work below. This document remains the target contract for release; production still runs the deterministic foundation until the advanced-model and rehearsal gates pass. See [implementation status](implementation-status.md) and [the content-management guide](content-management.md).
+**Reconciliation note (2026-08-21):** this historical implementation specification predates the released fixed-32 shortlist. Production now runs `bayes-attribute-shortlist-v1`, not the advanced candidate described in older sections below. The profile, waiting, snapshot-backed results, immutable final decision, transactional persistence, seed-version binding, emulator configuration, release rehearsal, and deployment are complete; see [implementation status](implementation-status.md) and [the content-management guide](content-management.md).
 
 ## Scope
 
@@ -10,7 +10,7 @@ Deliver a runnable TypeScript monorepo for the fixed 2026 five-person trip. It m
 
 - React/Vite is the presentation layer; Hono is the local HTTP API.
 - `shared` owns Zod schemas and public presentation-safe contracts.
-- `backend` owns ranking, destination aggregation, attributes, pair selection, and stopping rules. The shipped deterministic Elo-style foundation is to be upgraded to the uncertainty-aware model in the one-trip roadmap before the actual group run.
+- `backend` owns ranking, destination aggregation, attributes, pair selection, and stopping rules. The released production model is the fixed-32 Bayesian attribute shortlist; older Elo and hierarchical implementations are offline reference code.
 - The checked-in seed data is loaded by the backend only. Comparison payloads omit destination metadata.
 - Local development uses an explicitly non-production `X-Demo-User` roster adapter. Production requests verify Firebase ID tokens and match their verified email against the `ROSTER_EMAILS` deployment variable.
 

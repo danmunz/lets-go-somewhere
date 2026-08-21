@@ -2,7 +2,7 @@
 
 **Review scope:** the one-trip implementation checkpoint against `docs/one-trip-implementation-spec.md`, `docs/one-trip-tasks.md`, and the destination-blind boundary. The reviewed changes are committed in `91dc81c`.
 **Reviewed:** 2026-08-18  
-**Original verdict:** **Not release-ready.** The findings below were the must-fix correctness and authentication issues found in this review. They were resolved and regression-tested in the same change set on 2026-08-18. The later Firestore Emulator persistence proof and fixture-based verdict QA are also complete; fixed-shortlist verification and the unrun five-identity browser rehearsal remain release gates.
+**Original verdict:** **Not release-ready.** The findings below were the must-fix correctness and authentication issues found in this review. They were resolved and regression-tested in the same change set on 2026-08-18. The later Firestore Emulator persistence proof, fixture-based verdict QA, fixed-shortlist verification, authenticated five-identity API rehearsal, focused literal-browser flow, and release deployment are also complete.
 
 ## Must-fix findings
 
@@ -52,7 +52,7 @@ Consequently the same opened envelope can show a group verdict from one immutabl
 
 ## Release-readiness assessment
 
-**Code-review findings resolved; release remains blocked.** The expanded Firestore Emulator proof and fixture-based visual QA are complete; run the five-identity browser rehearsal required by OT-22 through OT-26. The documented model-evaluation report is independently **FAIL — DO NOT PROMOTE**; it remains a hard release gate because the required advanced ranking has not yet cleared its synthetic evidence threshold.
+**Code-review findings resolved; release completed.** The expanded Firestore Emulator proof, fixture-based visual QA, fixed-shortlist verification, authenticated five-identity rehearsal, focused literal-browser flow, disposable cloud smoke, and final production preflight are complete. The documented advanced-model evaluation remains **FAIL — DO NOT PROMOTE** historical evidence; it is not the released fixed-32 shortlist model.
 
 ## RG-02 transparent-reveal frontend QA — 2026-08-19
 

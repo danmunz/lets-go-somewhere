@@ -8,6 +8,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Released the verified one-trip experience to Cloud Run revision
+  `lgs-api-00007-nfn` and Firebase Hosting after a final empty, count-only
+  production preflight. No real trip was started during release verification.
+
 - Fixed the trip-briefing help return so it clears `#how-it-works`; refreshing
   after returning to a choice no longer reopens the briefing.
 
@@ -54,7 +58,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - V4 retro-adventure refinement: unboxed interactive roster art, activity-matched opaque imagery, live completion progress, a full-bleed map-first atlas, and a character-led group verdict.
 - Firestore-backed comparison, pending-pair, and reveal persistence, plus a completion-gated snapshot-backed transparent social-ballot API.
 - A consolidated traveler-art library: current roster cutouts remain at `assets/images/`, with legacy variants retained under `assets/images/old/`.
-- An unreleased one-trip journey: destination-free profile, atlas-to-waiting flow, snapshot-backed personal and group results, immutable post-reveal decisions, explicit state recovery, and hardened atlas/media fallbacks.
+- The released one-trip journey: destination-free profile, atlas-to-waiting flow, snapshot-backed personal and group results, immutable post-reveal decisions, explicit state recovery, and hardened atlas/media fallbacks.
 - A local Firebase Auth/Firestore emulator configuration, transactional pending-pair submission, seed-version binding, and immutable reveal snapshots.
 - An offline, regularized preference-model candidate with posterior uncertainty, information-gain selection, confidence-aware stopping, deterministic fixtures, and a fail-closed promotion report.
 - A repeatable Auth/Firestore Emulator transaction suite that verifies atomic concurrent submissions and stale-offer protection against the real repository adapter.

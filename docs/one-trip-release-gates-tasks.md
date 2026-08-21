@@ -2,20 +2,19 @@
 
 **Source:** [one-trip release-gates specification](one-trip-release-gates-spec.md) at commit `194123f`.
 
-**Status:** partially complete. RG-01 passed in `fbae847`; RG-02 passed
+**Status:** completed and released 2026-08-21. RG-01 passed in `fbae847`; RG-02 passed
 fixture-based visual/accessibility review in `3f101e4` and `06551f8`; RG-03
 passed in `4ce95f0`; RG-04 passed in `a785de3`; and the complex-model audit is
 recorded historically in `1d2c084`. RG-06 fixed-shortlist verification passed
 in `271867d`; its exact fixed-round evidence replaces the complex-model
 promotion requirement. RG-05's authenticated API rehearsal passed in
-`f205caa`; its literal browser record is still incomplete. RG-07 documentation
-reconciliation is current as of 2026-08-20, including the successful first
-count-only production preflight and a limited disposable-cloud plumbing smoke
-that was deletion-requested afterward. RG-08 controlled release remains open
-for the five-identity browser record, remaining behavioral smoke, deployment,
-and final production preflight. This
-board is an execution order, not release approval.
-**Hard stop:** deployment and the real five-person trip remain blocked until every required evidence task below passes against one immutable commit, seed digest, and selected model version. A failed task is recorded as failed; its thresholds, snapshot facts, and real-trip state must not be changed to make it pass.
+`f205caa`, with a focused literal-browser flow recorded separately. RG-07
+documentation was reconciled on 2026-08-21. RG-08 completed with a limited
+disposable-cloud smoke, Cloud Run revision `lgs-api-00007-nfn`, Firebase
+Hosting release, and a final empty count-only production preflight. This board
+is retained as the historical execution order.
+**Release rule:** Any future release must again satisfy the applicable evidence
+tasks against one immutable commit, seed digest, and selected model version.
 
 ## Delivery rules
 
@@ -153,7 +152,7 @@ tests. The five-identity browser rehearsal remains a separate gate.
 | C | RG-06 fixed-shortlist verification | The fixed 32-question release candidate is verified. |
 | D | RG-05 after RG-02, RG-03, RG-04, and RG-06 | Five-identity evidence passes on one commit/seed/model tuple. |
 | E | RG-07 | Docs describe only recorded evidence. |
-| F | RG-08 | Deployment remains blocked until all prior gates pass. |
+| F | RG-08 | Completed: Cloud Run, Firebase Hosting, and final empty production preflight passed. |
 
 ## Critical path
 

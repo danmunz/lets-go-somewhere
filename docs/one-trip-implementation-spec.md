@@ -4,7 +4,7 @@
 **Scope:** All remaining work in Sprints 1–3 of [the one-trip roadmap](roadmap.md).  
 **Release bar:** This is the required implementation for the one real five-person trip decision. It is not a pilot, product platform, or V2 staging plan.
 
-**Progress reconciliation (2026-08-18):** OT-01 through OT-18 foundations and the review fixes are implemented in the local checkpoint committed as `91dc81c`. OT-19 has been exercised with both the original and compact hierarchical candidates; both evaluations are explicitly **FAIL — DO NOT PROMOTE**. The target names below describe the required model contract, not a claim that production has switched. Emulator/E2E rehearsal, the runbook, visual release QA, and deployment remain open.
+**Progress reconciliation (2026-08-21):** OT-01 through OT-18 foundations and the review fixes are implemented. OT-19's original and compact hierarchical candidates remain **FAIL — DO NOT PROMOTE** historical evidence; ADR 0003 selected the released fixed-32 Bayesian shortlist instead. Emulator/API rehearsal, focused literal-browser review, runbook, visual release QA, disposable smoke, deployment, and final production preflight are complete.
 
 ## 1. Outcome and non-negotiable boundaries
 

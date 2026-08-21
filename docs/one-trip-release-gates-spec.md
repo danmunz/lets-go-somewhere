@@ -1,7 +1,6 @@
 # One-trip release gates
 
-**Status:** Partially implemented and verified locally; fixed-shortlist verification and authenticated five-identity API rehearsal pass. A limited disposable cloud smoke has also passed, while the literal browser record, remaining behavioral smoke, deployment, and final preflight remain.
-**Not a release approval.**
+**Status:** Released 2026-08-21. Fixed-shortlist verification, authenticated five-identity API rehearsal, focused literal-browser flow, disposable cloud smoke, deployment, and final production preflight passed. No real trip has started.
 
 Completed evidence: the independent v2 social-ballot audit/fail-closed fixes
 (`fbae847`), guarded preflight/reset implementation and focused tests
@@ -14,11 +13,11 @@ Its bounded verification passed in `271867d`; authenticated API rehearsal
 passed in `f205caa`. A temporary Cloud Run/Firebase/Firestore project verified
 live health, Hosting routing, approved disposable-account authentication, one
 Firestore-backed blind comparison, and redaction before deletion was requested.
-The literal five-identity browser record and deployment remain open.
+The literal browser record covers one disposable traveler end-to-end; the five-person state transition is verified by the authenticated API Emulator rehearsal. This is recorded as the actual evidence boundary, not a claim of five concurrent visual-browser contexts.
 
-This specification closes the remaining verification work for the transparent
-social ballot. It does not authorize a deployment while the literal browser,
-remaining behavioral-smoke, and final release gates below remain open.
+This specification records the release criteria and evidence for the transparent
+social ballot. Future changes must satisfy the same destination-blindness,
+snapshot, and preflight rules before release.
 
 ## Release rule
 

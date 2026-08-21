@@ -2,7 +2,7 @@
 
 ## Current implementation status
 
-Landing, character selection, comparison, completion-gated atlas, group verdict, preference profile, waiting status, personal results, and immutable final-decision surfaces are implemented in the committed one-trip checkpoint. The transparent-verdict fixture and visual/accessibility review are complete locally; fixed-shortlist verification, the five-identity browser rehearsal, and deployment gates remain open. See [implementation status](implementation-status.md). The comparison counter truthfully communicates the fixed `N of 32 choices` commitment.
+Landing, character selection, required how-it-works briefing, comparison, completion-gated atlas, group verdict, preference profile, waiting status, personal results, and immutable final-decision surfaces are released for this one trip. The transparent-verdict fixture and visual/accessibility review, fixed-shortlist verification, authenticated five-identity rehearsal, focused literal-browser flow, disposable cloud smoke, deployment, and final empty production preflight have passed. See [implementation status](implementation-status.md). The comparison counter truthfully communicates the fixed `N of 32 choices` commitment.
 
 ## Screens
 
@@ -19,5 +19,5 @@ Use a single narrow column on small screens. Comparison cards become a two-colum
 
 - Whole activity cards are semantic buttons with an accessible selection label.
 - Use the supplied design-system focus indicator and `prefers-reduced-motion` behavior.
-- Progress has an accessible label and no exact question total.
+- Progress has an accessible label and the truthful fixed `N of 32 choices` total.
 - Do not rely on color or motion to distinguish any essential state.
