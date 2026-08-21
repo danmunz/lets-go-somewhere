@@ -1,6 +1,6 @@
 # One-trip operator runbook
 
-**Status:** partially rehearsed. The isolated Auth/Firestore Emulator transaction suite passes locally; the five-person browser rehearsal and final release verification remain gates. This document contains procedures, not evidence that the full release has passed.
+**Status:** partially rehearsed. The isolated Auth/Firestore Emulator transaction suite and the authenticated five-identity API rehearsal pass locally; literal browser screenshots plus final release verification remain gates. This document contains procedures, not evidence that the full release has passed.
 
 ## Before touching the real trip
 
@@ -20,7 +20,7 @@ npm run emulators:start
 npm run test:emulator
 ```
 
-The emulator uses the isolated project ID `lgs-emulator-test`, Auth on port 9099, Firestore on port 8081, and the Emulator UI on port 4000. The non-default Firestore port avoids clashing with the local service commonly occupying 8080. `PATH="/opt/homebrew/opt/openjdk/bin:$PATH" npm run test:emulator` passed on 2026-08-19 with seven tests: explicit emulator routing, concurrent and stale pending claims, racing reveal creation, immutable snapshot reload, immutable final-decision conflict, and redacted v2-result serialization from a Firestore-backed snapshot. The intentional racing transactions may log Firestore lock-retry warnings; the test passes only after the repository returns one identical stored snapshot/decision. Do not point these commands at the production project. The separate five-identity browser rehearsal remains required.
+The emulator uses the isolated project ID `lgs-emulator-test`, Auth on port 9099, Firestore on port 8081, and the Emulator UI on port 4000. The non-default Firestore port avoids clashing with the local service commonly occupying 8080. `PATH="/opt/homebrew/opt/openjdk/bin:$PATH" npm run test:emulator` now runs eight checks: explicit emulator routing; concurrent and stale pending claims; racing immutable reveal creation; immutable snapshot reload; immutable final-decision conflict; redacted v2-result serialization; and the authenticated five-identity route rehearsal. The latter creates only disposable `@rehearsal.invalid` Auth Emulator accounts and verifies mismatch recovery, refresh/resume, duplicate rejection, all five fixed 32-choice rounds, completion gates, organizer-only reveal, snapshot parity, and stale-tab decision safety through the real API. The intentional racing transactions may log Firestore lock-retry warnings; the test passes only after the repository returns one identical stored snapshot/decision. Do not point these commands at the production project. Literal browser screenshots remain required.
 
 ## Browser rehearsal
 
@@ -38,6 +38,18 @@ Use five isolated Auth Emulator identities mapped to Dan, John, Matt, Peter, and
 - keyboard focus, reduced motion, desktop, mobile, photo fallback, and destination-blind comparison redaction all remain correct.
 
 Capture screenshots outside the repository and record the browser, viewport, commit, seed digest, and pass/fail notes in the private rehearsal record.
+
+### Browser-only Auth Emulator switch
+
+The frontend has a deliberately development-only browser rehearsal route. With
+the API already pointed at the isolated Auth and Firestore emulators and given
+the matching disposable roster aliases, serve Vite with
+`VITE_LGS_AUTH_EMULATOR=1`, `VITE_LGS_EMULATOR_PROJECT_ID=lgs-emulator-test`,
+and `VITE_LGS_AUTH_EMULATOR_HOST=127.0.0.1:9099`. The character-selection
+continue button then signs in only the matching disposable `.invalid` account;
+it never invokes Google OAuth. The switch requires both Vite development mode
+and an explicit `=1`, so it cannot enable in a production build. Do not set it
+in Hosting or Cloud Run configuration.
 
 ## Deploying a verified release
 

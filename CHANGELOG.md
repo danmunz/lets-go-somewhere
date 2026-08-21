@@ -24,6 +24,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- An isolated five-identity Auth/Firestore Emulator rehearsal that drives the
+  real API through all five fixed 32-choice journeys, protected reveal,
+  immutable snapshot parity, and stale final-decision recovery. The local
+  browser rehearsal can now use disposable `.invalid` Auth Emulator accounts
+  behind an explicit development-only switch; production remains Google OAuth
+  only.
+
 - A required first-run “How it works” trip briefing between verified character selection and the first anonymous comparison, plus a global contextual help return path. It explains Dan’s fixed 24-trip curation, the 32-choice Bayesian shortlist process, private personal results, and the sealed social reveal without exposing live destination or ranking data.
 
 - Initial product documentation, implementation scaffold, and destination/activity seed data.

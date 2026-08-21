@@ -14,7 +14,7 @@ import peterAvatar from '../../assets/images/peter_cutout.png';
 import { AtlasExplorer } from './AtlasExplorer.js';
 import { ApiError, createApiClient, routeIntentForApiError, type ApiAuthentication, type OneTripApiClient } from './api.js';
 import { AppStateNotice, CompletedTransition, JourneyNav, MediaImage, TravelEffortKey, type JourneyDestination } from './components/index.js';
-import { getRestoredGoogleToken, signInWithGoogle } from './firebase.js';
+import { getRestoredGoogleToken, signInWithEmulatorRehearsalUser, signInWithGoogle, usesAuthEmulatorRehearsal } from './firebase.js';
 import { HowItWorksButton, HowItWorksScreen, MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
 import { HOW_IT_WORKS_HASH, howItWorksBackLabel, needsHowItWorksBriefing } from './howItWorks.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
@@ -90,7 +90,15 @@ function App() {
   useEffect(() => { if (screen === 'completed-transition' && api && !profile && !busy) void loadProfile(api); }, [api, busy, loadProfile, profile, screen]);
   useEffect(() => { screenRef.current = screen; }, [screen]);
 
-  const signIn = async () => { if (!selected) return; try { await enterJourney({ user: selected, token: import.meta.env.PROD ? await signInWithGoogle() : undefined }); } catch (reason) { setError(reason instanceof Error ? reason.message : 'Google sign-in failed.'); setBusy(false); } };
+  const signIn = async () => {
+    if (!selected) return;
+    try {
+      const token = usesAuthEmulatorRehearsal()
+        ? await signInWithEmulatorRehearsalUser(selected)
+        : import.meta.env.PROD ? await signInWithGoogle() : undefined;
+      await enterJourney({ user: selected, token });
+    } catch (reason) { setError(reason instanceof Error ? reason.message : 'Google sign-in failed.'); setBusy(false); }
+  };
   const choose = async (winner: string) => { if (!api || !next || next.complete || picked) return; setPicked(winner); setError(''); try { await api.submitComparison({ activityA: next.activityA.id, activityB: next.activityB.id, winner }); window.setTimeout(() => { setPicked(''); void loadComparison(api); }, 180); } catch (reason) { setPicked(''); await handleRouteError(reason, 'comparison'); } };
   const openAtlas = async (updateHash = true) => { if (!api) return; setBusy(true); setError(''); try { const response = await api.getAtlas(); setAtlas(response.destinations); setScreen('atlas'); if (updateHash) setJourneyHash('atlas'); } catch (reason) { await handleRouteError(reason, 'atlas'); } finally { setBusy(false); } };
   const refreshStatus = useCallback(async () => { if (!api) return; try { const response = await api.getGroupStatus(); setStatus(response); return response; } catch (reason) { await handleRouteError(reason, 'group-status'); throw reason; } }, [api, handleRouteError]);
