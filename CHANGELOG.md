@@ -8,6 +8,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Tightened the one-trip release procedure: Cloud Run deployment now names the
+  source, project, and region explicitly; production's count-only preflight is
+  required both before and after deploy; reset is documented only for confirmed
+  untouched pre-start debris, never as a smoke-test cleanup mechanism.
+
 - Reconciled the one-trip runbook with ADR 0003: the old hierarchical model remains historical rejection evidence, while the bounded verification gate belongs to `bayes-attribute-shortlist-v1` and its fixed 32-choice policy.
 
 - Made the completed caller’s personal top five available privately before the group reveal, while preserving the embargo on every other traveler’s result and the group ballot.

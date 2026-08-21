@@ -170,15 +170,22 @@ bounded verification passes, no real-trip deployment occurs.
 Once all gates are recorded as passed:
 
 1. Run read-only preflight and archive its count-only receipt.
-2. Export the disposable preflight state through the approved private process;
-   perform the guarded reset; rerun preflight and require the empty result.
+2. If and only if that preflight shows closed, untouched pre-start debris,
+   obtain the required private export reference, perform the guarded reset,
+   and rerun preflight to require the empty result. A started user, completed
+   user, or opened/missing/invalid reveal is a hard stop, not resettable
+   release debris.
 3. Run the behavioral smoke test in the separately provisioned disposable
    Firebase/GCP environment: health, approved-account authentication, one
    destination-blind comparison, refresh/resume, completion-gated atlas, and
    organizer reveal authorization. Record only safe evidence; do not use a
    real roster account or production documents.
-4. Deploy the exact verified commit to Cloud Run `lgs-api` in `us-east4`, then
-   deploy Firebase Hosting for `lets-go-somewhere-3549f`.
+4. Verify the existing service's `ROSTER_EMAILS` environment-variable name
+   without logging its value. Deploy the exact verified commit from source to
+   Cloud Run `lgs-api` with explicit project `lets-go-somewhere-3549f` and
+   region `us-east4`, without flags that replace environment variables,
+   service identity, or IAM; then deploy Firebase Hosting for
+   `lets-go-somewhere-3549f`.
 5. Rerun production's count-only preflight and require the empty result before
    sharing the production URL with the five friends. Do not submit a
    comparison in production before the real trip begins.

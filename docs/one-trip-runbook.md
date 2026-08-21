@@ -41,18 +41,56 @@ Capture screenshots outside the repository and record the browser, viewport, com
 
 ## Deploying a verified release
 
-Only after fixed-shortlist verification, the five-identity browser rehearsal, visual QA, and independent review pass:
+Only after fixed-shortlist verification, the five-identity browser rehearsal,
+visual QA, and independent review pass. The release manager must use the exact
+candidate commit that produced those records; do not rebuild from an uncommitted
+worktree or substitute a later commit.
+
+First, record production's **read-only** count-only preflight. It must be empty
+before any deployment. This command does not start a trip or alter data:
+
+```sh
+npm run preflight:one-trip -- --project lets-go-somewhere-3549f
+```
+
+Also verify the deployed service still has the expected environment-variable
+*name* without printing its value. The output must include `ROSTER_EMAILS`.
+
+```sh
+gcloud run services describe lgs-api \
+  --project lets-go-somewhere-3549f \
+  --region us-east4 \
+  --format='value(spec.template.spec.containers[0].env.name)'
+```
+
+Then build and deploy from the repository root:
 
 ```sh
 npm run validate:seed
 npm test
 npm run typecheck
 npm run build
-gcloud run deploy lgs-api --region us-east4
+gcloud run deploy lgs-api \
+  --source . \
+  --project lets-go-somewhere-3549f \
+  --region us-east4
 firebase deploy --only hosting --project lets-go-somewhere-3549f
+npm run preflight:one-trip -- --project lets-go-somewhere-3549f
 ```
 
-Use the repository's existing deployment configuration and keep secrets in the configured service environment. Run behavioral smoke only in the separately provisioned disposable Firebase/GCP environment; production stays untouched apart from empty, count-only preflight. Do not expose or log tokens or roster configuration.
+`gcloud run deploy --source .` updates the source image while retaining the
+existing service configuration unless a configuration flag is supplied. Do not
+add `--set-env-vars`, `--clear-env-vars`, `--service-account`, IAM flags, or a
+different project/region to this command during this one-trip release. Keep
+secrets in the configured service environment. Run behavioral smoke only in
+the separately provisioned disposable Firebase/GCP environment; production
+stays untouched apart from empty, count-only preflight. Do not expose or log
+tokens or roster configuration.
+
+The final preflight must again report `empty: true`. Record only its count-safe
+receipt, the deployed revision, Hosting release timestamp, commit, and seed
+digest in private trip notes. If either preflight is nonempty or invalid, stop:
+do not use the reset command as a release cleanup shortcut.
 
 ## Reset and recovery
 
@@ -64,7 +102,15 @@ npm run preflight:one-trip -- --project lets-go-somewhere-3549f
 
 It exits successfully only when the reveal is `closed` and there are zero started users, completed users, snapshots, and decisions. `open-v1`, `missing-snapshot`, and `invalid` are hard stops. In particular, preserve an `open-v1` snapshot read-only; do not manufacture a v2 replacement or reset it without an explicit group decision.
 
-The guarded reset is only for untouched, disposable preflight debris. Generate and retain a private export reference outside the repository, then run the exact command below. The `private:` reference is included in the count-only receipt, so use an opaque locally generated value rather than a document ID, email address, or secret.
+The guarded reset is only for confirmed untouched pre-start debris, never for a
+smoke test or a real trip. If the preflight has any started user, completed user,
+opened/missing/invalid reveal, stop and obtain a group decision rather than
+trying a reset. Only when the preflight is `closed` with zero started and
+completed users may an operator choose to clear pre-start documents. Generate
+and retain a private export reference outside the repository, then run the
+exact command below. The `private:` reference is included in the count-only
+receipt, so use an opaque locally generated value rather than a document ID,
+email address, or secret.
 
 ```sh
 export LGS_EXPORT_REF="private:$(openssl rand -hex 16)"
