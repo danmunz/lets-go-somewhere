@@ -6,7 +6,7 @@
 
 1. Confirm the intended commit, seed digest, model decision, and deployment identifiers in [implementation status](implementation-status.md).
 2. Run `npm run validate:seed`, `npm test`, `npm run typecheck`, and `npm run build`.
-3. Run `npm run audit:model-policy` and the full model evaluation, then confirm that the advanced model ADR is **PROMOTED**. If ADR 0003 says **DO NOT PROMOTE**, stop: the hosted app is not ready for the real one-shot decision.
+3. Confirm ADR 0003 names `bayes-attribute-shortlist-v1` with `fixed-32-boundary-v1` as the release candidate. The old hierarchical audit is historical rejection evidence only; do **not** wait for it to be promoted. Instead, record the bounded fixed-shortlist checks: deterministic 32-round replay, zero representative-fixture fit failures, coverage by question 24, final-eight boundary selection when eligible, DTO redaction, and persisted-shortlist stability.
 4. Use only approved Google accounts from the private deployment configuration. Never put roster emails, tokens, service-account JSON, or `ROSTER_EMAILS` values in this repository.
 5. Record the exact seed digest and deployed commit in the private trip notes, not in source control.
 
@@ -41,7 +41,7 @@ Capture screenshots outside the repository and record the browser, viewport, com
 
 ## Deploying a verified release
 
-Only after fixed-shortlist verification, emulator/E2E, visual QA, and independent review pass:
+Only after fixed-shortlist verification, the five-identity browser rehearsal, visual QA, and independent review pass:
 
 ```sh
 npm run validate:seed
@@ -52,7 +52,7 @@ gcloud run deploy lgs-api --region us-east4
 firebase deploy --only hosting --project lets-go-somewhere-3549f
 ```
 
-Use the repository's existing deployment configuration and keep secrets in the configured service environment. Smoke-test sign-in, one comparison, resume, completion-gated atlas access, and reveal authorization. Do not expose or log tokens or roster configuration.
+Use the repository's existing deployment configuration and keep secrets in the configured service environment. Run behavioral smoke only in the separately provisioned disposable Firebase/GCP environment; production stays untouched apart from empty, count-only preflight. Do not expose or log tokens or roster configuration.
 
 ## Reset and recovery
 

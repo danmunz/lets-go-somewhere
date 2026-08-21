@@ -1,6 +1,6 @@
 # Implementation status
 
-Last reconciled: 2026-08-19 (transparent social-ballot release-gate checkpoint).
+Last reconciled: 2026-08-20 (pre-game briefing and release-readiness checkpoint).
 
 This is the operational status companion to the product specification. It records what is shipped without weakening the product requirements in [spec.md](spec.md) or the intended journey in [ux.md](ux.md).
 
@@ -29,7 +29,7 @@ claims.
 
 ## Implemented but unreleased one-trip work
 
-The local build now includes a plain-language destination-free profile, immediate caller-only private shortlist, completion-only waiting lobby, durable post-completion navigation, snapshot-backed group result view, qualitative result explanations, group-finalist matrix, and one immutable post-reveal final decision. The transparent group result is the stored `5/4/3/2/1` ballot—not a normalized group score—and v2 snapshots are cross-field validated before they are served. An independent audit also closed the legacy-final-decision and stale-decision-read gaps in `fbae847`. The guarded count-only preflight/reset tooling in `4ce95f0` is unit-tested locally; it has not been run against production. These changes remain unreleased while the fixed-shortlist verification and rehearsal gates below are open.
+The local build now includes a plain-language destination-free profile, immediate caller-only private shortlist, completion-only waiting lobby, durable post-completion navigation, snapshot-backed group result view, qualitative result explanations, group-finalist matrix, and one immutable post-reveal final decision. The transparent group result is the stored `5/4/3/2/1` ballot—not a normalized group score—and v2 snapshots are cross-field validated before they are served. An independent audit also closed the legacy-final-decision and stale-decision-read gaps in `fbae847`. The guarded count-only preflight/reset tooling in `4ce95f0` is unit-tested locally; it has not been run against production. These changes remain unreleased while fixed-shortlist verification, rehearsal, disposable smoke, and production-preflight gates are open.
 
 ## Remaining one-trip release gates
 
@@ -37,7 +37,7 @@ These are product gaps, not documentation changes to make the requirements disap
 
 1. **Fixed-shortlist verification:** `bayes-attribute-shortlist-v1` is wired locally. Record deterministic 32-round replay, representative fit, coverage, boundary-selection, redaction, and snapshot-stability evidence before release. The completed complex-model audit remains historical evidence, not this model's gate; see [model evaluation](model-evaluation.md) and ADR 0003.
 2. **Rehearsal:** The isolated Auth/Firestore Emulator now verifies configuration, concurrent/stale pending claims, racing immutable reveal creation, persisted snapshot reload, immutable final-decision conflicts, and redacted v2-result serialization. The remaining five-identity browser flow must be recorded against the fixed-shortlist release candidate.
-3. **Release verification:** The fixture-based desktop/mobile visual and accessibility review is complete locally. Complete the five-identity browser rehearsal before release. Production preflight must remain count-only and empty; any behavioral smoke test that starts a journey belongs in a separately provisioned disposable Firebase/GCP environment because the guarded production reset intentionally refuses started state.
+3. **Release verification:** The fixture-based desktop/mobile visual and accessibility review is complete locally. Complete the five-identity browser rehearsal, run behavioral smoke in a separate disposable Firebase/GCP environment, then require an empty, count-only production preflight both before and after deployment. Production must never be used for a test journey because the guarded reset intentionally refuses started state.
 
 ## Required one-trip inference work
 

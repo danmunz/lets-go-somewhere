@@ -8,6 +8,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Reconciled the one-trip runbook with ADR 0003: the old hierarchical model remains historical rejection evidence, while the bounded verification gate belongs to `bayes-attribute-shortlist-v1` and its fixed 32-choice policy.
+
 - Made the completed caller’s personal top five available privately before the group reveal, while preserving the embargo on every other traveler’s result and the group ballot.
 - Reframed the post-completion profile as a plain-language `Your trip rhythm`, added durable post-completion navigation, and redesigned the atlas around its full unranked candidate set, keyboard-visible map selection, and a credited photo lightbox.
 - Replaced the one-trip production ranking path with `bayes-attribute-shortlist-v1`: exactly 32 adaptive, destination-blind comparisons over the eight canonical activity attributes.

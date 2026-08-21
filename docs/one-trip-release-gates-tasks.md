@@ -6,8 +6,10 @@
 fixture-based visual/accessibility review in `3f101e4` and `06551f8`; RG-03
 passed in `4ce95f0`; RG-04 passed in `a785de3`; and the complex-model audit is
 recorded historically in `1d2c084`. ADR 0003 supersedes its promotion gate with
-fixed-shortlist verification. RG-05, RG-06, RG-07 final reconciliation, and
-RG-08 remain open. This board is an execution order, not release approval.
+fixed-shortlist verification. RG-07 documentation reconciliation is current as
+of 2026-08-20; RG-05 five-identity rehearsal, RG-06 fixed-shortlist evidence,
+and RG-08 controlled release remain open. This board is an execution order,
+not release approval.
 **Hard stop:** deployment and the real five-person trip remain blocked until every required evidence task below passes against one immutable commit, seed digest, and selected model version. A failed task is recorded as failed; its thresholds, snapshot facts, and real-trip state must not be changed to make it pass.
 
 ## Delivery rules
