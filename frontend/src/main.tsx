@@ -127,14 +127,14 @@ function App() {
   const closeHowItWorks = useCallback(() => {
     const destination = howItWorksReturnRef.current;
     if (howItWorksRequired) {
-      window.history.replaceState(null, '', '');
+      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
       setScreen(destination);
     } else if (window.location.hash === HOW_IT_WORKS_HASH && window.history.state?.lgsHowItWorks) window.history.back();
-    else { window.history.replaceState(null, '', ''); setScreen(destination); }
+    else { window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`); setScreen(destination); }
   }, [howItWorksRequired]);
   const startChoices = useCallback(() => {
     setHowItWorksRequired(false);
-    if (window.location.hash === HOW_IT_WORKS_HASH) window.history.replaceState(null, '', '');
+    if (window.location.hash === HOW_IT_WORKS_HASH) window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
     setScreen('comparison');
   }, []);
   useEffect(() => {
