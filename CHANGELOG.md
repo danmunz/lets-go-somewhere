@@ -12,6 +12,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
   `lgs-api-00007-nfn` and Firebase Hosting after a final empty, count-only
   production preflight. No real trip was started during release verification.
 
+- Expanded the content-management guide with the released briefing, fixed-round
+  progress, durable navigation, private-shortlist, atlas, and reset boundaries.
+
 - Fixed the trip-briefing help return so it clears `#how-it-works`; refreshing
   after returning to a choice no longer reopens the briefing.
 
