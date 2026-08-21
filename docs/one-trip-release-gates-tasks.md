@@ -10,7 +10,10 @@ in `271867d`; its exact fixed-round evidence replaces the complex-model
 promotion requirement. RG-05's authenticated API rehearsal passed in
 `f205caa`; its literal browser record is still incomplete. RG-07 documentation
 reconciliation is current as of 2026-08-20, including the successful first
-count-only production preflight. RG-08 controlled release remains open. This
+count-only production preflight and a limited disposable-cloud plumbing smoke
+that was deletion-requested afterward. RG-08 controlled release remains open
+for the five-identity browser record, remaining behavioral smoke, deployment,
+and final production preflight. This
 board is an execution order, not release approval.
 **Hard stop:** deployment and the real five-person trip remain blocked until every required evidence task below passes against one immutable commit, seed digest, and selected model version. A failed task is recorded as failed; its thresholds, snapshot facts, and real-trip state must not be changed to make it pass.
 

@@ -1,6 +1,6 @@
 # One-trip operator runbook
 
-**Status:** partially rehearsed. The isolated Auth/Firestore Emulator transaction suite and authenticated five-identity API rehearsal pass locally; a literal browser pass has covered roster, briefing, one blind comparison, help return, and desktop/mobile atlas fallback. The complete five-identity visual record, disposable smoke, deployment, and second production preflight remain gates. This document contains procedures, not evidence that the full release has passed.
+**Status:** partially rehearsed. The isolated Auth/Firestore Emulator transaction suite and authenticated five-identity API rehearsal pass locally; a literal browser pass has covered roster, briefing, one blind comparison, help return, and desktop/mobile atlas fallback. A disposable Cloud Run/Firebase/Firestore project also passed health, Hosting routing, disposable approved-account authentication, one Firestore-backed blind comparison, response redaction, and count-only state inspection before being deletion-requested. The complete five-identity visual record, remaining behavioral-smoke coverage, deployment, and second production preflight remain gates. This document contains procedures, not evidence that the full release has passed.
 
 ## Before touching the real trip
 
@@ -98,6 +98,14 @@ secrets in the configured service environment. Run behavioral smoke only in
 the separately provisioned disposable Firebase/GCP environment; production
 stays untouched apart from empty, count-only preflight. Do not expose or log
 tokens or roster configuration.
+
+The 2026-08-20 disposable smoke used an explicitly temporary labelled project
+with a project-scoped USD 4 alert budget. It verified live health, Hosting
+routing, disposable approved-account authentication, one Firestore-backed blind
+comparison, comparison redaction, and count-only state inspection, then the
+entire temporary project was deletion-requested. Treat that as plumbing
+evidence only: it does not replace the remaining five-identity browser record
+or broader behavioral-smoke checks.
 
 The final preflight must again report `empty: true`. Record only its count-safe
 receipt, the deployed revision, Hosting release timestamp, commit, and seed

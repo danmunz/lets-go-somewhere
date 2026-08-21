@@ -31,6 +31,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Ran and tore down a labelled disposable Cloud Run/Firebase/Firestore smoke
+  environment. It verified live health, Hosting routing, disposable
+  approved-account authentication, one Firestore-backed destination-blind
+  comparison, response redaction, and count-only state inspection without
+  touching the real-trip project.
+
 - An isolated five-identity Auth/Firestore Emulator rehearsal that drives the
   real API through all five fixed 32-choice journeys, protected reveal,
   immutable snapshot parity, and stale final-decision recovery. The local
