@@ -4240,51 +4240,91 @@
   font-size: 22px;
   font-style: normal;
 }
-.briefing-taste-glyphs {
-  position: relative;
+.briefing-learning-glyph {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-  min-height: 104px;
-  padding: 7px;
-  background: var(--color-olive);
+  grid-template-columns: minmax(86px, 0.86fr) auto minmax(112px, 1.14fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 108px;
+  padding: 9px;
+  border: 2px solid var(--color-night);
+  background: var(--color-cream);
   transform: rotate(1deg);
 }
-.briefing-taste-glyphs span {
+.briefing-learning-glyph__picks {
   display: grid;
-  min-height: 38px;
-  place-items: center;
-  background: var(--color-cream);
+  gap: 4px;
+}
+.briefing-learning-glyph__picks > span {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 4px;
+  align-items: center;
+  min-height: 23px;
+  padding: 3px 5px;
+  border: 1.5px solid var(--color-night);
+  background: var(--color-amber);
   color: var(--color-night);
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1;
+}
+.briefing-learning-glyph__picks > span::before {
+  color: var(--color-olive);
+  content: "✓";
+  font-size: 18px;
+  font-weight: 900;
   text-align: center;
 }
-.briefing-taste-glyphs span:nth-child(2n) {
-  background: var(--color-amber);
+.briefing-learning-glyph__picks b,
+.briefing-learning-glyph__pattern > b {
+  display: none;
 }
-.briefing-taste-glyphs span:nth-child(3n) {
-  background: var(--color-terra);
-  color: var(--color-cream);
+.briefing-learning-glyph__picks i,
+.briefing-learning-glyph__pattern i {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.05;
 }
-.briefing-taste-glyphs i {
-  position: absolute;
-  inset: 31px auto auto calc(50% - 40px);
+.briefing-learning-glyph__arrow {
+  color: var(--color-terra);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-style: normal;
+}
+.briefing-learning-glyph__pattern {
   display: grid;
-  width: 80px;
-  height: 52px;
-  place-items: center;
+  gap: 5px;
+  padding: 6px;
   border: 2px solid var(--color-night);
-  border-radius: 50%;
   background: var(--color-trail-blue);
   color: var(--color-cream);
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-style: normal;
-  line-height: 0.9;
-  text-align: center;
-  transform: rotate(-6deg);
+}
+.briefing-learning-glyph__pattern > b {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+.briefing-learning-glyph__pattern > span {
+  display: grid;
+  grid-template-columns: minmax(54px, auto) 1fr;
+  gap: 5px;
+  align-items: center;
+}
+.briefing-learning-glyph__pattern i {
+  font-size: 13px;
+}
+.briefing-learning-glyph__pattern em {
+  display: block;
+  height: 7px;
+  border: 1px solid color-mix(in srgb, var(--color-night) 65%, transparent);
+  background: color-mix(in srgb, var(--color-cream) 25%, transparent);
+}
+.briefing-learning-glyph__pattern em::before {
+  display: block;
+  width: var(--bar-width);
+  height: 100%;
+  background: var(--color-amber);
+  content: "";
 }
 .briefing-route-glyphs {
   display: flex;
@@ -4335,38 +4375,6 @@
   background: var(--color-terra);
   color: var(--color-cream);
   transform: rotate(1.4deg);
-}
-.briefing-reveal-glyph > span {
-  display: grid;
-  width: 58px;
-  height: 47px;
-  place-items: center;
-  border: 2px solid var(--color-night);
-  background: var(--color-amber);
-  color: var(--color-night);
-  font-size: 30px;
-}
-.briefing-reveal-glyph > b {
-  position: absolute;
-  right: 8px;
-  bottom: 6px;
-  font-family: var(--font-mono);
-  font-size: 20px;
-}
-.briefing-crew {
-  position: absolute;
-  top: 0;
-  left: 7px;
-  display: flex;
-  align-items: end;
-  height: 54px;
-}
-.briefing-crew img {
-  width: 42px;
-  height: 56px;
-  margin-right: -12px;
-  object-fit: contain;
-  filter: drop-shadow(1px 2px 0 var(--color-night));
 }
 .briefing-action {
   display: flex;
@@ -4486,7 +4494,7 @@
   }
   .briefing-step__visual--curation,
   .briefing-choice-glyphs,
-  .briefing-taste-glyphs,
+  .briefing-learning-glyph,
   .briefing-route-glyphs,
   .briefing-reveal-glyph {
     grid-column: 2;
@@ -4503,7 +4511,8 @@
     font-size: 18px;
   }
   .briefing-choice-glyphs b,
-  .briefing-taste-glyphs span,
+  .briefing-learning-glyph__picks i,
+  .briefing-learning-glyph__pattern i,
   .briefing-route-glyphs span,
   .briefing-reveal-glyph > b,
   .briefing-step__visual--curation > b {
@@ -4711,108 +4720,103 @@
   display: block;
 }
 
-/* The reveal illustration is a small story: five sealed personal lists become one shared board. */
+/* The reveal illustration is a small story: five private lists become one board to discuss. */
 .briefing-reveal-glyph {
-  grid-template-columns: 1fr 92px;
-  grid-template-rows: 1fr auto;
-  gap: 4px 12px;
-  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: minmax(86px, 1fr) 48px minmax(72px, 0.8fr);
+  gap: 7px;
+  align-items: stretch;
+  min-height: 112px;
+  padding: 9px;
+  border: 2px solid var(--color-night);
   background: var(--color-cream);
   color: var(--color-night);
+  transform: rotate(1.4deg);
 }
-.briefing-private-lists {
-  display: flex;
-  gap: 4px;
-  align-items: end;
-  align-self: end;
+.briefing-reveal-glyph__private,
+.briefing-reveal-glyph__board {
+  display: grid;
+  align-content: center;
+  gap: 7px;
 }
-.briefing-private-lists:before {
-  position: absolute;
-  top: 9px;
-  left: 11px;
+.briefing-reveal-glyph__private > b,
+.briefing-reveal-glyph__board > b {
   color: var(--color-terra);
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.07em;
-  content: "FIVE PRIVATE LISTS";
 }
-.briefing-private-lists > span {
+.briefing-reveal-glyph__private > div {
+  display: flex;
+  gap: 2px;
+  align-items: end;
+}
+.briefing-reveal-glyph__private span {
   display: grid;
-  width: 26px;
-  height: 40px;
-  place-items: center;
-  border: 2px solid var(--color-night);
-  background: var(--color-amber);
-  box-shadow: 2px 2px 0 var(--color-night);
-  transform: rotate(calc((var(--list-accent) - 2) * 3deg));
+  width: 22px;
+  gap: 1px;
+  justify-items: center;
 }
-.briefing-private-lists > span:nth-child(2n) {
-  background: var(--color-trail-blue);
-  color: var(--color-cream);
+.briefing-reveal-glyph__private img {
+  width: 21px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(1px 1px 0 rgba(31, 27, 22, 0.28));
 }
-.briefing-private-lists > span:nth-child(3n) {
-  background: var(--color-olive);
-  color: var(--color-cream);
-}
-.briefing-private-lists i {
-  font-family: var(--font-display);
-  font-size: 21px;
+.briefing-reveal-glyph__private i {
+  color: color-mix(in srgb, var(--color-night) 75%, var(--color-terra));
+  font-family: var(--font-mono);
+  font-size: 9px;
   font-style: normal;
 }
-.briefing-envelope {
-  position: relative;
+.briefing-reveal-glyph__envelope {
   display: grid;
-  grid-row: 1/-1;
-  gap: 1px;
+  gap: 3px;
   place-items: center;
-  padding: 7px 4px;
-  border: 2px dashed var(--color-night);
-  background: var(--color-terra);
-  color: var(--color-cream);
+  padding: 5px 2px;
+  border: 2px dashed color-mix(in srgb, var(--color-night) 70%, transparent);
+  background: var(--color-amber);
+  color: var(--color-night);
   text-align: center;
 }
-.briefing-envelope span {
-  font-size: 28px;
+.briefing-reveal-glyph__envelope span {
+  font-size: 25px;
   line-height: 1;
 }
-.briefing-envelope b {
-  font-size: 14px;
+.briefing-reveal-glyph__envelope b {
+  font-family: var(--font-mono);
+  font-size: 10px;
   line-height: 0.9;
   text-transform: uppercase;
 }
-.briefing-points-board {
+.briefing-reveal-glyph__board {
+  padding: 6px;
+  border: 2px solid var(--color-night);
+  background: var(--color-trail-blue);
+  color: var(--color-cream);
+}
+.briefing-reveal-glyph__board > b {
+  color: var(--color-cream);
+  font-size: 10px;
+}
+.briefing-reveal-glyph__board > div {
   display: flex;
-  grid-column: 1;
-  gap: 4px;
+  gap: 2px;
   align-items: center;
 }
-.briefing-points-board:before {
-  margin-right: 2px;
-  color: var(--color-trail-blue);
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 800;
-  content: "SHARED BOARD";
-}
-.briefing-points-board span {
+.briefing-reveal-glyph__board span {
   display: grid;
-  width: 22px;
-  height: 22px;
+  width: 17px;
+  height: 17px;
   place-items: center;
-  border-radius: 50%;
-  background: var(--color-night);
-  color: var(--color-cream);
-  font-size: 14px;
+  border: 1px solid var(--color-night);
+  background: var(--color-cream);
+  color: var(--color-night);
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 800;
 }
-.briefing-points-board span:nth-child(1) {
-  background: var(--color-terra);
-}
-.briefing-points-board span:nth-child(2) {
+.briefing-reveal-glyph__board span:first-child {
   background: var(--color-amber);
-  color: var(--color-night);
-}
-.briefing-points-board span:nth-child(3) {
-  background: var(--color-olive);
 }

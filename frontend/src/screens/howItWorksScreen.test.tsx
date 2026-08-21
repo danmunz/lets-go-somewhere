@@ -14,9 +14,11 @@ const travelers = [
 describe('pre-game how-it-works briefing', () => {
   it('explains the fixed social process without live destination or result data', () => {
     const markup = renderToStaticMarkup(<HowItWorksScreen travelers={travelers} required backLabel="Back to character selection" onBack={() => undefined} onStartChoices={() => undefined} />);
-    expect(markup).toContain('Dan picked 24 possible trips');
-    expect(markup).toContain('You pick your favorites');
-    expect(markup).toContain('A small learning model');
+    expect(markup).toContain('Dan picked 24 trips');
+    expect(markup).toContain('You make A-or-B choices');
+    expect(markup).toContain('The algorithm learns');
+    expect(markup).toContain('THE GAME NOTICES');
+    expect(markup).toContain('FIVE PRIVATE TOP FIVES');
     expect(markup).toContain('See how the group voted');
     expect(markup).toContain('Start my 32 choices');
     expect(markup).not.toContain('Oaxaca');
