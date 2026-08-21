@@ -1,6 +1,6 @@
 # V1 implementation specification
 
-**Reconciliation note (2026-08-21):** this historical implementation specification predates the released fixed-32 shortlist. Production now runs `bayes-attribute-shortlist-v1`, not the advanced candidate described in older sections below. The profile, waiting, snapshot-backed results, immutable final decision, transactional persistence, seed-version binding, emulator configuration, release rehearsal, and deployment are complete; see [implementation status](implementation-status.md) and [the content-management guide](content-management.md).
+**Reconciliation note (2026-08-21):** this historical implementation specification predates the released fixed-32 shortlist. Production now runs `bayes-attribute-shortlist-v1`, not the advanced candidate described in older sections below. The profile, waiting, snapshot-backed results, transactional persistence, seed-version binding, emulator configuration, release rehearsal, and deployment are complete; the final-decision interaction in historical sections below is retired. See [implementation status](implementation-status.md) and [the content-management guide](content-management.md).
 
 ## Scope
 

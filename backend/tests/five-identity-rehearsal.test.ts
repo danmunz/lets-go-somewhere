@@ -17,7 +17,7 @@ describe.runIf(process.env.LGS_TEST_MODE === 'emulator')('five-identity authenti
     ROSTER.map((user) => [user, `${user}@rehearsal.invalid`]),
   ) as Record<RosterUser, string>;
   const tokens = new Map<RosterUser, string>();
-  const collectionNames = ['lgsV4Users', 'lgsV4State', 'lgsV4ResultSnapshots', 'lgsV4FinalDecisions'];
+  const collectionNames = ['lgsV4Users', 'lgsV4State', 'lgsV4ResultSnapshots'];
 
   const headersFor = (user: RosterUser) => ({
     Authorization: `Bearer ${tokens.get(user) ?? ''}`,
@@ -177,17 +177,8 @@ describe.runIf(process.env.LGS_TEST_MODE === 'emulator')('five-identity authenti
     expect(groupPayload.snapshotId).toBe(reveal.snapshotId);
     expect(groupPayload.group).toHaveLength(5);
 
-    // A stale Dan tab cannot overwrite the decision an active Dan tab saved.
-    const choice = groupPayload.group[0]!.id;
-    const saved = await request('dan', '/v1/final-decision', {
-      method: 'POST', body: JSON.stringify({ choice }),
-    });
-    expect(saved.status).toBe(201);
-    const stale = await request('dan', '/v1/final-decision', {
-      method: 'POST', body: JSON.stringify({ choice: 'need-more-research' }),
-    });
-    expect(stale.status).toBe(409);
-    const reloadedDecision = await request('dan', '/v1/final-decision');
-    expect(await reloadedDecision.json()).toMatchObject({ decision: { user: 'dan', choice } });
+    // The reveal is the end of the in-app flow. The group discusses its
+    // transparent results together rather than recording a final vote here.
+    expect((await request('dan', '/v1/final-decision')).status).toBe(404);
   }, 120_000);
 });

@@ -188,7 +188,6 @@ describe('transparent social ballot', () => {
       })),
       finalistRanks: social.finalistRanks,
       insights: social.insights,
-      decisions: [],
     };
     expect(transparentGroupResultsResponseSchema.parse(response).group[0]!.name).toBe('A');
     expect(transparentGroupResultsResponseSchema.safeParse({ ...response, hiddenUtility: 1 }).success).toBe(false);

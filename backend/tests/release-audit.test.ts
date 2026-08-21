@@ -6,8 +6,6 @@ import { buildTransparentSocialBallot } from '../src/results/social-ballot.js';
 import {
   __storeTest,
   createOrGetRevealSnapshot,
-  getAllFinalDecisions,
-  getFinalDecision,
   type RevealSnapshotInput,
 } from '../src/store.js';
 
@@ -89,29 +87,8 @@ describe('release-gate backend audit', () => {
     });
   });
 
-  it('rejects stale or cross-snapshot persisted decisions instead of publishing them', async () => {
-    const snapshot = await createOrGetRevealSnapshot(validV2Input());
-    __storeTest.setMemoryFinalDecision('dan', {
-      user: 'dan', choice: 'antigua', snapshotId: `${snapshot.snapshotId}-other`, createdAt: now,
-    });
-
-    await expect(getFinalDecision('dan')).rejects.toThrow(/snapshot ID must match/);
-    await expect(getAllFinalDecisions()).rejects.toThrow(/snapshot ID must match/);
-    const response = await app.request('/v1/final-decision', { headers });
-    expect(response.status).toBe(503);
-    expect(await response.json()).toMatchObject({ code: 'temporarily-unavailable' });
-  });
-
-  it('keeps every final-decision endpoint read-only for a valid legacy reveal', async () => {
-    __storeTest.setMemoryRevealSnapshot('legacy-audit', validLegacySnapshot());
-
-    const get = await app.request('/v1/final-decision', { headers });
-    expect(get.status).toBe(503);
-    expect(await get.json()).toEqual({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' });
-
-    const post = await app.request('/v1/final-decision', { method: 'POST', headers, body: JSON.stringify({ choice: 'antigua' }) });
-    expect(post.status).toBe(503);
-    expect(await post.json()).toEqual({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' });
-    expect(__storeTest.getMemoryFinalDecision('dan')).toBeUndefined();
+  it('returns not found for the retired decision endpoints', async () => {
+    expect((await app.request('/v1/final-decision', { headers })).status).toBe(404);
+    expect((await app.request('/v1/final-decision', { method: 'POST', headers })).status).toBe(404);
   });
 });

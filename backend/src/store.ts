@@ -7,8 +7,6 @@ import type {
   Activity,
   Comparison,
   Destination,
-  FinalDecision,
-  FinalDecisionChoice,
   ResultSnapshotCreation,
   VersionedResultSnapshot,
 } from '@lgs/shared';
@@ -16,8 +14,6 @@ import {
   activitySchema,
   comparisonSchema,
   destinationSchema,
-  finalDecisionChoiceSchema,
-  finalDecisionRecordSchema,
   resultSnapshotCreationSchema,
   resultSnapshotReaderSchema,
 } from '@lgs/shared';
@@ -66,7 +62,6 @@ export type StoredUserState = {
  */
 export type RevealSnapshotInput = Omit<ResultSnapshotCreation, 'createdAt'> & { createdAt?: string };
 export type StoredRevealSnapshot = VersionedResultSnapshot & { snapshotId: string };
-export type StoredFinalDecision = FinalDecision & { snapshotId: string };
 
 export type SeedVersionState = {
   current: string;
@@ -98,7 +93,6 @@ export class StoreConflictError extends Error {
   constructor(
     public readonly code: StoreConflictCode,
     message: string,
-    public readonly existingDecision?: StoredFinalDecision,
   ) {
     super(message);
     this.name = 'StoreConflictError';
@@ -110,9 +104,7 @@ export type StoreConflictCode =
   | 'pending-missing'
   | 'pending-expired'
   | 'pending-revision-mismatch'
-  | 'pending-offered-mismatch'
-  | 'reveal-snapshot-missing'
-  | 'final-decision-exists';
+  | 'pending-offered-mismatch';
 
 export type PendingClaimInput = Comparison & {
   /** The server revision that accompanied the issued pair. */
@@ -155,7 +147,6 @@ const revealSnapshotInputSchema = resultSnapshotCreationSchema
   .omit({ createdAt: true })
   .extend({ createdAt: timestampSchema.optional() })
   .strict();
-const storedFinalDecisionSchema = finalDecisionRecordSchema.extend({ snapshotId: z.string().min(1) }).strict();
 
 type StoredRevealState = {
   open: boolean;
@@ -182,13 +173,6 @@ function readStoredRevealSnapshot(snapshotId: string, value: unknown): StoredRev
   const parsed = resultSnapshotReaderSchema.safeParse(value);
   if (!parsed.success) throw persistedError(`result snapshot ${snapshotId}`, parsed.error);
   return { snapshotId, ...parsed.data };
-}
-
-function readStoredFinalDecision(user: RosterUser, value: unknown): StoredFinalDecision {
-  const parsed = storedFinalDecisionSchema.safeParse(value);
-  if (!parsed.success) throw persistedError(`final decision for ${user}`, parsed.error);
-  if (parsed.data.user !== user) throw new StoreDataError(`Invalid persisted final decision for ${user}: document user must match its roster path.`);
-  return parsed.data;
 }
 
 function snapshotForWrite(input: RevealSnapshotInput, now: string): ResultSnapshotCreation {
@@ -290,7 +274,6 @@ const memoryUsers = new Map<RosterUser, RawUserDocument>();
 const memoryUserLocks = new Map<RosterUser, Promise<void>>();
 let memoryRevealState: StoredRevealState = { open: false };
 const memoryResultSnapshots = new Map<string, VersionedResultSnapshot>();
-const memoryFinalDecisions = new Map<RosterUser, StoredFinalDecision>();
 let memoryRevealLock: Promise<void> = Promise.resolve();
 let testSeedVersionOverride: string | undefined;
 const currentSeedVersion = () => testSeedVersionOverride ?? getSeedVersion();
@@ -298,7 +281,6 @@ const database = () => { if (!getApps().length) initializeApp(); return getFires
 const userDocument = (user: RosterUser) => database().collection('lgsV4Users').doc(user);
 const revealDocument = () => database().collection('lgsV4State').doc('reveal');
 const resultSnapshotDocument = (snapshotId: string) => database().collection('lgsV4ResultSnapshots').doc(snapshotId);
-const finalDecisionDocument = (user: RosterUser) => database().collection('lgsV4FinalDecisions').doc(user);
 
 /**
  * Gives the memory adapter the same one-winner claim semantics as Firestore
@@ -319,7 +301,7 @@ async function withMemoryUserLock<T>(user: RosterUser, operation: () => Promise<
   }
 }
 
-/** Serializes memory-only reveal/decision writes just as Firestore does. */
+/** Serializes memory-only reveal writes just as Firestore does. */
 async function withMemoryRevealLock<T>(operation: () => Promise<T> | T): Promise<T> {
   const previous = memoryRevealLock;
   let release!: () => void;
@@ -601,105 +583,6 @@ export const createOrGetRevealSnapshot = async (input: RevealSnapshotInput): Pro
   });
 };
 
-function choiceIsAllowed(snapshot: StoredRevealSnapshot, choice: FinalDecisionChoice): boolean {
-  if (choice === 'need-more-research') return true;
-  return snapshot.schemaVersion === 2
-    ? snapshot.group.finalists.some((destination) => destination.id === choice)
-    : snapshot.group.topFive.some((destination) => destination.id === choice);
-}
-
-/**
- * A final-decision document is only meaningful for the one immutable reveal
- * it names.  Validate that relationship again on every read so manually
- * corrupted or stale persisted data cannot be rendered as part of a newer
- * reveal.
- */
-function readDecisionForSnapshot(user: RosterUser, value: unknown, snapshot: StoredRevealSnapshot): StoredFinalDecision {
-  const decision = readStoredFinalDecision(user, value);
-  if (decision.snapshotId !== snapshot.snapshotId) {
-    throw new StoreDataError(`Invalid persisted final decision for ${user}: snapshot ID must match the open reveal.`);
-  }
-  if (!choiceIsAllowed(snapshot, decision.choice)) {
-    throw new StoreDataError(`Invalid persisted final decision for ${user}: choice is not allowed by the open reveal.`);
-  }
-  return decision;
-}
-
-/**
- * Records a traveler's post-reveal discussion stance exactly once. The choice
- * is validated against the stored snapshot rather than a caller's current
- * ranking so it cannot alter the blind result or drift after reveal.
- */
-export const createFinalDecision = async (user: RosterUser, value: FinalDecisionChoice): Promise<StoredFinalDecision> => {
-  const parsedChoice = finalDecisionChoiceSchema.safeParse(value);
-  if (!parsedChoice.success) throw new StoreDataError('Cannot persist an invalid final decision.');
-
-  const create = (snapshot: StoredRevealSnapshot, existing: StoredFinalDecision | undefined, now: string): StoredFinalDecision => {
-    if (existing) {
-      throw new StoreConflictError('final-decision-exists', 'A final decision is already recorded for this traveler.', existing);
-    }
-    if (!choiceIsAllowed(snapshot, parsedChoice.data)) {
-      throw new StoreDataError('A final decision must select a current group finalist or need-more-research.');
-    }
-    return storedFinalDecisionSchema.parse({ user, choice: parsedChoice.data, snapshotId: snapshot.snapshotId, createdAt: now });
-  };
-
-  if (!shouldUseFirestore()) {
-    return withMemoryRevealLock(() => {
-      const snapshotId = memoryRevealState.snapshotId;
-      if (!memoryRevealState.open || !snapshotId) {
-        throw new StoreConflictError('reveal-snapshot-missing', 'A final decision requires an open reveal snapshot.');
-      }
-      const rawSnapshot = memoryResultSnapshots.get(snapshotId);
-      if (!rawSnapshot) throw new StoreDataError(`Reveal references missing result snapshot ${snapshotId}.`);
-      const snapshot = readStoredRevealSnapshot(snapshotId, rawSnapshot);
-      const decision = create(snapshot, memoryFinalDecisions.get(user), new Date().toISOString());
-      memoryFinalDecisions.set(user, decision);
-      return decision;
-    });
-  }
-
-  return database().runTransaction(async (transaction) => {
-    const state = readRevealState((await transaction.get(revealDocument())).data());
-    if (!state.open || !state.snapshotId) {
-      throw new StoreConflictError('reveal-snapshot-missing', 'A final decision requires an open reveal snapshot.');
-    }
-    const snapshotDocument = resultSnapshotDocument(state.snapshotId);
-    const [snapshotResult, existingResult] = await Promise.all([
-      transaction.get(snapshotDocument),
-      transaction.get(finalDecisionDocument(user)),
-    ]);
-    if (!snapshotResult.exists) throw new StoreDataError(`Reveal references missing result snapshot ${state.snapshotId}.`);
-    const snapshot = readStoredRevealSnapshot(state.snapshotId, snapshotResult.data());
-    const existing = existingResult.exists ? readDecisionForSnapshot(user, existingResult.data(), snapshot) : undefined;
-    const decision = create(snapshot, existing, new Date().toISOString());
-    transaction.create(finalDecisionDocument(user), decision);
-    return decision;
-  });
-};
-
-/** Decision reads are intentionally limited to the post-reveal repository. */
-export const getFinalDecision = async (user: RosterUser): Promise<StoredFinalDecision | undefined> => {
-  const snapshot = await getRevealSnapshot();
-  if (!snapshot) return undefined;
-  if (!shouldUseFirestore()) {
-    const decision = memoryFinalDecisions.get(user);
-    return decision ? readDecisionForSnapshot(user, decision, snapshot) : undefined;
-  }
-  const document = await finalDecisionDocument(user).get();
-  return document.exists ? readDecisionForSnapshot(user, document.data(), snapshot) : undefined;
-};
-
-export const getAllFinalDecisions = async (): Promise<StoredFinalDecision[]> => {
-  const snapshot = await getRevealSnapshot();
-  if (!snapshot) return [];
-  if (!shouldUseFirestore()) return ROSTER.flatMap((user) => {
-    const decision = memoryFinalDecisions.get(user);
-    return decision ? [readDecisionForSnapshot(user, decision, snapshot)] : [];
-  });
-  return (await Promise.all(ROSTER.map((user) => getFinalDecision(user)))).flatMap((decision) => decision ? [decision] : []);
-};
-
 /** Test-only controls for validating adapter migration behavior without Firebase. */
 export const __storeTest = {
   clearMemory() {
@@ -707,7 +590,6 @@ export const __storeTest = {
     memoryUserLocks.clear();
     memoryRevealState = { open: false };
     memoryResultSnapshots.clear();
-    memoryFinalDecisions.clear();
     memoryRevealLock = Promise.resolve();
     testSeedVersionOverride = undefined;
   },
@@ -719,7 +601,5 @@ export const __storeTest = {
     memoryResultSnapshots.set(snapshotId, value);
     memoryRevealState = { open: true, openedAt, snapshotId };
   },
-  getMemoryFinalDecision(user: RosterUser): StoredFinalDecision | undefined { return memoryFinalDecisions.get(user); },
-  setMemoryFinalDecision(user: RosterUser, value: StoredFinalDecision) { memoryFinalDecisions.set(user, value); },
   setCurrentSeedVersion(version: string | undefined) { testSeedVersionOverride = version; },
 };

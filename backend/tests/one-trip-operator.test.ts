@@ -59,7 +59,7 @@ function validSnapshot() {
 
 class FakeRepository implements OneTripOperatorRepository {
   readonly documents = new Map<OneTripCollection, Map<string, unknown>>([
-    ['lgsV4Users', new Map()], ['lgsV4State', new Map()], ['lgsV4ResultSnapshots', new Map()], ['lgsV4FinalDecisions', new Map()],
+    ['lgsV4Users', new Map()], ['lgsV4State', new Map()], ['lgsV4ResultSnapshots', new Map()],
   ]);
   readonly deleted: Array<{ collection: OneTripCollection; id: string }> = [];
   constructor(private readonly selected = project) {}
@@ -89,7 +89,7 @@ describe('one-trip operator preflight', () => {
   it('reports only count-safe empty state and rejects credential project mismatch', async () => {
     const repository = new FakeRepository();
     const report = await inspectOneTrip(repository, project);
-    expect(report).toMatchObject({ reveal: 'closed', startedUsers: 0, completedUsers: 0, snapshots: 0, decisions: 0 });
+    expect(report).toMatchObject({ reveal: 'closed', startedUsers: 0, completedUsers: 0, snapshots: 0 });
     expect(reportIsEmpty(report)).toBe(true);
     expect(formatPreflightReport(report)).not.toContain('lgsV4');
     await expect(inspectOneTrip(new FakeRepository('another-project'), project)).rejects.toMatchObject({ code: 'project-mismatch' });
@@ -131,14 +131,12 @@ describe('one-trip operator preflight', () => {
     const repository = new FakeRepository();
     repository.documents.get('lgsV4Users')!.set('unused', {});
     repository.documents.get('lgsV4ResultSnapshots')!.set('orphan', validSnapshot());
-    repository.documents.get('lgsV4FinalDecisions')!.set('dan', { irrelevant: true });
     repository.documents.get('lgsV4State')!.set('reveal', { open: false });
     const report = await resetUntouchedOneTrip(repository, project, 'private:7b4e4c19');
     expect(reportIsEmpty(report)).toBe(true);
     expect(repository.deleted).toEqual(expect.arrayContaining([
       { collection: 'lgsV4Users', id: 'unused' },
       { collection: 'lgsV4ResultSnapshots', id: 'orphan' },
-      { collection: 'lgsV4FinalDecisions', id: 'dan' },
       { collection: 'lgsV4State', id: 'reveal' },
     ]));
     expect(repository.deleted.every(({ collection, id }) => collection !== 'lgsV4State' || id === 'reveal')).toBe(true);

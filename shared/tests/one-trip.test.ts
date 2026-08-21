@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   BLIND_ACTIVITY_FORBIDDEN_FIELDS,
-  finalDecisionRequestSchema,
-  finalDecisionSchema,
   groupStatusSchema,
   nextComparisonResponseSchema,
   preferenceProfileSchema,
@@ -30,15 +28,6 @@ const activity: Activity = {
 };
 
 describe('one-trip shared contracts', () => {
-  it('accepts only a non-empty destination ID or the research option as a final decision choice', () => {
-    expect(finalDecisionSchema.safeParse('antigua')).toMatchObject({ success: true });
-    expect(finalDecisionSchema.safeParse('need-more-research')).toMatchObject({ success: true });
-    expect(finalDecisionSchema.safeParse('   ')).toMatchObject({ success: false });
-    expect(finalDecisionSchema.safeParse('')).toMatchObject({ success: false });
-    expect(finalDecisionRequestSchema.safeParse({ choice: 'antigua' })).toMatchObject({ success: true });
-    expect(finalDecisionRequestSchema.safeParse({ choice: 'antigua', user: 'dan' })).toMatchObject({ success: false });
-  });
-
   it('validates target progress and rejects impossible completion details', () => {
     expect(
       nextComparisonResponseSchema.safeParse({

@@ -2,7 +2,7 @@
 
 ## Current implementation status
 
-Landing, character selection, required how-it-works briefing, comparison, completion-gated atlas, group verdict, preference profile, waiting status, personal results, and immutable final-decision surfaces are released for this one trip. The transparent-verdict fixture and visual/accessibility review, fixed-shortlist verification, authenticated five-identity rehearsal, focused literal-browser flow, disposable cloud smoke, deployment, and final empty production preflight have passed. See [implementation status](implementation-status.md). The comparison counter truthfully communicates the fixed `N of 32 choices` commitment.
+Landing, character selection, required how-it-works briefing, comparison, completion-gated atlas, group verdict, preference profile, waiting status, and personal results are released for this one trip. The transparent-verdict fixture and visual/accessibility review, fixed-shortlist verification, authenticated five-identity rehearsal, focused literal-browser flow, disposable cloud smoke, deployment, and final empty production preflight have passed. See [implementation status](implementation-status.md). The comparison counter truthfully communicates the fixed `N of 32 choices` commitment.
 
 ## Screens
 

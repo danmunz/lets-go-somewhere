@@ -1,7 +1,5 @@
 import type {
   AtlasDestination,
-  FinalDecision,
-  FinalDecisionChoice,
   TransparentGroupResultsResponse,
   GroupStatus,
   NextComparisonResponse,
@@ -34,19 +32,16 @@ export type ApiRequestSource =
   | 'atlas'
   | 'group-status'
   | 'personal-results'
-  | 'group-results'
-  | 'final-decision';
+  | 'group-results';
 
 export type ApiRouteIntent =
   | 'stay-put'
   | 'return-to-comparison'
   | 'show-waiting'
   | 'show-sign-in'
-  | 'show-access-error'
-  | 'use-recorded-decision';
+  | 'show-access-error';
 
 export type AtlasResponse = { destinations: AtlasDestination[] };
-export type FinalDecisionResponse = { decision: FinalDecision | null; decisions: FinalDecision[] };
 
 export type OneTripApiContracts = {
   nextComparison: NextComparisonResponse;
@@ -55,7 +50,6 @@ export type OneTripApiContracts = {
   groupStatus: GroupStatus;
   personalResults: PersonalResultsResponse;
   groupResults: TransparentGroupResultsResponse;
-  finalDecision: FinalDecisionResponse;
 };
 
-export type { FinalDecisionChoice, PreferenceProfile, RosterUser };
+export type { PreferenceProfile, RosterUser };

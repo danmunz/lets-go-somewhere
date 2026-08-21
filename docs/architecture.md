@@ -2,7 +2,7 @@
 
 This document describes the architecture for **Let's Go Somewhere**, including the released one-trip journey and its operational safeguards.
 
-**Current release (2026-08-21):** the production one-trip build includes the profile, completion-only waiting lobby, immutable v2 transparent social-ballot results, snapshot-bound final decisions, seed-version sealing, emulator configuration, guarded count-only preflight/reset tooling, and `bayes-attribute-shortlist-v1`. The social snapshot is cross-field validated and independently audited; fixed-32 verification, the five-identity authenticated API Emulator rehearsal, a focused literal-browser flow, disposable cloud smoke, and final empty production preflight all passed. No real trip data has been written.
+**Current release (2026-08-21):** the production one-trip build includes the profile, completion-only waiting lobby, immutable v2 transparent social-ballot results, seed-version sealing, emulator configuration, guarded count-only preflight/reset tooling, and `bayes-attribute-shortlist-v1`. The social snapshot is cross-field validated and independently audited; fixed-32 verification, the five-identity authenticated API Emulator rehearsal, a focused literal-browser flow, disposable cloud smoke, and final empty production preflight all passed. No real trip data has been written.
 
 The application presents users with repeated destination-blind, pairwise activity choices such as:
 
@@ -30,11 +30,11 @@ The current frontend uses the Firebase Web SDK, MapLibre, NumberFlow, Paper Shad
 
 ### One-trip shared contract boundary
 
-`shared/src/index.ts` owns the runtime Zod schemas and inferred types for the one-trip API boundary: destination-blind comparison DTOs, roster/progress/completion state, profile and group-status data, post-reveal results, immutable snapshot summaries, final decisions, and typed API errors. Route handlers remain responsible for intentionally constructing and validating those DTOs; the shared comparison serializer is strict so destination, credit, score, rank, and model fields cannot be introduced through an object spread. These contracts are additive while the current deployed routes retain their legacy DTOs; no unfinished UI is implied by their presence.
+`shared/src/index.ts` owns the runtime Zod schemas and inferred types for the one-trip API boundary: destination-blind comparison DTOs, roster/progress/completion state, profile and group-status data, post-reveal results, immutable snapshot summaries, and typed API errors. Route handlers remain responsible for intentionally constructing and validating those DTOs; the shared comparison serializer is strict so destination, credit, score, rank, and model fields cannot be introduced through an object spread. These contracts are additive while the current deployed routes retain their legacy DTOs; no unfinished UI is implied by their presence.
 
 The pre-game “How it works” briefing is frontend-only static content (`frontend/src/screens/HowItWorksScreen.tsx`). Its required-once gate is derived from the already-safe comparison-progress response (`comparisons === 0`); it neither persists a separate onboarding flag nor requests destinations, rankings, model values, or reveal data. The same screen can be opened through the hash-backed global help control and returns to the caller’s prior app screen.
 
-The one-trip repository persists the first opened reveal in `lgsV4ResultSnapshots/{snapshotId}` and records that ID in `lgsV4State/reveal` atomically. A v2 snapshot stores the transparent `5/4/3/2/1` tally, personal top fives, matrix, tie state, and evidence-backed social insights; the persisted reader validates those cross-field facts before a result DTO is built. Later reads return the stored document rather than recomputing it. Each `lgsV4FinalDecisions/{rosterUser}` document is a create-once, snapshot-bound discussion stance; reads and repeat writes fail closed if it no longer matches the open snapshot. Valid v1 snapshots remain read-only and return the safe legacy-unavailable state. These repository capabilities do not by themselves authorize a release.
+The one-trip repository persists the first opened reveal in `lgsV4ResultSnapshots/{snapshotId}` and records that ID in `lgsV4State/reveal` atomically. A v2 snapshot stores the transparent `5/4/3/2/1` tally, personal top fives, matrix, tie state, and evidence-backed social insights; the persisted reader validates those cross-field facts before a result DTO is built. Later reads return the stored document rather than recomputing it. Valid v1 snapshots remain read-only and return the safe legacy-unavailable state. Existing retired decision documents, if any, are ignored and never rewritten. These repository capabilities do not by themselves authorize a release.
 
 ---
 
@@ -722,13 +722,11 @@ GET  /v1/group-status
 POST /v1/reveal
 GET  /v1/results/me
 GET  /v1/results/group
-GET  /v1/final-decision
-POST /v1/final-decision
 ```
 
 `/v1/profile`, `/v1/group-status`, and `/v1/results/me` are implemented backend contracts with local frontend payoff surfaces in the one-trip checkpoint. A completed authenticated caller may read only their own private top five from `/v1/results/me`; before reveal this response has no `snapshotId` and contains no other member, ballot, or raw-choice data. Once opened, the immutable social snapshot supplies the same caller result with its snapshot identity. Comparison responses expose only activity ID, title, description, and opaque local card image path. Atlas and result routes are completion/reveal gated as appropriate. These surfaces are not yet a production release claim until the model, emulator/E2E, visual QA, and deployment gates pass.
 
-`POST /v1/reveal` creates (or returns) the one immutable result snapshot. `GET /v1/results/group` reads that stored snapshot rather than recalculating live comparisons; it exposes only post-reveal finalists, qualitative insight copy, member top threes, ranks on those finalists, and recorded discussion stances. `POST /v1/final-decision` accepts one snapshot-finalist ID or `need-more-research` and is create-once: repeat submissions return `409` with the existing public decision. `GET /v1/final-decision` returns the caller’s decision plus the post-reveal roster summary. Neither endpoint exposes raw comparisons, posterior covariance, or activity-by-activity votes.
+`POST /v1/reveal` creates (or returns) the one immutable result snapshot. `GET /v1/results/group` reads that stored snapshot rather than recalculating live comparisons; it exposes only post-reveal finalists, qualitative insight copy, and the five members’ stored top fives. The reveal is the end of the in-app flow: the group talks through the information and chooses together off-app. Neither endpoint exposes raw comparisons, posterior covariance, or activity-by-activity votes.
 
 ### Target multi-group API surface
 

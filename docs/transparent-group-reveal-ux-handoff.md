@@ -1,6 +1,8 @@
 # Transparent Group Reveal — UX Handoff
 
 **For:** TGR-06 frontend implementation
+
+> **Historical handoff:** the post-reveal final-decision interaction described in some sections below was retired on 2026-08-21. The current reveal ends after the transparent tally, shared insights, personal top fives, and practical context, with a prompt to discuss the choice together. Do not reintroduce its controls, route, or persistence.
 **Authority:** [transparent group reveal specification](transparent-group-reveal-spec.md), then the design system. This handoff controls composition and behavior only; it does not alter the server tally, stored display mode, insight order, or immutable decision flow.
 
 ## Experience intent

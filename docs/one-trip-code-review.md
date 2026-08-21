@@ -1,5 +1,7 @@
 # One-trip implementation code review
 
+> **Historical review:** final-decision references below describe the codebase at the time of review. That interaction is retired and unsupported in the current product.
+
 **Review scope:** the one-trip implementation checkpoint against `docs/one-trip-implementation-spec.md`, `docs/one-trip-tasks.md`, and the destination-blind boundary. The reviewed changes are committed in `91dc81c`.
 **Reviewed:** 2026-08-18  
 **Original verdict:** **Not release-ready.** The findings below were the must-fix correctness and authentication issues found in this review. They were resolved and regression-tested in the same change set on 2026-08-18. The later Firestore Emulator persistence proof, fixture-based verdict QA, fixed-shortlist verification, authenticated five-identity API rehearsal, focused literal-browser flow, and release deployment are also complete.

@@ -34,11 +34,11 @@ type GroupInsight = {
 type GroupDisplayMode = 'broad-leader' | 'near-tie' | 'no-consensus' | 'shared-shortlist';
 ```
 
-`GET /v1/results/group` returns the immutable snapshot ID/model version, `displayMode`, exactly five ordered `group` entries enriched with name, country, cover image, and existing travel context; all five members' complete `topFive`; the five-by-five finalist rank matrix (`1..5` or `outside-top-five`); ordered insights; and final decisions. It contains no `groupScore`, interval, normalized utility, consensus label, posterior draw, activity comparison, or credit data.
+`GET /v1/results/group` returns the immutable snapshot ID/model version, `displayMode`, exactly five ordered `group` entries enriched with name, country, cover image, and existing travel context; all five members' complete `topFive`; the five-by-five finalist rank matrix (`1..5` or `outside-top-five`); and ordered insights. It contains no `groupScore`, interval, normalized utility, consensus label, posterior draw, activity comparison, credit data, or final-vote data.
 
 The snapshot persists rank-only ballot input for every roster member, per-finalist tally fields and supporter set, displayed ranks, selected display mode, and insights. It is created once in the existing reveal transaction. A repeat open or later model/seed deployment returns the original snapshot.
 
-The published group remains exactly five entries, as required by the final-decision flow. If the fifth boundary remains tied after all three published tiebreaks, include the tied destinations in the stored five in stable destination-ID order **but give them the same displayed rank and never describe one as ahead of the other**. Final-decision choices remain the five stored finalists plus `need-more-research`.
+The published group remains exactly five entries. If the fifth boundary remains tied after all three published tiebreaks, include the tied destinations in the stored five in stable destination-ID order **but give them the same displayed rank and never describe one as ahead of the other**. The group talks through these five places together; the app does not collect a later vote.
 
 ## Reveal composition and preference-shape states
 
@@ -76,4 +76,4 @@ All rankings and points are text equivalents, not color-only. Tables retain head
 - Test that no-consensus suppresses a winner claim even if a points leader exists.
 - Test insight templates only emit statements supported by stored ranks/themes, respect the ordering/cap, and never disclose raw activity choices.
 - Test snapshot creation/reload immutability and API validation/redaction; no old normalized group fields may cross the public contract.
-- Browser-test the locked route, every crew scoreboard/matrix state, keyboard navigation, reduced motion, and final-decision options after a shared rank.
+- Browser-test the locked route, every crew scoreboard/matrix state, keyboard navigation, reduced motion, and the discussion closing after a shared rank.

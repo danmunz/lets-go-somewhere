@@ -1,7 +1,6 @@
 export { AppStateNotice } from './AppStateNotice.js';
 export { CompletedTransition } from './CompletedTransition.js';
 export { CrewReadMatrix } from './CrewReadMatrix.js';
-export { FinalDecisionDialog } from './FinalDecisionDialog.js';
 export { FinalistDrawer } from './FinalistDrawer.js';
 export { FinalistMatrix } from './FinalistMatrix.js';
 export { MediaImage } from './MediaImage.js';

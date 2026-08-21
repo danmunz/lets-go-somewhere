@@ -6,7 +6,6 @@ import {
   type Activity,
   type Comparison,
   type Destination,
-  type FinalDecision,
   type GroupStatus,
   type PersonalResultsResponse,
   type ProfileResponse,
@@ -205,19 +204,10 @@ function destinationForResult(id: string, destinationsById: ReadonlyMap<string, 
   return destination;
 }
 
-function publicDecision(decision: FinalDecision): FinalDecision {
-  return {
-    user: decision.user,
-    choice: decision.choice,
-    createdAt: decision.createdAt,
-  };
-}
-
 /** Maps only the immutable snapshot plus public seed context into the verdict DTO. */
 export function buildGroupResultsResponse(
   snapshot: StoredRevealSnapshot,
   destinations: readonly Destination[],
-  decisions: readonly FinalDecision[],
 ): import('@lgs/shared').TransparentGroupResultsResponse {
   if (snapshot.schemaVersion !== 2) throw new Error('This legacy reveal must be read through its legacy result path.');
   const destinationsById = new Map(destinations.map((destination) => [destination.id, destination]));
@@ -247,16 +237,5 @@ export function buildGroupResultsResponse(
     })),
     finalistRanks: snapshot.group.finalistRanks,
     insights: snapshot.group.insights,
-    decisions: decisions.map(publicDecision),
   });
-}
-
-export function buildFinalDecisionResponse(
-  decision: FinalDecision | undefined,
-  decisions: readonly FinalDecision[],
-) {
-  return {
-    decision: decision ? publicDecision(decision) : null,
-    decisions: decisions.map(publicDecision),
-  };
 }

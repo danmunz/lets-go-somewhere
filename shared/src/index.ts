@@ -380,24 +380,6 @@ export const insightSchema = z
   })
   .strict();
 
-export const finalDecisionChoiceSchema = z.union([z.literal('need-more-research'), z.string().trim().min(1)]);
-export type FinalDecisionChoice = z.infer<typeof finalDecisionChoiceSchema>;
-
-/**
- * Validates the value itself; membership in the immutable group top five is a
- * server-side snapshot check and cannot be expressed in this shared schema.
- */
-export const finalDecisionSchema = finalDecisionChoiceSchema;
-export const finalDecisionRequestSchema = z.object({ choice: finalDecisionChoiceSchema }).strict();
-export const finalDecisionRecordSchema = z
-  .object({
-    user: rosterUserSchema,
-    choice: finalDecisionChoiceSchema,
-    createdAt: z.string().datetime({ offset: true }),
-  })
-  .strict();
-export type FinalDecision = z.infer<typeof finalDecisionRecordSchema>;
-
 export const personalResultsResponseSchema = z
   .object({
     // A completed traveler may read their own shortlist before the shared
@@ -429,7 +411,6 @@ export const groupResultsResponseSchema = z
       )
       .length(5),
     insights: z.array(insightSchema).max(3),
-    decisions: z.array(finalDecisionRecordSchema).max(ROSTER_USERS.length),
   })
   .strict();
 export type GroupResultsResponse = z.infer<typeof groupResultsResponseSchema>;
@@ -600,7 +581,6 @@ export const transparentGroupResultsResponseSchema = z
       .length(ROSTER_USERS.length),
     finalistRanks: z.array(transparentFinalistRankRowSchema).length(5),
     insights: z.array(groupInsightSchema).max(3),
-    decisions: z.array(finalDecisionRecordSchema).max(ROSTER_USERS.length),
   })
   .strict();
 export type TransparentGroupResultsResponse = z.infer<typeof transparentGroupResultsResponseSchema>;

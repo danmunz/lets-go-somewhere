@@ -1,15 +1,11 @@
 import {
   comparisonSchema,
-  finalDecisionRecordSchema,
-  finalDecisionRequestSchema,
   transparentGroupResultsResponseSchema,
   groupStatusSchema,
   nextComparisonResponseSchema,
   personalResultsResponseSchema,
   profileResponseSchema,
   rosterUserSchema,
-  type FinalDecision,
-  type FinalDecisionChoice,
   type TransparentGroupResultsResponse,
   type GroupStatus,
   type NextComparisonResponse,
@@ -17,7 +13,7 @@ import {
   type ProfileResponse,
   type RosterUser,
 } from '@lgs/shared';
-import type { ApiRequestSource, ApiRouteIntent, AtlasResponse, FinalDecisionResponse } from './types.js';
+import type { ApiRequestSource, ApiRouteIntent, AtlasResponse } from './types.js';
 
 type ResponseParser<T> = { parse(value: unknown): T };
 type FetchLike = typeof fetch;
@@ -54,14 +50,12 @@ const readPayload = async (response: Response): Promise<unknown> => {
 
 /**
  * Centralizes API failure behavior so route components never infer gate state
- * from missing result data. A 409 has different meaning for an incomplete
- * traveler and an already-recorded immutable decision, hence the source.
+ * from missing result data.
  */
 export function routeIntentForApiError(error: ApiError, source: ApiRequestSource): ApiRouteIntent {
   if (error.status === 401) return 'show-sign-in';
   if (error.status === 403) return 'show-access-error';
   if (error.status === 423) return 'show-waiting';
-  if (error.status === 409 && source === 'final-decision') return 'use-recorded-decision';
   if (error.status === 409 && ['completion', 'profile', 'atlas', 'personal-results'].includes(source)) {
     return 'return-to-comparison';
   }
@@ -97,13 +91,7 @@ export function createApiClient(authentication: ApiAuthentication, fetchImpl: Fe
     getGroupStatus: () => request('/v1/group-status', groupStatusSchema),
     getPersonalResults: () => request('/v1/results/me', personalResultsResponseSchema),
     getGroupResults: () => request('/v1/results/group', transparentGroupResultsResponseSchema),
-    getFinalDecision: () => request('/v1/final-decision', finalDecisionResponseParser),
     openReveal: () => request('/v1/reveal', revealResponseParser, { method: 'POST' }),
-    recordFinalDecision: (choice: FinalDecisionChoice) =>
-      request('/v1/final-decision', finalDecisionResponseParser, {
-        method: 'POST',
-        body: JSON.stringify(finalDecisionRequestSchema.parse({ choice })),
-      }),
   };
 }
 
@@ -119,17 +107,6 @@ const atlasDestinationParser = {
 };
 
 const atlasResponseParser = atlasDestinationParser;
-
-const finalDecisionResponseParser = {
-  parse(value: unknown): FinalDecisionResponse {
-    if (!value || typeof value !== 'object') throw new Error('The decision response was not valid.');
-    const response = value as { decision?: unknown; decisions?: unknown };
-    return {
-      decision: response.decision === null || response.decision === undefined ? null : finalDecisionRecordSchema.parse(response.decision),
-      decisions: Array.isArray(response.decisions) ? response.decisions.map((decision) => finalDecisionRecordSchema.parse(decision)) : [],
-    };
-  },
-};
 
 const sessionResponseParser = {
   parse(value: unknown): SessionResponse {
@@ -162,7 +139,6 @@ const revealResponseParser = {
 
 export type OneTripApiClient = ReturnType<typeof createApiClient>;
 export type {
-  FinalDecision,
   TransparentGroupResultsResponse,
   GroupStatus,
   NextComparisonResponse,

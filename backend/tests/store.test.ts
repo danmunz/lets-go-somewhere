@@ -10,10 +10,7 @@ import {
   __storeTest,
   addComparison,
   claimPendingAndAppendComparison,
-  createFinalDecision,
   createOrGetRevealSnapshot,
-  getAllFinalDecisions,
-  getFinalDecision,
   getRevealSnapshot,
   getStoredUserState,
   inspectSeedVersionState,
@@ -229,7 +226,7 @@ describe('transactional pending claims', () => {
   });
 });
 
-describe('immutable reveal snapshots and final decisions', () => {
+describe('immutable reveal snapshots', () => {
   it('creates one snapshot and retains it across repeated opens and repository reads', async () => {
     __storeTest.clearMemory();
     const first = await createOrGetRevealSnapshot(snapshotInput());
@@ -255,53 +252,4 @@ describe('immutable reveal snapshots and final decisions', () => {
     expect(await getRevealSnapshot()).toEqual(snapshot);
   });
 
-  it('does not persist a final decision before an open reveal snapshot', async () => {
-    __storeTest.clearMemory();
-
-    await expect(createFinalDecision('dan', 'antigua')).rejects.toMatchObject({
-      name: 'StoreConflictError',
-      code: 'reveal-snapshot-missing',
-    });
-    expect(__storeTest.getMemoryFinalDecision('dan')).toBeUndefined();
-    expect(await getFinalDecision('dan')).toBeUndefined();
-  });
-
-  it('creates one snapshot-bound decision and returns its existing state in a repeat conflict', async () => {
-    __storeTest.clearMemory();
-    const snapshot = await createOrGetRevealSnapshot(snapshotInput());
-    const decision = await createFinalDecision('dan', 'antigua');
-
-    expect(decision).toMatchObject({ user: 'dan', choice: 'antigua', snapshotId: snapshot.snapshotId });
-    await expect(createFinalDecision('dan', 'oaxaca')).rejects.toMatchObject({
-      name: 'StoreConflictError',
-      code: 'final-decision-exists',
-      existingDecision: decision,
-    });
-    expect(await getFinalDecision('dan')).toEqual(decision);
-    expect(await getAllFinalDecisions()).toEqual([decision]);
-  });
-
-  it('accepts only a snapshot finalist or research and keeps a rejected choice out of storage', async () => {
-    __storeTest.clearMemory();
-    await createOrGetRevealSnapshot(snapshotInput());
-
-    await expect(createFinalDecision('james', 'not-a-finalist')).rejects.toBeInstanceOf(StoreDataError);
-    expect(__storeTest.getMemoryFinalDecision('james')).toBeUndefined();
-    await expect(createFinalDecision('james', 'need-more-research')).resolves.toMatchObject({ choice: 'need-more-research' });
-  });
-
-  it('allows exactly one concurrent final-decision create for a roster member', async () => {
-    __storeTest.clearMemory();
-    await createOrGetRevealSnapshot(snapshotInput());
-
-    const attempts = await Promise.allSettled([
-      createFinalDecision('matt', 'antigua'),
-      createFinalDecision('matt', 'antigua'),
-    ]);
-
-    expect(attempts.filter((attempt) => attempt.status === 'fulfilled')).toHaveLength(1);
-    expect(attempts.find((attempt) => attempt.status === 'rejected')).toMatchObject({
-      reason: expect.objectContaining({ code: 'final-decision-exists' }),
-    });
-  });
 });

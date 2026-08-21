@@ -1,6 +1,6 @@
 # One-trip implementation specification
 
-**Status:** Historical implementation plan — superseded by the fixed-32 shortlist and private-shortlist decisions in [ADR 0003](adr/0003-one-trip-ranking-model.md).  
+**Status:** Historical implementation plan — superseded by the fixed-32 shortlist and private-top-five decisions in [ADR 0003](adr/0003-one-trip-ranking-model.md). The final-decision interaction described below was retired on 2026-08-21; current behavior ends at the transparent group reveal.
 **Scope:** All remaining work in Sprints 1–3 of [the one-trip roadmap](roadmap.md).  
 **Release bar:** This is the required implementation for the one real five-person trip decision. It is not a pilot, product platform, or V2 staging plan.
 

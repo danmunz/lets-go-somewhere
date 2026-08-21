@@ -11,10 +11,6 @@ describe('one-trip API state mapping', () => {
     expect(routeIntentForApiError(new ApiError(409, 'Finish first.', {}), 'atlas')).toBe('return-to-comparison');
   });
 
-  it('treats an immutable repeat decision as an already-recorded state', () => {
-    expect(routeIntentForApiError(new ApiError(409, 'Already recorded.', {}), 'final-decision')).toBe('use-recorded-decision');
-  });
-
   it('keeps authorization failures distinct from ordinary retryable errors', () => {
     expect(routeIntentForApiError(new ApiError(401, 'Sign in.', {}), 'profile')).toBe('show-sign-in');
     expect(routeIntentForApiError(new ApiError(403, 'No access.', {}), 'profile')).toBe('show-access-error');
@@ -38,11 +34,4 @@ describe('one-trip API state mapping', () => {
     expect(calls[1]?.init?.body).toBe(JSON.stringify({ activityA: 'a-1', activityB: 'b-1', winner: 'a-1' }));
   });
 
-  it('keeps the pre-decision response nullable instead of mistaking it for a malformed saved decision', async () => {
-    const client = createApiClient({ user: 'dan' }, async () => new Response(JSON.stringify({ decision: null, decisions: [] }), {
-      headers: { 'content-type': 'application/json' },
-    }));
-
-    await expect(client.getFinalDecision()).resolves.toEqual({ decision: null, decisions: [] });
-  });
 });

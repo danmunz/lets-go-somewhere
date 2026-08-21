@@ -1,17 +1,14 @@
 import { Hono, type Context } from 'hono';
-import { comparisonSchema, finalDecisionRequestSchema, nextComparisonResponseSchema, toAtlasDestination, toSafeActivity } from '@lgs/shared';
+import { comparisonSchema, nextComparisonResponseSchema, toAtlasDestination, toSafeActivity } from '@lgs/shared';
 import {
   activities,
   assertRevealSnapshotSeedVersionCompatible,
   assertSeedVersionCompatible,
   claimPendingAndAppendComparison,
-  createFinalDecision,
   createOrGetRevealSnapshot,
   destinations,
   getAllComparisons,
-  getAllFinalDecisions,
   getComparisons,
-  getFinalDecision,
   getRevealSnapshot,
   getStoredUserState,
   isRevealOpen,
@@ -26,7 +23,6 @@ import { isShortlistComplete, shortlistProgress, selectShortlistPair } from './m
 import { authenticate } from './auth.js';
 import {
   buildShortlistRevealSnapshot,
-  buildFinalDecisionResponse,
   buildGroupResultsResponse,
   buildGroupStatusResponse,
   buildCurrentPersonalResultsResponse,
@@ -167,53 +163,5 @@ app.get('/v1/results/group', async (context) => {
   if (snapshot.schemaVersion === 1) {
     return context.json({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' }, 503);
   }
-  return context.json(buildGroupResultsResponse(snapshot, destinations, await getAllFinalDecisions()));
-});
-
-app.get('/v1/final-decision', async (context) => {
-  const snapshot = await getRevealSnapshot();
-  if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
-  assertRevealSnapshotSeedVersionCompatible(snapshot);
-  if (snapshot.schemaVersion === 1) {
-    return context.json({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' }, 503);
-  }
-  const user = context.get('user') as RosterUser;
-  return context.json(buildFinalDecisionResponse(await getFinalDecision(user), await getAllFinalDecisions()));
-});
-
-app.post('/v1/final-decision', async (context) => {
-  let body: unknown;
-  try { body = await context.req.json(); } catch { return context.json({ code: 'invalid-request', error: 'Final decision body must be JSON.' }, 400); }
-  const parsed = finalDecisionRequestSchema.safeParse(body);
-  if (!parsed.success) return context.json({ code: 'invalid-request', error: 'Choose a finalist or need-more-research.' }, 400);
-  const snapshot = await getRevealSnapshot();
-  if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The group reveal is still closed.' }, 423);
-  assertRevealSnapshotSeedVersionCompatible(snapshot);
-  if (snapshot.schemaVersion === 1) {
-    return context.json({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' }, 503);
-  }
-  const user = context.get('user') as RosterUser;
-  try {
-    const decision = await createFinalDecision(user, parsed.data.choice);
-    return context.json(buildFinalDecisionResponse(decision, await getAllFinalDecisions()), 201);
-  } catch (error) {
-    if (error instanceof StoreConflictError) {
-      if (error.code === 'reveal-snapshot-missing') {
-        return context.json({ code: 'reveal-locked', error: error.message }, 423);
-      }
-      if (error.code === 'final-decision-exists' && error.existingDecision) {
-        return context.json({
-          code: 'conflict',
-          error: error.message,
-          decision: {
-            user: error.existingDecision.user,
-            choice: error.existingDecision.choice,
-            createdAt: error.existingDecision.createdAt,
-          },
-        }, 409);
-      }
-    }
-    if (error instanceof StoreDataError) return context.json({ code: 'invalid-request', error: error.message }, 400);
-    throw error;
-  }
+  return context.json(buildGroupResultsResponse(snapshot, destinations));
 });

@@ -1,5 +1,7 @@
 # Transparent group reveal delivery board
 
+> **Historical task board:** final-decision work described below was retired on 2026-08-21. The current product does not collect a post-reveal vote or decision.
+
 **Source:** [transparent group reveal specification](transparent-group-reveal-spec.md).  
 **Release condition:** This board replaces the old normalized/polarization group
 summary before the one real trip. Individual inference, calibration, and

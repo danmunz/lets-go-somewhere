@@ -53,8 +53,9 @@ state.
 - Test a valid v2 snapshot through repeated reads and repeated organizer-open
   requests; the same snapshot ID and stored facts must return after a restart
   or changed live ranking implementation. Never recalculate an opened reveal.
-- Test final-decision membership against only the five stored finalists plus
-  `need-more-research`, one immutable decision per roster member, and the
+- Verify no final-vote route or response field remains, and that the five
+  stored finalists are presented as a discussion aid rather than a recorded
+  choice.
   stale/repeat conflict response.
 - Test legacy behavior with a persisted `schemaVersion: 1` snapshot: result
   routes must return the existing safe `temporarily-unavailable` response,
@@ -76,7 +77,7 @@ state.
 - Verify the always-visible 5/4/3/2/1 key, image-led five-place scoreboard,
   supporter-avatar text equivalents, all five personal top fives, and the
   finalist matrix. Matrix cells must say `Outside top five`, never `6+`.
-- Test keyboard opening/closing of destination details and final-decision
+- Test keyboard opening/closing of destination details and the reveal's
   confirmation, focus return, 44px controls, and reduced motion. Sequential
   decoration must not delay readable result content or a decision.
 - Capture desktop and mobile screenshots for broad leader, shared first tie,
@@ -100,13 +101,12 @@ tokens.
 - require an explicit project ID, verify the credential-selected project
   matches it, and print that target before inspecting it;
 - inspect only `lgsV4Users`, `lgsV4State/reveal`, `lgsV4ResultSnapshots`, and
-  `lgsV4FinalDecisions`;
-- report counts only: started users, completed users, snapshots, decisions;
+- report counts only: started users, completed users, and snapshots;
 - report reveal state as `closed`, `open-v1`, `open-v2`, `missing-snapshot`, or
   `invalid`; validate any referenced snapshot with the persisted reader;
 - exit nonzero for `open-v1`, `missing-snapshot`, or `invalid`, and exit zero
   only when the state is empty/closed and contains no started users, snapshots,
-  or decisions.
+  or snapshots.
 
 The preflight output is the required v1 migration evidence. An `open-v1`
 result is a hard stop: preserve the legacy snapshot read-only, do not deploy a
@@ -148,12 +148,12 @@ The rehearsal must prove:
 - only Dan can open the envelope after all five identities complete; the
   locked route exposes no result data before then;
 - all five identities receive the same immutable snapshot ID after reveal;
-  the social ballot, personal results, and final-decision choices agree with
+  the social ballot and personal results agree with
   it; a stale tab reload observes another user's already-recorded decision;
 - the visual/accessibility checks above pass in desktop and mobile contexts.
 
 Extend the Emulator suite to cover concurrent reveal opening, restart/reload
-snapshot stability, and final-decision persistence in addition to its current
+snapshot stability in addition to its current
 pending-pair transaction cases. Run `npm run validate:seed`, `npm test`,
 `npm run typecheck`, `npm run build`, and `npm run test:emulator` before
 recording rehearsal success.

@@ -7,10 +7,8 @@ import { buildTransparentSocialBallot } from '../src/results/social-ballot.js';
 import {
   StoreConflictError,
   claimPendingAndAppendComparison,
-  createFinalDecision,
   createOrGetRevealSnapshot,
   destinations,
-  getFinalDecision,
   getRevealSnapshot,
   getStoredUserState,
   setPending,
@@ -23,7 +21,7 @@ import {
  * Firebase Emulator project configured by `npm run test:emulator`.
  */
 describe.runIf(process.env.LGS_TEST_MODE === 'emulator')('Firestore transaction adapter', () => {
-  const collectionNames = ['lgsV4Users', 'lgsV4State', 'lgsV4ResultSnapshots', 'lgsV4FinalDecisions'];
+  const collectionNames = ['lgsV4Users', 'lgsV4State', 'lgsV4ResultSnapshots'];
   const finalistIds = ['antigua', 'oaxaca', 'quito', 'lima', 'medellin'];
 
   /** A schema-valid persisted result, deliberately independent of live ranking. */
@@ -139,27 +137,11 @@ describe.runIf(process.env.LGS_TEST_MODE === 'emulator')('Firestore transaction 
     expect(reload).toMatchObject({ snapshotId: opened.snapshotId, modelVersion: 'stored-model', group: opened.group, users: opened.users });
   });
 
-  it('persists one immutable decision and rejects a stale repeat without mutation', async () => {
-    const snapshot = await createOrGetRevealSnapshot(revealInput());
-    const attempts = await Promise.allSettled([
-      createFinalDecision('dan', 'antigua'),
-      createFinalDecision('dan', 'oaxaca'),
-    ]);
-    const accepted = attempts.find((attempt): attempt is PromiseFulfilledResult<Awaited<ReturnType<typeof createFinalDecision>>> => attempt.status === 'fulfilled');
-    const rejected = attempts.find((attempt) => attempt.status === 'rejected');
-
-    expect(accepted?.value).toMatchObject({ user: 'dan', snapshotId: snapshot.snapshotId });
-    expect(rejected).toMatchObject({ reason: expect.objectContaining<Partial<StoreConflictError>>({ code: 'final-decision-exists' }) });
-    await expect(getFinalDecision('dan')).resolves.toEqual(accepted?.value);
-    const persisted = await getFirestore().collection('lgsV4FinalDecisions').doc('dan').get();
-    expect(persisted.data()).toEqual(accepted?.value);
-  });
-
   it('builds a redacted public v2 group result from the Firestore-backed snapshot', async () => {
     await createOrGetRevealSnapshot(revealInput());
     const persisted = await getRevealSnapshot();
     if (!persisted || persisted.schemaVersion !== 2) throw new Error('Expected a persisted v2 reveal fixture.');
-    const response = buildGroupResultsResponse(persisted, destinations, []);
+    const response = buildGroupResultsResponse(persisted, destinations);
     const serialized = JSON.stringify(response);
 
     expect(response.snapshotId).toBe(persisted.snapshotId);

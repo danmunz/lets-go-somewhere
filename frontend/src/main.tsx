@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import NumberFlow from '@number-flow/react';
 import { MeshGradient } from '@paper-design/shaders-react';
 import { createRoot } from 'react-dom/client';
-import type { AtlasDestination, FinalDecision, FinalDecisionChoice, GroupStatus, NextComparisonResponse, PreferenceProfile, RosterUser, TransparentGroupResultsResponse } from '@lgs/shared';
+import type { AtlasDestination, GroupStatus, NextComparisonResponse, PreferenceProfile, RosterUser, TransparentGroupResultsResponse } from '@lgs/shared';
 import '../../design-system/base.css';
 import '../../design-system/components.css';
 import logoUrl from '../../design-system/assets/logo.png';
@@ -166,7 +166,6 @@ function App() {
     window.addEventListener('hashchange', restoreFromHash);
     return () => { window.removeEventListener('popstate', restoreFromHash); window.removeEventListener('hashchange', restoreFromHash); };
   }, [api, navigateJourney, profile]);
-  const saveFinalDecision = async (choice: FinalDecisionChoice): Promise<FinalDecision> => { if (!api) throw new Error('Sign in again before saving your next step.'); try { const response = await api.recordFinalDecision(choice); if (!response.decision) throw new Error('The saved decision was missing from the response.'); return response.decision; } catch (reason) { if (reason instanceof ApiError && routeIntentForApiError(reason, 'final-decision') === 'use-recorded-decision') { const existing = await api.getFinalDecision(); if (existing.decision) return existing.decision; } throw reason; } };
   const selectTraveler = (id: RosterUser) => { if (spinning) return; setSelected(id); setSpinning(id); setToast(`${travelerName(id)} is ready to roll.`); window.setTimeout(() => setSpinning(undefined), 750); window.setTimeout(() => setToast(''), 1800); };
   const notice = error ? <div className="app-notice-overlay"><AppStateNotice tone="error" title="A quick detour">{error}</AppStateNotice></div> : null;
   const currentJourney = activeJourneyDestination(screen);
@@ -182,7 +181,7 @@ function App() {
   if (screen === 'profile' && profile) return <>{journeyNav}<ProfileScreen profile={profile} onOpenAtlas={() => void openAtlas()} onOpenWaiting={() => void openWaiting()} onOpenMyResults={() => void openMyResults()} revealOpen={Boolean(results || status?.revealOpen)} focusHeading />{notice}{help}</>;
   if (screen === 'atlas' && user) return <>{journeyNav}<AtlasScreen destinations={atlas} user={user} onOpenWaiting={() => void openWaiting()} onOpenProfile={() => navigateJourney('profile')} />{notice}{help}</>;
   if (screen === 'waiting' && status && user) return <>{journeyNav}<WaitingScreen status={status} user={user} travelerName={travelerName} onRefresh={refreshStatus} onBackToAtlas={() => void openAtlas()} onOpenReveal={() => void reveal()} onOpenVerdict={() => void openVerdict()} focusHeading />{notice}{help}</>;
-  if (screen === 'verdict' && results && user) return <>{journeyNav}<VerdictScreen results={results} currentUser={user} travelerName={travelerName} avatarFor={(id) => travelerById(id).image} onOpenMyResults={() => void openMyResults()} onRecordDecision={saveFinalDecision} />{notice}{help}</>;
+  if (screen === 'verdict' && results && user) return <>{journeyNav}<VerdictScreen results={results} currentUser={user} travelerName={travelerName} avatarFor={(id) => travelerById(id).image} onOpenMyResults={() => void openMyResults()} />{notice}{help}</>;
   if (screen === 'my-results' && myResults) return <>{journeyNav}<MyResultsScreen results={myResults} onBack={() => navigateJourney(results ? 'verdict' : 'profile')} backLabel={results ? 'Back to the group reveal' : 'Back to what I liked'} />{notice}{help}</>;
   if (screen !== 'comparison') return <><main className="one-trip-screen"><AppStateNotice tone={error ? 'error' : 'loading'} title={error ? 'That route needs a moment' : 'Preparing your route'}>{error || 'Loading the right place in your trip.'}</AppStateNotice></main>{help}</>;
   const activities = next && !next.complete ? [next.activityA, next.activityB] : [];
@@ -202,7 +201,7 @@ if (fixtureMode === 'trip-preview') {
 } else if (fixtureMode === 'transparent-reveal') {
   const displayMode = fixtureOverlay === 'near-tie' ? 'near-tie' : fixtureOverlay === 'no-consensus' ? 'no-consensus' : fixtureOverlay === 'broad-leader' ? 'broad-leader' : 'shared-shortlist';
   const socialOverlay = fixtureOverlay === 'wild-card' || fixtureOverlay === 'two-camps' || fixtureOverlay === 'split' ? fixtureOverlay : undefined;
-  root.render(<VerdictScreen results={createVerdictFixture(displayMode, socialOverlay)} currentUser="dan" travelerName={(id) => fixtureTravelerNames[id]} avatarFor={fixtureAvatar} onOpenMyResults={() => undefined} onRecordDecision={async (choice) => ({ user: 'dan', choice, createdAt: '2026-08-19T00:00:00.000Z' })} />);
+  root.render(<VerdictScreen results={createVerdictFixture(displayMode, socialOverlay)} currentUser="dan" travelerName={(id) => fixtureTravelerNames[id]} avatarFor={fixtureAvatar} onOpenMyResults={() => undefined} />);
 } else {
   root.render(<App />);
 }

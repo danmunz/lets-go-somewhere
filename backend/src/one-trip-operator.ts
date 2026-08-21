@@ -9,7 +9,6 @@ export const ONE_TRIP_COLLECTIONS = [
   'lgsV4Users',
   'lgsV4State',
   'lgsV4ResultSnapshots',
-  'lgsV4FinalDecisions',
 ] as const;
 
 export type OneTripCollection = (typeof ONE_TRIP_COLLECTIONS)[number];
@@ -29,7 +28,6 @@ export type OneTripPreflightReport = Readonly<{
   startedUsers: number;
   completedUsers: number;
   snapshots: number;
-  decisions: number;
   reveal: RevealPreflightState;
 }>;
 
@@ -94,10 +92,9 @@ async function assertProject(repository: OneTripOperatorRepository, projectId: s
 /** Inspects only the one-trip documents and returns count-only facts. */
 export async function inspectOneTrip(repository: OneTripOperatorRepository, projectId: string): Promise<OneTripPreflightReport> {
   await assertProject(repository, projectId);
-  const [users, snapshots, decisions, revealDocument] = await Promise.all([
+  const [users, snapshots, revealDocument] = await Promise.all([
     repository.list('lgsV4Users'),
     repository.list('lgsV4ResultSnapshots'),
-    repository.list('lgsV4FinalDecisions'),
     repository.getReveal(),
   ]);
 
@@ -110,7 +107,7 @@ export async function inspectOneTrip(repository: OneTripOperatorRepository, proj
       if (state.completedAt) completedUsers += 1;
     }
   } catch {
-    return { projectId, startedUsers, completedUsers, snapshots: snapshots.length, decisions: decisions.length, reveal: 'invalid' };
+    return { projectId, startedUsers, completedUsers, snapshots: snapshots.length, reveal: 'invalid' };
   }
 
   const snapshotById = new Map(snapshots.map((snapshot) => [snapshot.id, snapshot]));
@@ -127,16 +124,16 @@ export async function inspectOneTrip(repository: OneTripOperatorRepository, proj
     revealState = !parsed.success ? 'invalid' : parsed.data.schemaVersion === 1 ? 'open-v1' : 'open-v2';
   }
   if (revealState !== 'invalid' && [...parsedSnapshots.values()].some((snapshot) => !snapshot.success)) revealState = 'invalid';
-  return { projectId, startedUsers, completedUsers, snapshots: snapshots.length, decisions: decisions.length, reveal: revealState };
+  return { projectId, startedUsers, completedUsers, snapshots: snapshots.length, reveal: revealState };
 }
 
 export function reportIsEmpty(report: OneTripPreflightReport): boolean {
-  return report.reveal === 'closed' && report.startedUsers === 0 && report.completedUsers === 0 && report.snapshots === 0 && report.decisions === 0;
+  return report.reveal === 'closed' && report.startedUsers === 0 && report.completedUsers === 0 && report.snapshots === 0;
 }
 
 /** Count-only serializable output. Keep this contract free of document IDs/data. */
 export function formatPreflightReport(report: OneTripPreflightReport): string {
-  return JSON.stringify({ targetProject: report.projectId, startedUsers: report.startedUsers, completedUsers: report.completedUsers, snapshots: report.snapshots, decisions: report.decisions, reveal: report.reveal, empty: reportIsEmpty(report) });
+  return JSON.stringify({ targetProject: report.projectId, startedUsers: report.startedUsers, completedUsers: report.completedUsers, snapshots: report.snapshots, reveal: report.reveal, empty: reportIsEmpty(report) });
 }
 
 /** Never erase a started journey or an opened/legacy reveal, confirmation notwithstanding. */
@@ -148,13 +145,12 @@ export async function resetUntouchedOneTrip(repository: OneTripOperatorRepositor
   if (before.startedUsers > 0 || before.completedUsers > 0 || before.reveal !== 'closed') {
     throw new OneTripOperatorError('reset-refused', 'Refusing to reset a started journey or any opened, missing, or invalid reveal.');
   }
-  const [users, snapshots, decisions, reveal] = await Promise.all([
-    repository.list('lgsV4Users'), repository.list('lgsV4ResultSnapshots'), repository.list('lgsV4FinalDecisions'), repository.getReveal(),
+  const [users, snapshots, reveal] = await Promise.all([
+    repository.list('lgsV4Users'), repository.list('lgsV4ResultSnapshots'), repository.getReveal(),
   ]);
   await Promise.all([
     ...users.map((document) => repository.delete('lgsV4Users', document.id)),
     ...snapshots.map((document) => repository.delete('lgsV4ResultSnapshots', document.id)),
-    ...decisions.map((document) => repository.delete('lgsV4FinalDecisions', document.id)),
     ...(reveal ? [repository.delete('lgsV4State', 'reveal')] : []),
   ]);
   const after = await inspectOneTrip(repository, projectId);

@@ -6,7 +6,7 @@ The V1 use case is one fixed five-person trip in November 2026 (Dan, John, Matt,
 
 ## Status
 
-The app is a TypeScript workspace with a destination-blind React flow, activity-specific editorial media, Firestore-backed roster persistence, Google authentication, seed validation, tests, and CI checks. The local one-trip checkpoint also includes a plain-language profile, a caller-only private top five after completion, waiting, immutable social-ballot snapshots, all five post-reveal personal top fives, and immutable final decisions. A finished traveler must keep their private shortlist to themselves until the group reveal; every other person's shortlist and the group tally remain sealed until Dan opens it.
+The app is a TypeScript workspace with a destination-blind React flow, activity-specific editorial media, Firestore-backed roster persistence, Google authentication, seed validation, tests, and CI checks. The local one-trip checkpoint also includes a plain-language profile, a caller-only private top five after completion, waiting, immutable social-ballot snapshots, and all five post-reveal personal top fives. A finished traveler must keep their private shortlist to themselves until the group reveal; every other person's shortlist and the group tally remain sealed until Dan opens it. Once revealed, the app provides transparent information for the group to discuss together; it does not collect a final vote.
 
 Production preview: <https://lets-go-somewhere-3549f.web.app>. For shipped scope and the remaining one-trip release boundary, see [implementation status](docs/implementation-status.md).
 

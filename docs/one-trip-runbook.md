@@ -20,7 +20,7 @@ npm run emulators:start
 npm run test:emulator
 ```
 
-The emulator uses the isolated project ID `lgs-emulator-test`, Auth on port 9099, Firestore on port 8081, and the Emulator UI on port 4000. The non-default Firestore port avoids clashing with the local service commonly occupying 8080. `PATH="/opt/homebrew/opt/openjdk/bin:$PATH" npm run test:emulator` now runs eight checks: explicit emulator routing; concurrent and stale pending claims; racing immutable reveal creation; immutable snapshot reload; immutable final-decision conflict; redacted v2-result serialization; and the authenticated five-identity route rehearsal. The latter creates only disposable `@rehearsal.invalid` Auth Emulator accounts and verifies mismatch recovery, refresh/resume, duplicate rejection, all five fixed 32-choice rounds, completion gates, organizer-only reveal, snapshot parity, and stale-tab decision safety through the real API. The intentional racing transactions may log Firestore lock-retry warnings; the test passes only after the repository returns one identical stored snapshot/decision. Do not point these commands at the production project. Literal browser screenshots remain required.
+The emulator uses the isolated project ID `lgs-emulator-test`, Auth on port 9099, Firestore on port 8081, and the Emulator UI on port 4000. The non-default Firestore port avoids clashing with the local service commonly occupying 8080. `PATH="/opt/homebrew/opt/openjdk/bin:$PATH" npm run test:emulator` now runs eight checks: explicit emulator routing; concurrent and stale pending claims; racing immutable reveal creation; immutable snapshot reload; redacted v2-result serialization; and the authenticated five-identity route rehearsal. The latter creates only disposable `@rehearsal.invalid` Auth Emulator accounts and verifies mismatch recovery, refresh/resume, duplicate rejection, all five fixed 32-choice rounds, completion gates, organizer-only reveal, and snapshot parity through the real API. The intentional racing transactions may log Firestore lock-retry warnings; the test passes only after the repository returns one identical stored snapshot. Do not point these commands at the production project. Literal browser screenshots remain required.
 
 ## Browser rehearsal
 
@@ -34,7 +34,7 @@ Use five isolated Auth Emulator identities mapped to Dan, John, Matt, Peter, and
 - map failure leaves the named destination list/gallery usable;
 - Dan can open the reveal only after all five are complete;
 - personal/group results use the same immutable snapshot ID;
-- final decision accepts a finalist or `need-more-research` once and rejects mutation afterward;
+- the group reveal ends with the transparent scoreboard and discussion prompt; no final vote is collected;
 - keyboard focus, reduced motion, desktop, mobile, photo fallback, and destination-blind comparison redaction all remain correct.
 
 Capture screenshots outside the repository and record the browser, viewport, commit, seed digest, and pass/fail notes in the private rehearsal record.
@@ -132,7 +132,7 @@ the regular `gcloud` CLI. Re-run the count-only command below afterwards.
 npm run preflight:one-trip -- --project lets-go-somewhere-3549f
 ```
 
-It exits successfully only when the reveal is `closed` and there are zero started users, completed users, snapshots, and decisions. `open-v1`, `missing-snapshot`, and `invalid` are hard stops. In particular, preserve an `open-v1` snapshot read-only; do not manufacture a v2 replacement or reset it without an explicit group decision.
+It exits successfully only when the reveal is `closed` and there are zero started users, completed users, and snapshots. `open-v1`, `missing-snapshot`, and `invalid` are hard stops. In particular, preserve an `open-v1` snapshot read-only; do not manufacture a v2 replacement or reset it without an explicit group decision.
 
 The guarded reset is only for confirmed untouched pre-start debris, never for a
 smoke test or a real trip. If the preflight has any started user, completed user,
@@ -149,6 +149,6 @@ export LGS_EXPORT_REF="private:$(openssl rand -hex 16)"
 npm run reset:one-trip -- --project lets-go-somewhere-3549f --confirm-trip-reset --export-ref "$LGS_EXPORT_REF"
 ```
 
-The reset re-runs preflight before deletion, refuses after any started traveler or opened/missing/invalid reveal, deletes only documents in `lgsV4Users`, `lgsV4State/reveal`, `lgsV4ResultSnapshots`, and `lgsV4FinalDecisions`, then re-runs preflight and succeeds only on the empty state. Store its receipt (project, commit, seed digest, UTC time, export reference, and count-only post-reset state) in private trip notes. Never reset a live trip to fix content, rerun a model, or recover a user without an explicit group decision. A seed-version mismatch is intentionally fail-closed: restore the original checked-in seed rather than mutating the live journey.
+The reset re-runs preflight before deletion, refuses after any started traveler or opened/missing/invalid reveal, deletes only documents in `lgsV4Users`, `lgsV4State/reveal`, and `lgsV4ResultSnapshots`, then re-runs preflight and succeeds only on the empty state. It never deletes retired decision documents. Store its receipt (project, commit, seed digest, UTC time, export reference, and count-only post-reset state) in private trip notes. Never reset a live trip to fix content, rerun a model, or recover a user without an explicit group decision. A seed-version mismatch is intentionally fail-closed: restore the original checked-in seed rather than mutating the live journey.
 
-After reveal, snapshots and final decisions are immutable. Do not delete or rewrite them as a content operation. For an incident, preserve the snapshot ID, seed digest, model version, request timestamp, and safe error code, then stop and investigate using the deployment/run logs.
+After reveal, snapshots are immutable. Do not delete or rewrite them as a content operation. For an incident, preserve the snapshot ID, seed digest, model version, request timestamp, and safe error code, then stop and investigate using the deployment/run logs.

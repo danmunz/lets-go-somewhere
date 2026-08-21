@@ -1,5 +1,7 @@
 # One-trip implementation task board
 
+> **Historical task board:** references to a final-decision interaction below were retired on 2026-08-21. The current reveal ends with transparent results and an off-app group discussion.
+
 **Source:** [one-trip implementation specification](one-trip-implementation-spec.md) and [one-trip roadmap](roadmap.md).  
 **Release condition:** Every task in this board is required before the one real five-person run. This is not a feature backlog; no task may be silently moved to a later product version.
 

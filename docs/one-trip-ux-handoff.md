@@ -1,5 +1,7 @@
 # One-trip UX handoff — completed traveler through final call
 
+> **Historical handoff:** the “final call” decision interaction was retired on 2026-08-21. The current user journey ends with the shared reveal and an off-app group conversation.
+
 **Task:** OT-01  
 **Status:** Ready for implementation  
 **Companion documents:** [one-trip implementation specification](one-trip-implementation-spec.md), [user journey](ux.md), [design system](design-system.md), and [roadmap](roadmap.md).

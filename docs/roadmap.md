@@ -20,7 +20,7 @@ atlas tradeoff, and the approved transparent group-tally rule.
 | ONE-02 | Build the five-character waiting lobby from `/v1/group-status`; use polling and explicit refresh, not realtime infrastructure. | It conveys completion-only roster state without leaking preferences. |
 | ONE-03 | Build personal post-gate results and concise explanation primitives from `/v1/results/me`. | A traveler can understand their own top results without seeing anyone else's raw choices. |
 | ONE-04 | Replace normalized group scoring with the approved 5/4/3/2/1 top-five tally, full personal top-fives, and evidence-backed overlap/divergence views. | The score rule, ranks, ties, camps, wild cards, and no-consensus state are visible without raw activity choices or hidden group math. |
-| ONE-05 | Add one immutable post-reveal group decision: choose a finalist or `need-more-research`. | It never alters the blind ranking, exposes no activity-by-activity choices, and gives the group a clear next conversation. |
+| ONE-05 | End the post-reveal experience with a transparent five-place result and a clear prompt to discuss it together. | It never alters the blind ranking, exposes no activity-by-activity choices, and leaves the final trip choice to the five people off-app. |
 
 Existing seeded weather, travel effort, and any available rough logistics appear only as labelled finalist context. There is no separate practical score or live airfare integration.
 

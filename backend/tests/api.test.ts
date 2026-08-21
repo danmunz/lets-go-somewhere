@@ -62,7 +62,7 @@ describe('API boundary', () => {
     expect(payload.members).toHaveLength(5);
     expect(payload.members.every((member: { topFive: unknown[] }) => member.topFive.length === 5)).toBe(true);
     const raw = JSON.stringify(payload);
-    for (const forbidden of ['activityA', 'activityB', 'winner', 'comparisons', 'covariance', 'destinationScores', 'attributeScores', 'groupScore', 'normalized', 'interval', 'posterior']) {
+    for (const forbidden of ['activityA', 'activityB', 'winner', 'comparisons', 'covariance', 'destinationScores', 'attributeScores', 'groupScore', 'normalized', 'interval', 'posterior', 'decisions', 'finalDecision']) {
       expect(raw).not.toContain(`\"${forbidden}\"`);
     }
   });

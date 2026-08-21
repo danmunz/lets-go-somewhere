@@ -37,7 +37,6 @@ const baseFixture = (): TransparentGroupResultsResponse => {
       ranks: fixtureTravelers.map((user, userIndex) => ({ user, rank: userIndex === 4 && placeIndex === 4 ? 'outside-top-five' as const : ((placeIndex + userIndex) % 5) + 1 })),
     })),
     insights: [],
-    decisions: [],
   };
 };
 

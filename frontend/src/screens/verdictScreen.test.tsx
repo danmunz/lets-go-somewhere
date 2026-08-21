@@ -15,10 +15,9 @@ const resultFixture: TransparentGroupResultsResponse = {
   members: users.map((user) => ({ user, topFive: group.map((item, index) => ({ rank: index + 1, id: item.id, name: item.name, imageUrl: item.imageUrl })) })),
   finalistRanks: group.map((item, index) => ({ destinationId: item.id, ranks: users.map((user, userIndex) => ({ user, rank: userIndex === 4 && index === 4 ? 'outside-top-five' as const : index + 1 })) })),
   insights: [{ kind: 'split-destination', title: 'A lively split', body: 'Dan and James placed Place 1 in their top five; three travelers did not.', destinationIds: ['place-1'], users: ['dan', 'james'] }],
-  decisions: [{ user: 'dan', choice: 'place-1', createdAt: '2026-08-18T12:00:00.000Z' }],
 };
 const personalFixture: PersonalResultsResponse = { snapshotId: 'snapshot-test', modelVersion: 'baseline-test', confidence: { label: 'clear-favorite', summary: 'Your first place has a clear pull.' }, profile: { headline: 'A curious route', synthesis: 'Example', confidenceLabel: 'clear-shape', dimensions: [] }, results: group.map((item, index) => ({ ...item, fitLabel: index === 0 ? 'strong-match' as const : 'contender' as const, interval: { low: .4, high: .8 }, explanation: { themes: ['nature', 'novelty'], matchedActivityCount: 3, encounteredActivityCount: 7 } })) };
-const renderVerdict = (results = resultFixture) => renderToStaticMarkup(<VerdictScreen results={results} currentUser="dan" travelerName={(user) => names[user]} avatarFor={() => '/assets/traveler.png'} onOpenMyResults={() => undefined} onRecordDecision={async () => resultFixture.decisions[0]!} />);
+const renderVerdict = (results = resultFixture) => renderToStaticMarkup(<VerdictScreen results={results} currentUser="dan" travelerName={(user) => names[user]} avatarFor={() => '/assets/traveler.png'} onOpenMyResults={() => undefined} />);
 
 describe('transparent social reveal', () => {
   it.each(verdictFixtureModes)('renders the deterministic %s visual-QA fixture without legacy group math', (mode) => {
@@ -28,13 +27,12 @@ describe('transparent social reveal', () => {
     expect(markup).toContain('Outside top five');
     expect(markup).not.toMatch(/normalized|polarization|group confidence|interval/i);
   });
-  it('shows the published key, five personal maps, matrix language, and immutable next step', () => {
+  it('shows the published key, five personal maps, matrix language, and a clear handoff to discussion', () => {
     const markup = renderVerdict();
     expect(markup).toContain('Every top five counts.');
     expect(markup).toContain('Outside top five');
     expect(markup).toContain('Everyone’s top five.');
-    expect(markup).toContain('Locked in: champion Place 1.');
-    expect(markup).toContain('This one stays put, even after a refresh.');
+    expect(markup).toContain('Now talk it through and decide together.');
     expect(markup).not.toContain('Group fit'); expect(markup).not.toContain('6+'); expect(markup).not.toContain('normalized');
   });
 
@@ -59,11 +57,9 @@ describe('transparent social reveal', () => {
     expect(markup).toContain('Oaxaca');
   });
 
-  it('limits an unresolved final decision to five stored finalists plus research and exposes semantic keyboard controls', () => {
+  it('keeps the reveal focused on the five stored finalists and exposes semantic keyboard controls', () => {
     const markup = renderVerdict(createVerdictFixture());
-    const actionLabels = [...markup.matchAll(/>Champion ([^<]+)<\/button>/g)].map((match) => match[1]);
-    expect(actionLabels).toEqual(['Oaxaca', 'Antigua', 'Madeira', 'Kyoto', 'Lofoten']);
-    expect(markup).toContain('Need more research');
+    expect(markup).not.toMatch(/Champion|Need more research|Locked in/);
     expect(markup).toContain('aria-label="Open place details for Oaxaca"');
     expect(markup).toContain('aria-label="Scrollable group ranking table"');
     expect(markup).toContain('tabindex="0"');
@@ -76,10 +72,10 @@ describe('transparent social reveal', () => {
     ]);
     const fallback = renderToStaticMarkup(<mediaImage.MediaImage src="/missing-image.webp" alt="A view from Oaxaca" fallbackLabel="Photo unavailable" />);
     expect(fallback).toContain('alt="A view from Oaxaca"');
-    expect(styles).toContain('@media(prefers-reduced-motion:reduce)');
-    expect(styles).toContain('.verdict-finalists__list>button:focus-visible');
+    expect(styles).toContain('@media (prefers-reduced-motion: reduce)');
+    expect(styles).toContain('.verdict-finalists__list > button:focus-visible');
     expect(styles).toContain('.finalist-matrix__scroll:focus-visible');
-    expect(styles).toContain('@media(min-width:640px){.ballot-key li:last-child b');
+    expect(styles).toContain('@media (min-width: 640px)');
     expect(styles).not.toContain('animation: screen-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;');
   });
 

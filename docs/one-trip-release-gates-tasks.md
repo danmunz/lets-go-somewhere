@@ -1,5 +1,7 @@
 # One-trip release-gates task board
 
+> **Historical task board:** final-decision requirements below were retired on 2026-08-21. The current release ends with the transparent group reveal and off-app discussion.
+
 **Source:** [one-trip release-gates specification](one-trip-release-gates-spec.md) at commit `194123f`.
 
 **Status:** completed and released 2026-08-21. RG-01 passed in `fbae847`; RG-02 passed
