@@ -17,6 +17,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- A required first-run “How it works” trip briefing between verified character selection and the first anonymous comparison, plus a global contextual help return path. It explains Dan’s fixed 24-trip curation, the 32-choice Bayesian shortlist process, private personal results, and the sealed social reveal without exposing live destination or ranking data.
+
 - Initial product documentation, implementation scaffold, and destination/activity seed data.
 - Production design-system tokens, component contracts, guidance, and approved product logo.
 - Local TypeScript workspace, shared schemas, seed validation, deterministic V1 ranking engine, presentation-safe API, destination-blind frontend flow, tests, and CI quality workflow.

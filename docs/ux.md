@@ -371,6 +371,8 @@ On confirmation:
 ```text
 Join as [Character]
        ↓
+P03 How it works (before the first saved choice)
+       ↓
 P04 Comparison
 ```
 
@@ -390,68 +392,32 @@ Character selection bypasses awkward email/display names and instantly grounds t
 
 # 8. Screen P03 — How It Works
 
-**Implementation status:** the onboarding explanation is currently integrated into the welcome and character-select screens rather than shipped as this standalone screen. Retain the content intent when extracting it later.
-
 ## Purpose
 
-Teach the mechanic without teaching the algorithm.
+Orient a signed-in first-time traveler before their first choice. The page is a bright, visual trip briefing—not a modal or a technical lecture. It makes the social agreement explicit: Dan curated the possibilities, every traveler makes their own choices, and the group result stays sealed until everyone is done.
 
-## Required information
+## Entry and exit
 
-### Headline
+- Required after account/character confirmation while the traveler has **zero saved choices**. Leaving before a choice is saved brings the briefing back on return.
+- A traveler with one or more saved choices resumes directly to P04.
+- The persistent `? How it works` control opens this page from every major surface and returns to the exact prior screen. `#how-it-works` is supported without bypassing account, comparison, or reveal gates.
+- Required entry provides **Back to character selection** and **Start my 32 choices**. Help entry uses contextual Back copy only.
 
-> **Don't overthink it.**
+## Required visual path and copy
 
-### Instructions
+The desktop presentation is one connected five-step editorial path; mobile stacks the same five steps. It uses only generic diagrams, inline illustration, and approved traveler art—never candidate names, countries, maps, scores, ranks, or live model state.
 
-1. You'll see two things you could do.
-2. Pick whichever sounds more fun.
-3. We hide where they are.
-4. At the end, we'll tell you what trips fit you.
+1. **Dan picked 24 possible trips** — “Before the game started, Dan chose 24 places that could work for this group—thinking about your shared interests, budget, travel time, and the kind of trip you might actually take.” The visual is 24 sealed, unnamed cards/pins.
+2. **You pick your favorites** — “You’ll see two travel experiences at a time and pick the one you’d rather do. Go with your first instinct.” Two equal mini cards make clear neither answer is better.
+3. **We learn what you like** — Explain the eight experience ingredients, then: “A small Bayesian model updates its best guess about what you enjoy after every choice. It is looking for patterns in your taste—not trying to make the decision for you.”
+4. **Your ranking becomes clear** — “You’ll make 32 choices. The first 24 give every possible trip a fair look. The last eight help sort out the places closest to your personal top five.” A `24 fair-look choices → 8 top-five choices` route diagram reinforces the fixed-round policy. A reminder says their own top five is private until the rest of the crew finishes.
+5. **The group’s rankings are revealed** — “Once all five people finish, Dan opens the envelope. You’ll see everybody’s top five, where the group agrees, where it splits, and a simple 5/4/3/2/1 points board to guide the conversation.” Close with: “The app helps everyone discover what they like. The five of you choose the trip.”
 
-### Explicit reassurance
+## Accessibility and motion
 
-> There are no wrong answers.
-
-### Approximate duration
-
-> Usually 28–35 choices · about 3–5 minutes
-
-### Primary CTA
-
-**Let's go**
-
-## Optional
-
-A one-step interactive demonstration:
-
-```text
-Explore ancient ruins
-        OR
-Hike through a mountain reserve
-```
-
-The demo answer should not be recorded.
-
-## Exits
-
-```text
-Let's go
- ↓
-P04 Comparison
-```
-
-## Emotion
-
-**Anticipation**
-
-## Pain point
-
-Explaining adaptive ranking or mathematical confidence here would create unnecessary cognitive load.
-
-## Opportunity
-
-Keep methodology accessible through a small "How does this work?" link elsewhere, but not in the primary flow.
+- Use semantic ordered steps, a single H1, visible keyboard focus, 44px controls, and 20px desktop copy.
+- The path enters once with restrained staggered fade/translation. `prefers-reduced-motion` renders the full guide immediately.
+- All diagrams are supplementary; the written step copy communicates the process by itself.
 
 ---
 

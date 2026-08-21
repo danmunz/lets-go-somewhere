@@ -14,6 +14,7 @@ This is the operational status companion to the product specification. It record
   immutable v2 public top-five points scoreboard, each member's post-reveal
   top five, stored social insights, and one snapshot-bound final decision.
 - Responsive character-select, comparison, atlas, and result surfaces with keyboard focus and reduced-motion behavior.
+- A required, destination-safe first-run briefing between verified character selection and the first comparison. It uses a plain-language five-step explanation of Dan’s fixed 24-trip curation, the fixed 32-choice game, private personal shortlists, and the sealed group reveal; the persistent help control returns to the prior screen.
 
 ## Intentional V3/V4 product decisions
 

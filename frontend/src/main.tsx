@@ -15,7 +15,8 @@ import { AtlasExplorer } from './AtlasExplorer.js';
 import { ApiError, createApiClient, routeIntentForApiError, type ApiAuthentication, type OneTripApiClient } from './api.js';
 import { AppStateNotice, CompletedTransition, JourneyNav, MediaImage, TravelEffortKey, type JourneyDestination } from './components/index.js';
 import { getRestoredGoogleToken, signInWithGoogle } from './firebase.js';
-import { MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
+import { HowItWorksButton, HowItWorksScreen, MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
+import { HOW_IT_WORKS_HASH, howItWorksBackLabel, needsHowItWorksBriefing } from './howItWorks.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
 import { DevPreview } from './DevPreview.js';
 import type { AppScreen } from './types.js';
@@ -54,9 +55,11 @@ function AtlasScreen({ destinations, user, onOpenWaiting, onOpenProfile }: { des
 
 function App() {
   const [screen, setScreen] = useState<AppScreen>('welcome');
+  const [howItWorksReturn, setHowItWorksReturn] = useState<AppScreen>('welcome');
+  const [howItWorksRequired, setHowItWorksRequired] = useState(false);
   const [user, setUser] = useState<RosterUser>(); const [token, setToken] = useState<string>(); const [selected, setSelected] = useState<RosterUser>(); const [spinning, setSpinning] = useState<RosterUser>();
   const [next, setNext] = useState<NextComparisonResponse>(); const [profile, setProfile] = useState<PreferenceProfile>(); const [atlas, setAtlas] = useState<AtlasDestination[]>([]); const [status, setStatus] = useState<GroupStatus>(); const [results, setResults] = useState<TransparentGroupResultsResponse>(); const [myResults, setMyResults] = useState<Awaited<ReturnType<OneTripApiClient['getPersonalResults']>>>();
-  const [picked, setPicked] = useState(''); const [toast, setToast] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [booting, setBooting] = useState(true); const bootstrapOnce = useRef(false); const handledJourneyHash = useRef('');
+  const [picked, setPicked] = useState(''); const [toast, setToast] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [booting, setBooting] = useState(true); const bootstrapOnce = useRef(false); const handledJourneyHash = useRef(''); const screenRef = useRef<AppScreen>('welcome'); const howItWorksReturnRef = useRef<AppScreen>('welcome');
   const api = useMemo(() => user ? createApiClient({ user, token }) : undefined, [token, user]);
   const setJourneyHash = useCallback((destination: JourneyDestination, replace = false) => {
     const hash = `#${journeyHash[destination]}`;
@@ -79,12 +82,13 @@ function App() {
   const loadComparison = useCallback(async (client: OneTripApiClient) => { try { const response = await client.getNextComparison(); setNext(response); setScreen(response.complete ? 'completed-transition' : 'comparison'); } catch (reason) { await handleRouteError(reason, 'comparison'); } }, [handleRouteError]);
   const enterJourney = useCallback(async (authentication: ApiAuthentication) => {
     const client = createApiClient(authentication); setBusy(true); setError('');
-    try { const session = await client.getSession(); if (session.user !== authentication.user) throw new Error(`That Google account belongs to ${travelerName(session.user)}. Choose that traveler to continue.`); setUser(session.user); setToken(authentication.token); window.localStorage.setItem(rosterKey, session.user); const comparison = await client.getNextComparison(); setNext(comparison); if (comparison.complete) { setScreen('completed-transition'); const profileResponse = await client.getProfile(); setProfile(profileResponse.profile); setScreen('profile'); } else setScreen('comparison'); }
+    try { const session = await client.getSession(); if (session.user !== authentication.user) throw new Error(`That Google account belongs to ${travelerName(session.user)}. Choose that traveler to continue.`); setUser(session.user); setToken(authentication.token); window.localStorage.setItem(rosterKey, session.user); const comparison = await client.getNextComparison(); setNext(comparison); if (comparison.complete) { setScreen('completed-transition'); const profileResponse = await client.getProfile(); setProfile(profileResponse.profile); setScreen('profile'); } else if (needsHowItWorksBriefing(comparison.progress.comparisons)) { setHowItWorksReturn('character'); howItWorksReturnRef.current = 'character'; setHowItWorksRequired(true); window.history.replaceState(null, '', HOW_IT_WORKS_HASH); setScreen('how-it-works'); } else setScreen('comparison'); }
     catch (reason) { window.localStorage.removeItem(rosterKey); setError(reason instanceof Error ? reason.message : 'We couldn’t resume your trip.'); setScreen('character'); }
     finally { setBusy(false); setBooting(false); }
   }, []);
   useEffect(() => { if (bootstrapOnce.current) return; bootstrapOnce.current = true; const rosterUser = storedTraveler(); if (!rosterUser) { setBooting(false); return; } void (async () => { const restoredToken = import.meta.env.PROD ? await getRestoredGoogleToken() : undefined; if (import.meta.env.PROD && !restoredToken) { window.localStorage.removeItem(rosterKey); setBooting(false); return; } await enterJourney({ user: rosterUser, token: restoredToken }); })(); }, [enterJourney]);
   useEffect(() => { if (screen === 'completed-transition' && api && !profile && !busy) void loadProfile(api); }, [api, busy, loadProfile, profile, screen]);
+  useEffect(() => { screenRef.current = screen; }, [screen]);
 
   const signIn = async () => { if (!selected) return; try { await enterJourney({ user: selected, token: import.meta.env.PROD ? await signInWithGoogle() : undefined }); } catch (reason) { setError(reason instanceof Error ? reason.message : 'Google sign-in failed.'); setBusy(false); } };
   const choose = async (winner: string) => { if (!api || !next || next.complete || picked) return; setPicked(winner); setError(''); try { await api.submitComparison({ activityA: next.activityA.id, activityB: next.activityB.id, winner }); window.setTimeout(() => { setPicked(''); void loadComparison(api); }, 180); } catch (reason) { setPicked(''); await handleRouteError(reason, 'comparison'); } };
@@ -105,6 +109,42 @@ function App() {
     if (destination === 'waiting') { void openWaiting(updateHash); return; }
     void openVerdict(updateHash);
   }, [api, loadProfile, openAtlas, openMyResults, openVerdict, openWaiting, profile, setJourneyHash]);
+  const openHowItWorks = useCallback((origin = screenRef.current) => {
+    howItWorksReturnRef.current = origin;
+    setHowItWorksReturn(origin);
+    setHowItWorksRequired(false);
+    window.history.pushState({ lgsHowItWorks: true }, '', HOW_IT_WORKS_HASH);
+    setScreen('how-it-works');
+  }, []);
+  const closeHowItWorks = useCallback(() => {
+    const destination = howItWorksReturnRef.current;
+    if (howItWorksRequired) {
+      window.history.replaceState(null, '', '');
+      setScreen(destination);
+    } else if (window.location.hash === HOW_IT_WORKS_HASH && window.history.state?.lgsHowItWorks) window.history.back();
+    else { window.history.replaceState(null, '', ''); setScreen(destination); }
+  }, [howItWorksRequired]);
+  const startChoices = useCallback(() => {
+    setHowItWorksRequired(false);
+    if (window.location.hash === HOW_IT_WORKS_HASH) window.history.replaceState(null, '', '');
+    setScreen('comparison');
+  }, []);
+  useEffect(() => {
+    const resolveHowItWorksHash = () => {
+      if (window.location.hash === HOW_IT_WORKS_HASH && screenRef.current !== 'how-it-works') {
+        howItWorksReturnRef.current = screenRef.current;
+        setHowItWorksReturn(screenRef.current);
+        setHowItWorksRequired(false);
+        setScreen('how-it-works');
+      } else if (window.location.hash !== HOW_IT_WORKS_HASH && screenRef.current === 'how-it-works') {
+        setScreen(howItWorksReturnRef.current);
+      }
+    };
+    resolveHowItWorksHash();
+    window.addEventListener('popstate', resolveHowItWorksHash);
+    window.addEventListener('hashchange', resolveHowItWorksHash);
+    return () => { window.removeEventListener('popstate', resolveHowItWorksHash); window.removeEventListener('hashchange', resolveHowItWorksHash); };
+  }, []);
   useEffect(() => {
     if (!api || !profile) return;
     const restoreFromHash = () => {
@@ -125,19 +165,21 @@ function App() {
   const journeyNav = user && profile && currentJourney
     ? <JourneyNav active={currentJourney} revealOpen={Boolean(results || status?.revealOpen)} onNavigate={(destination) => navigateJourney(destination)} />
     : null;
+  const help = screen !== 'how-it-works' ? <HowItWorksButton onClick={() => openHowItWorks()} /> : null;
   if (booting) return <main className="one-trip-screen"><AppStateNotice tone="loading" title="Finding your saved route">Checking whether your traveler has an unfinished journey.</AppStateNotice></main>;
-  if (screen === 'welcome') return <main className="welcome-shell screen-enter"><Ambient /><section className="welcome"><img src={logoUrl} alt="Let's Go Somewhere" className="logo" /><p className="eyebrow">Five travelers. One real answer.</p><h1>Let the trip<br /><em>choose itself.</em></h1><p className="lede">A destination-blind game for deciding where your group should go. Choose the experiences that pull you in; we keep the places secret until it counts.</p><div className="how-it-works"><span><b>01</b> Pick your traveler</span><span><b>02</b> Make gut-call choices</span><span><b>03</b> Explore the contenders</span></div><button className="lgs-button lgs-button--primary welcome-cta" onClick={() => setScreen('character')}>Meet the crew →</button></section>{notice}</main>;
-  if (screen === 'character') return <main className="character-shell character-shell--spin screen-enter"><header className="topbar"><button className="back-button" onClick={() => setScreen('welcome')} aria-label="Back to welcome">←</button><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" /><span className="character-step">Step 1 of 2</span></header><section className="character-selection" aria-labelledby="character-title"><div className="character-intro"><p className="eyebrow">Choose your traveler</p><h1 id="character-title">Who’s making<br />the calls?</h1><p className="lede">Hover for a little hello, then pick the traveler who matches your Google account.</p></div><div className="roster-heading"><span>Meet the crew</span><b>{selected ? 'Traveler locked in' : 'Pick one to begin'}</b></div><div className="traveler-roster" role="group" aria-label="Choose your traveler">{travelers.map((traveler) => <button key={traveler.id} className={`traveler traveler--${traveler.accent} ${selected === traveler.id ? 'traveler--selected' : ''} ${spinning === traveler.id ? 'traveler--spinning' : ''}`} onClick={() => selectTraveler(traveler.id)} aria-pressed={selected === traveler.id} disabled={Boolean(spinning) && spinning !== traveler.id}><span className="traveler-stage"><i className="traveler-shadow" /><Avatar id={traveler.id} large className="traveler-figure" /></span><span className="traveler-label"><strong>{traveler.name}</strong><small>{traveler.role}</small></span><span className="traveler-check" aria-hidden="true">✓</span></button>)}</div><p className="selection-toast" role="status" aria-live="polite">{toast ? `✦ ${toast}` : 'Choose a traveler to unlock your route.'}</p></section><footer className="character-action"><span>{selected ? `${travelerName(selected)} selected` : 'Your character stays with you through the reveal.'}</span><button className="lgs-button lgs-button--primary" disabled={!selected || Boolean(spinning) || busy} onClick={() => void signIn()}>{busy ? 'Checking your route…' : selected ? `Continue as ${travelerName(selected)}` : 'Choose your traveler'} →</button></footer>{notice}</main>;
-  if (screen === 'completed-transition') return <main className="one-trip-screen"><CompletedTransition complete={Boolean(profile)} />{busy && <p className="topo-loader">Reading the shape of your choices…</p>}{notice}</main>;
-  if (screen === 'profile' && profile) return <>{journeyNav}<ProfileScreen profile={profile} onOpenAtlas={() => void openAtlas()} onOpenWaiting={() => void openWaiting()} onOpenMyResults={() => void openMyResults()} revealOpen={Boolean(results || status?.revealOpen)} focusHeading />{notice}</>;
-  if (screen === 'atlas' && user) return <>{journeyNav}<AtlasScreen destinations={atlas} user={user} onOpenWaiting={() => void openWaiting()} onOpenProfile={() => navigateJourney('profile')} />{notice}</>;
-  if (screen === 'waiting' && status && user) return <>{journeyNav}<WaitingScreen status={status} user={user} travelerName={travelerName} onRefresh={refreshStatus} onBackToAtlas={() => void openAtlas()} onOpenReveal={() => void reveal()} onOpenVerdict={() => void openVerdict()} focusHeading />{notice}</>;
-  if (screen === 'verdict' && results && user) return <>{journeyNav}<VerdictScreen results={results} currentUser={user} travelerName={travelerName} avatarFor={(id) => travelerById(id).image} onOpenMyResults={() => void openMyResults()} onRecordDecision={saveFinalDecision} />{notice}</>;
-  if (screen === 'my-results' && myResults) return <>{journeyNav}<MyResultsScreen results={myResults} onBack={() => navigateJourney(results ? 'verdict' : 'profile')} backLabel={results ? 'Back to the group reveal' : 'Back to my trip rhythm'} />{notice}</>;
-  if (screen !== 'comparison') return <main className="one-trip-screen"><AppStateNotice tone={error ? 'error' : 'loading'} title={error ? 'That route needs a moment' : 'Preparing your route'}>{error || 'Loading the right place in your trip.'}</AppStateNotice></main>;
+  if (screen === 'welcome') return <><main className="welcome-shell screen-enter"><Ambient /><section className="welcome"><img src={logoUrl} alt="Let's Go Somewhere" className="logo" /><p className="eyebrow">Five travelers. One real answer.</p><h1>Let the trip<br /><em>choose itself.</em></h1><p className="lede">A destination-blind game for deciding where your group should go. Choose the experiences that pull you in; we keep the places secret until it counts.</p><div className="how-it-works"><span><b>01</b> Pick your traveler</span><span><b>02</b> Make gut-call choices</span><span><b>03</b> Explore the contenders</span></div><button className="lgs-button lgs-button--primary welcome-cta" onClick={() => setScreen('character')}>Meet the crew →</button></section>{notice}</main>{help}</>;
+  if (screen === 'character') return <><main className="character-shell character-shell--spin screen-enter"><header className="topbar"><button className="back-button" onClick={() => setScreen('welcome')} aria-label="Back to welcome">←</button><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" /><span className="character-step">Step 1 of 2</span></header><section className="character-selection" aria-labelledby="character-title"><div className="character-intro"><p className="eyebrow">Choose your traveler</p><h1 id="character-title">Who’s making<br />the calls?</h1><p className="lede">Hover for a little hello, then pick the traveler who matches your Google account.</p></div><div className="roster-heading"><span>Meet the crew</span><b>{selected ? 'Traveler locked in' : 'Pick one to begin'}</b></div><div className="traveler-roster" role="group" aria-label="Choose your traveler">{travelers.map((traveler) => <button key={traveler.id} className={`traveler traveler--${traveler.accent} ${selected === traveler.id ? 'traveler--selected' : ''} ${spinning === traveler.id ? 'traveler--spinning' : ''}`} onClick={() => selectTraveler(traveler.id)} aria-pressed={selected === traveler.id} disabled={Boolean(spinning) && spinning !== traveler.id}><span className="traveler-stage"><i className="traveler-shadow" /><Avatar id={traveler.id} large className="traveler-figure" /></span><span className="traveler-label"><strong>{traveler.name}</strong><small>{traveler.role}</small></span><span className="traveler-check" aria-hidden="true">✓</span></button>)}</div><p className="selection-toast" role="status" aria-live="polite">{toast ? `✦ ${toast}` : 'Choose a traveler to unlock your route.'}</p></section><footer className="character-action"><span>{selected ? `${travelerName(selected)} selected` : 'Your character stays with you through the reveal.'}</span><button className="lgs-button lgs-button--primary" disabled={!selected || Boolean(spinning) || busy} onClick={() => void signIn()}>{busy ? 'Checking your route…' : selected ? `Continue as ${travelerName(selected)}` : 'Choose your traveler'} →</button></footer>{notice}</main>{help}</>;
+  if (screen === 'how-it-works') return <HowItWorksScreen travelers={travelers} required={howItWorksRequired} backLabel={howItWorksRequired ? 'Back to character selection' : howItWorksBackLabel(howItWorksReturn)} onBack={closeHowItWorks} onStartChoices={howItWorksRequired ? startChoices : undefined} />;
+  if (screen === 'completed-transition') return <><main className="one-trip-screen"><CompletedTransition complete={Boolean(profile)} />{busy && <p className="topo-loader">Reading the shape of your choices…</p>}{notice}</main>{help}</>;
+  if (screen === 'profile' && profile) return <>{journeyNav}<ProfileScreen profile={profile} onOpenAtlas={() => void openAtlas()} onOpenWaiting={() => void openWaiting()} onOpenMyResults={() => void openMyResults()} revealOpen={Boolean(results || status?.revealOpen)} focusHeading />{notice}{help}</>;
+  if (screen === 'atlas' && user) return <>{journeyNav}<AtlasScreen destinations={atlas} user={user} onOpenWaiting={() => void openWaiting()} onOpenProfile={() => navigateJourney('profile')} />{notice}{help}</>;
+  if (screen === 'waiting' && status && user) return <>{journeyNav}<WaitingScreen status={status} user={user} travelerName={travelerName} onRefresh={refreshStatus} onBackToAtlas={() => void openAtlas()} onOpenReveal={() => void reveal()} onOpenVerdict={() => void openVerdict()} focusHeading />{notice}{help}</>;
+  if (screen === 'verdict' && results && user) return <>{journeyNav}<VerdictScreen results={results} currentUser={user} travelerName={travelerName} avatarFor={(id) => travelerById(id).image} onOpenMyResults={() => void openMyResults()} onRecordDecision={saveFinalDecision} />{notice}{help}</>;
+  if (screen === 'my-results' && myResults) return <>{journeyNav}<MyResultsScreen results={myResults} onBack={() => navigateJourney(results ? 'verdict' : 'profile')} backLabel={results ? 'Back to the group reveal' : 'Back to my trip rhythm'} />{notice}{help}</>;
+  if (screen !== 'comparison') return <><main className="one-trip-screen"><AppStateNotice tone={error ? 'error' : 'loading'} title={error ? 'That route needs a moment' : 'Preparing your route'}>{error || 'Loading the right place in your trip.'}</AppStateNotice></main>{help}</>;
   const activities = next && !next.complete ? [next.activityA, next.activityB] : [];
   const progress = next && !next.complete ? next.progress : { comparisons: 0, minimum: 32, maximum: 32, estimatedCompletion: 0 };
-  return <main className="game-shell screen-enter"><header className="game-topbar"><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" />{user && <div className="turn-meta"><Avatar id={user} />{travelerName(user)}’s turn</div>}</header><section className="game-heading"><p className="eyebrow">Trust your first instinct</p><div className="game-title-row"><h1>Which calls to you?</h1><span><NumberFlow value={progress.comparisons} /> answered</span></div><div className="game-progress"><i style={{ width: `${progress.estimatedCompletion * 100}%` }} /></div><p className="progress-message">{progressMessage(progress.comparisons)} <b><NumberFlow value={progress.comparisons} /> of <NumberFlow value={progress.maximum} /> choices</b></p></section>{busy && !activities.length ? <p className="topo-loader">Loading the next possibility…</p> : <section className="choice-stage">{activities.map((activity, index) => <button key={activity.id} className={`choice-card choice-card--${index} ${picked === activity.id ? 'choice-card--picked' : ''}`} onClick={() => void choose(activity.id)} disabled={Boolean(picked)}><i className="choice-photo" style={{ backgroundImage: `url(${activity.imageUrl})` }} /><i className="choice-photo-wash" /><span className="choice-pick">I’d rather… ↗</span><span className="choice-copy"><strong>{activity.title}</strong><small>{activity.description}</small></span></button>)}</section>}<div className="or-divider"><span />OR<span /></div>{notice}</main>;
+  return <><main className="game-shell screen-enter"><header className="game-topbar"><img src={logoUrl} alt="Let's Go Somewhere" className="topbar-logo" />{user && <div className="turn-meta"><Avatar id={user} />{travelerName(user)}’s turn</div>}</header><section className="game-heading"><p className="eyebrow">Trust your first instinct</p><div className="game-title-row"><h1>Which calls to you?</h1><span><NumberFlow value={progress.comparisons} /> answered</span></div><div className="game-progress"><i style={{ width: `${progress.estimatedCompletion * 100}%` }} /></div><p className="progress-message">{progressMessage(progress.comparisons)} <b><NumberFlow value={progress.comparisons} /> of <NumberFlow value={progress.maximum} /> choices</b></p></section>{busy && !activities.length ? <p className="topo-loader">Loading the next possibility…</p> : <section className="choice-stage">{activities.map((activity, index) => <button key={activity.id} className={`choice-card choice-card--${index} ${picked === activity.id ? 'choice-card--picked' : ''}`} onClick={() => void choose(activity.id)} disabled={Boolean(picked)}><i className="choice-photo" style={{ backgroundImage: `url(${activity.imageUrl})` }} /><i className="choice-photo-wash" /><span className="choice-pick">I’d rather… ↗</span><span className="choice-copy"><strong>{activity.title}</strong><small>{activity.description}</small></span></button>)}</section>}<div className="or-divider"><span />OR<span /></div>{notice}</main>{help}</>;
 }
 
 const fixtureMode = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('fixture') : null;

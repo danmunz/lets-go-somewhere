@@ -8,12 +8,12 @@ import johnAvatar from '../../assets/images/john_cutout.png';
 import mattAvatar from '../../assets/images/matt_cutout.png';
 import peterAvatar from '../../assets/images/peter_cutout.png';
 import { AtlasExplorer } from './AtlasExplorer.js';
-import { MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
+import { HowItWorksScreen, MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
 
-type PreviewPage = 'comparison' | 'profile' | 'atlas' | 'waiting' | 'ready' | 'verdict' | 'shortlist';
+type PreviewPage = 'how-it-works' | 'comparison' | 'profile' | 'atlas' | 'waiting' | 'ready' | 'verdict' | 'shortlist';
 const pages: readonly [PreviewPage, string][] = [
-  ['comparison', 'Choice cards'], ['profile', 'Profile'], ['atlas', 'Atlas'], ['waiting', 'Waiting'], ['ready', 'All five'], ['verdict', 'Reveal'], ['shortlist', 'My shortlist'],
+  ['how-it-works', 'How it works'], ['comparison', 'Choice cards'], ['profile', 'Profile'], ['atlas', 'Atlas'], ['waiting', 'Waiting'], ['ready', 'All five'], ['verdict', 'Reveal'], ['shortlist', 'My shortlist'],
 ];
 const avatarByUser: Record<RosterUser, string> = { dan: danAvatar, james: jamesAvatar, john: johnAvatar, matt: mattAvatar, peter: peterAvatar };
 const profile: PreferenceProfile = {
@@ -55,7 +55,8 @@ function PreviewComparison() {
 /** Development-only visual journey navigator. It never calls the API or stores a choice. */
 export function DevPreview() {
   const [page, setPage] = useState<PreviewPage>('comparison');
-  const body = page === 'comparison' ? <PreviewComparison />
+  const body = page === 'how-it-works' ? <HowItWorksScreen travelers={Object.entries(avatarByUser).map(([id, image]) => ({ id, name: fixtureTravelerNames[id as RosterUser], image }))} required backLabel="Back to character selection" onBack={() => setPage('comparison')} onStartChoices={() => setPage('comparison')} />
+    : page === 'comparison' ? <PreviewComparison />
     : page === 'profile' ? <ProfileScreen profile={profile} onOpenAtlas={() => setPage('atlas')} onOpenWaiting={() => setPage('waiting')} onOpenMyResults={() => setPage('shortlist')} />
       : page === 'atlas' ? <PreviewAtlas />
         : page === 'waiting' || page === 'ready' ? <WaitingScreen status={{ revealOpen: false, allComplete: page === 'ready', updatedAt: '2026-08-19T00:00:00.000Z', members: ['dan', 'james', 'john', 'matt', 'peter'].map((user, index) => ({ user: user as RosterUser, complete: page === 'ready' || index < 3 })) }} user="dan" travelerName={(user) => fixtureTravelerNames[user]} onRefresh={() => undefined} onBackToAtlas={() => setPage('atlas')} onOpenReveal={() => setPage('verdict')} />

@@ -18,6 +18,7 @@ import type {
 export type AppScreen =
   | 'welcome'
   | 'character'
+  | 'how-it-works'
   | 'comparison'
   | 'completed-transition'
   | 'profile'

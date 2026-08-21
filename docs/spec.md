@@ -32,6 +32,8 @@ The central product idea becomes:
 
 > **Tell us what sounds fun. We'll tell you where you should go.**
 
+Before the first saved comparison, every authenticated traveler receives a required, destination-safe “How it works” briefing. It explains that Dan curated the fixed 24 possible trips for the group’s shared interests, budget, and travel constraints; that each traveler will make 32 anonymous experience choices; that a small Bayesian attribute model learns recurring experience preferences; and that individual top fives remain private until the group completes the game and Dan opens the social reveal. This is explanatory copy only—not an organizer workflow or a source of live result data.
+
 ### Related documents
 
 - [User journey map](ux.md) translates this product specification into participant and organizer flows.
