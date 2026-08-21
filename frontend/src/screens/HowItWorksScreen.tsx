@@ -91,7 +91,11 @@ export function HowItWorksScreen({ travelers, required = false, backLabel, onBac
       </li>
       <li className="briefing-step briefing-step--reveal">
         <span className="briefing-step__number">05</span>
-        <div className="briefing-reveal-glyph" aria-hidden="true"><div className="briefing-crew">{travelers.map((traveler) => <img key={traveler.id} src={traveler.image} alt="" />)}</div><span>✉</span><b>5 · 4 · 3 · 2 · 1</b></div>
+        <div className="briefing-reveal-glyph" aria-hidden="true">
+          <div className="briefing-private-lists">{travelers.map((traveler, index) => <span key={traveler.id} style={{ '--list-accent': index } as CSSProperties}><i>{index + 1}</i></span>)}</div>
+          <div className="briefing-envelope"><span>✉</span><b>open when<br />all five finish</b></div>
+          <div className="briefing-points-board">{[5, 4, 3, 2, 1].map((points) => <span key={points}>{points}</span>)}</div>
+        </div>
         <div className="briefing-step__copy"><p className="eyebrow">The envelope opens last</p><h2>The group’s rankings are revealed</h2><p>Once all five people finish, Dan opens the envelope. You’ll see everybody’s top five, where the group agrees, where it splits, and a simple 5/4/3/2/1 points board to guide the conversation.</p><p className="briefing-step__closing">The app helps everyone discover what they like. The five of you choose the trip.</p></div>
       </li>
     </ol>
