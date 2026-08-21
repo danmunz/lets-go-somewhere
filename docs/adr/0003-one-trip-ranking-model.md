@@ -56,6 +56,23 @@ not waive verification. Before release, the fixed shortlist must demonstrate:
 The five-identity rehearsal, visual/accessibility review, disposable-environment
 smoke test, and empty production preflight remain separate release gates.
 
+## Verification record
+
+On 2026-08-20, the bounded local gate passed on canonical seed
+`e6ab43b564dcab83eb94a7a1cb6184e7ce72d2b293e53daf557f3fa18fb6a39f` via
+`npm test -- --run backend/tests/model/shortlist-release-evidence.test.ts`.
+The release-evidence test exercises the
+actual `bayes-attribute-shortlist-v1` / `fixed-32-boundary-v1` imports over
+clear, close, noisy, and divergent fixtures, including all five divergent
+travelers. It proved deterministic 32-round replays and shortlists, zero
+bounded-fixture fit failures, pair/cross-destination safety, two appearances
+per destination by question 24, all eligible final-eight boundary selections,
+comparison DTO redaction, and stable v2 snapshot input/readback.
+
+This closes only the model-verification portion of the decision. It does not
+turn the local build into a released trip or waive the remaining rehearsal,
+visual, smoke, and production-preflight gates.
+
 ## Historical evidence
 
 `bt-hierarchical-laplace-v1`, `bt-hierarchical-laplace-v2-compact`, the

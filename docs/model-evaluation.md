@@ -18,6 +18,35 @@ verification, redaction, snapshot stability, rehearsal, and smoke testing.
 `bt-hierarchical-laplace-v1`, `bt-hierarchical-laplace-v2-compact`, and
 `information-gain-v1` remain offline-only reference implementations.
 
+## Fixed-32 shortlist release evidence — PASS (bounded local gate)
+
+**Recorded 2026-08-20 against canonical seed
+`e6ab43b564dcab83eb94a7a1cb6184e7ce72d2b293e53daf557f3fa18fb6a39f`.**
+
+Command: `npm test -- --run backend/tests/model/shortlist-release-evidence.test.ts`
+
+This production-candidate check directly exercises
+`bayes-attribute-shortlist-v1` with `fixed-32-boundary-v1`; it is not a rerun
+of the rejected hierarchical audit. The three passing evidence groups prove:
+
+- deterministic two-pass 32-question replays for one fixed seed of each
+  representative clear-attribute, close fifth/sixth-boundary, noisy-replay,
+  and divergent five-traveler fixture (eight traveler trajectories total);
+- zero attribute-fit failures; 32 issued comparisons; no duplicate activity
+  pair or same-destination pair; every destination appears at least twice in
+  questions 1–24; and every question 25–32 selection equals the private
+  boundary selector while eligible pairs exist;
+- deterministic top fives and immutable v2 snapshot input for all five real
+  roster IDs, integrity-reader validation of that persisted shape, and a
+  recursive active-comparison DTO check excluding destination, media-credit,
+  rank, score, posterior, model, policy, selector, and seed metadata.
+
+The check deliberately does **not** claim a certified recovery rate,
+confidence interval, or a group winner. It proves the bounded operational
+contract of the one-trip model. The five-identity browser rehearsal,
+disposable-environment smoke, visual review, and production preflight remain
+separate gates.
+
 ## Completed run: initial v1 candidate
 
 - Command: `npm run evaluate:model`
