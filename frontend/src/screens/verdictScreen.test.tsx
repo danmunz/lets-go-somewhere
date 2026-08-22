@@ -12,11 +12,11 @@ const place = (index: number) => ({ rank: index + 1, id: `place-${index + 1}`, n
 const group = Array.from({ length: 5 }, (_, index) => place(index));
 const resultFixture: TransparentGroupResultsResponse = {
   snapshotId: 'snapshot-test', modelVersion: 'baseline-test', displayMode: 'shared-shortlist', group,
-  members: users.map((user) => ({ user, topFive: group.map((item, index) => ({ rank: index + 1, id: item.id, name: item.name, imageUrl: item.imageUrl })) })),
+  members: users.map((user, index) => ({ user, moodKeys: (index % 2 === 0 ? ['adventure', 'nature'] : ['food', 'culture']) as ['adventure', 'nature'], topFive: group.map((item, itemIndex) => ({ rank: itemIndex + 1, id: item.id, name: item.name, imageUrl: item.imageUrl })) })),
   finalistRanks: group.map((item, index) => ({ destinationId: item.id, ranks: users.map((user, userIndex) => ({ user, rank: userIndex === 4 && index === 4 ? 'outside-top-five' as const : index + 1 })) })),
   insights: [{ kind: 'split-destination', title: 'A lively split', body: 'Dan and James placed Place 1 in their top five; three travelers did not.', destinationIds: ['place-1'], users: ['dan', 'james'] }],
 };
-const personalFixture: PersonalResultsResponse = { snapshotId: 'snapshot-test', modelVersion: 'baseline-test', confidence: { label: 'clear-favorite', summary: 'Your first place has a clear pull.' }, profile: { headline: 'A curious route', synthesis: 'Example', confidenceLabel: 'clear-shape', dimensions: [] }, results: group.map((item, index) => ({ ...item, fitLabel: index === 0 ? 'strong-match' as const : 'contender' as const, interval: { low: .4, high: .8 }, explanation: { themes: ['nature', 'novelty'], matchedActivityCount: 3, encounteredActivityCount: 7 } })) };
+const personalFixture: PersonalResultsResponse = { snapshotId: 'snapshot-test', modelVersion: 'baseline-test', confidence: { label: 'clear-favorite', summary: 'Your first place has a clear pull.' }, profile: { headline: 'A curious route', synthesis: 'Example', confidenceLabel: 'clear-shape', dimensions: [{ key: 'adventure', label: 'Big adventures', strength: 'strong', direction: 'drawn-to' }, { key: 'nature', label: 'Time outside', strength: 'present', direction: 'drawn-to' }] }, results: group.map((item, index) => ({ ...item, fitLabel: index === 0 ? 'strong-match' as const : 'contender' as const, interval: { low: .4, high: .8 }, explanation: { themes: ['nature', 'novelty'], moodKeys: ['nature', 'novelty'], matchedActivityCount: 3, encounteredActivityCount: 7 } })) };
 const renderVerdict = (results = resultFixture) => renderToStaticMarkup(<VerdictScreen results={results} currentUser="dan" travelerName={(user) => names[user]} avatarFor={() => '/assets/traveler.png'} onOpenMyResults={() => undefined} />);
 
 describe('transparent social reveal', () => {
@@ -80,13 +80,13 @@ describe('transparent social reveal', () => {
   });
 
   it('renders personal results with post-gate place imagery and concise, non-raw-choice explanation', () => {
-    const markup = renderToStaticMarkup(<MyResultsScreen results={personalFixture} onBack={() => undefined} backLabel="Back to the group reveal" />);
+    const markup = renderToStaticMarkup(<MyResultsScreen results={personalFixture} traveler="dan" />);
     expect(markup).toContain('A view from Place 1'); expect(markup).toContain('Why it fits'); expect(markup).not.toContain('activity-by-activity');
   });
 
   it('labels a completed caller-only shortlist as private until an immutable reveal snapshot exists', () => {
     const { snapshotId: _snapshotId, ...privateResults } = personalFixture;
-    const markup = renderToStaticMarkup(<MyResultsScreen results={privateResults} onBack={() => undefined} backLabel="Back to what I liked" />);
+    const markup = renderToStaticMarkup(<MyResultsScreen results={privateResults} traveler="dan" />);
     expect(markup).toContain('Your private top five');
     expect(markup).toContain('The group’s results and everyone else’s top five stay hidden');
     expect(markup).not.toContain('Everyone’s top five');

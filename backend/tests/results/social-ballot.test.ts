@@ -184,6 +184,7 @@ describe('transparent social ballot', () => {
       })),
       members: users.map((user) => ({
         user,
+        moodKeys: ['adventure', 'nature'],
         topFive: broadBallots[user].map((id, index) => ({ rank: index + 1, id, name: id.toUpperCase(), imageUrl: `/media/destinations/${id}/cover.webp` })),
       })),
       finalistRanks: social.finalistRanks,

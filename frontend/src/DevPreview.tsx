@@ -8,6 +8,9 @@ import johnAvatar from '../../assets/images/john_cutout.png';
 import mattAvatar from '../../assets/images/matt_cutout.png';
 import peterAvatar from '../../assets/images/peter_cutout.png';
 import { AtlasExplorer } from './AtlasExplorer.js';
+import { JourneyNav } from './components/JourneyNav.js';
+import { journeyDestinationForScreen } from './journeyNavigation.js';
+import type { AppScreen } from './types.js';
 import { HowItWorksScreen, MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
 
@@ -40,12 +43,12 @@ const myResults: PersonalResultsResponse = {
   snapshotId: 'local-preview', modelVersion: 'preview-only', profile,
   results: verdict.group.map((place) => ({
     rank: place.rank, id: place.id, name: place.name, country: place.country, imageUrl: place.imageUrl,
-    explanation: { themes: ['big adventures', 'local texture'], matchedActivityCount: 5, encounteredActivityCount: 16 }, context: place.context,
+    explanation: { themes: ['big adventures', 'local texture'], moodKeys: ['adventure', 'culture'], matchedActivityCount: 5, encounteredActivityCount: 16 }, context: place.context,
   })),
 };
 
-function PreviewAtlas({ onOpenWaiting, onOpenProfile }: { onOpenWaiting: () => void; onOpenProfile: () => void }) {
-  return <AtlasExplorer destinations={atlasDestinations} user="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarSrc={danAvatar} onOpenWaiting={onOpenWaiting} onOpenProfile={onOpenProfile} />;
+function PreviewAtlas({ onOpenWaiting }: { onOpenWaiting: () => void }) {
+  return <AtlasExplorer destinations={atlasDestinations} user="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarSrc={danAvatar} onOpenWaiting={onOpenWaiting} />;
 }
 
 function PreviewComparison() {
@@ -55,12 +58,21 @@ function PreviewComparison() {
 /** Development-only visual journey navigator. It never calls the API or stores a choice. */
 export function DevPreview() {
   const [page, setPage] = useState<PreviewPage>('comparison');
-  const body = page === 'how-it-works' ? <HowItWorksScreen travelers={Object.entries(avatarByUser).map(([id, image]) => ({ id, name: fixtureTravelerNames[id as RosterUser], image }))} required backLabel="Back to character selection" onBack={() => setPage('comparison')} onStartChoices={() => setPage('comparison')} />
+  const [helpReturn, setHelpReturn] = useState<PreviewPage>('comparison');
+  const [briefingRequired, setBriefingRequired] = useState(false);
+  const openHelp = () => { setHelpReturn(page); setBriefingRequired(false); setPage('how-it-works'); };
+  const openRequiredBriefing = () => { setBriefingRequired(true); setPage('how-it-works'); };
+  const helpReturnLabel = pages.find(([id]) => id === helpReturn)?.[1].toLowerCase() ?? 'your choices';
+  const body = page === 'how-it-works' ? <HowItWorksScreen travelers={Object.entries(avatarByUser).map(([id, image]) => ({ id, name: fixtureTravelerNames[id as RosterUser], image }))} required={briefingRequired} backLabel={briefingRequired ? 'Back to character selection' : `Back to ${helpReturnLabel}`} onBack={() => setPage(briefingRequired ? 'comparison' : helpReturn)} onStartChoices={briefingRequired ? () => setPage('comparison') : undefined} />
     : page === 'comparison' ? <PreviewComparison />
-    : page === 'profile' ? <ProfileScreen profile={profile} onOpenAtlas={() => setPage('atlas')} onOpenWaiting={() => setPage('waiting')} onOpenMyResults={() => setPage('shortlist')} />
-      : page === 'atlas' ? <PreviewAtlas onOpenWaiting={() => setPage('waiting')} onOpenProfile={() => setPage('profile')} />
-        : page === 'waiting' || page === 'ready' ? <WaitingScreen status={{ revealOpen: false, allComplete: page === 'ready', updatedAt: '2026-08-19T00:00:00.000Z', members: ['dan', 'james', 'john', 'matt', 'peter'].map((user, index) => ({ user: user as RosterUser, complete: page === 'ready' || index < 3 })) }} user="dan" travelerName={(user) => fixtureTravelerNames[user]} onRefresh={() => undefined} onBackToAtlas={() => setPage('atlas')} onOpenReveal={() => setPage('verdict')} />
+    : page === 'profile' ? <ProfileScreen profile={profile} traveler="dan" onOpenMyResults={() => setPage('shortlist')} />
+      : page === 'atlas' ? <PreviewAtlas onOpenWaiting={() => setPage('waiting')} />
+        : page === 'waiting' || page === 'ready' ? <WaitingScreen status={{ revealOpen: false, allComplete: page === 'ready', updatedAt: '2026-08-19T00:00:00.000Z', members: ['dan', 'james', 'john', 'matt', 'peter'].map((user, index) => ({ user: user as RosterUser, complete: page === 'ready' || index < 3 })) }} user="dan" travelerName={(user) => fixtureTravelerNames[user]} onRefresh={() => undefined} onOpenReveal={() => setPage('verdict')} />
           : page === 'verdict' ? <VerdictScreen results={verdict} currentUser="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarFor={(user) => avatarByUser[user]} onOpenMyResults={() => setPage('shortlist')} />
-            : <MyResultsScreen results={myResults} onBack={() => setPage('verdict')} backLabel="Back to the group reveal" />;
-  return <><nav aria-label="Local preview screens" style={{ position: 'fixed', zIndex: 100, top: 12, right: 12, display: 'flex', flexWrap: 'wrap', gap: 6, maxWidth: 560, padding: 8, borderRadius: 12, background: '#1f1b16eB', boxShadow: '0 4px 18px #0006' }}>{pages.map(([id, label]) => <button key={id} onClick={() => setPage(id)} aria-pressed={page === id} style={{ fontSize: 14, minHeight: 36, padding: '6px 10px', border: '1px solid #f3e9dd', borderRadius: 7, color: '#1f1b16', background: page === id ? '#f9bd45' : '#f3e9dd' }}>{label}</button>)}</nav>{body}</>;
+            : <MyResultsScreen results={myResults} traveler="dan" />;
+  const screen: AppScreen = page === 'profile' ? 'profile' : page === 'atlas' ? 'atlas' : page === 'waiting' || page === 'ready' ? 'waiting' : page === 'verdict' ? 'verdict' : page === 'shortlist' ? 'my-results' : 'comparison';
+  const active = journeyDestinationForScreen(screen);
+  const revealOpen = page === 'verdict';
+  const navigation = active ? <JourneyNav active={active} revealOpen={revealOpen} revealSeen={page === 'verdict'} onNavigate={(destination) => setPage(destination === 'profile' ? 'profile' : destination === 'shortlist' ? 'shortlist' : destination === 'atlas' ? 'atlas' : destination === 'waiting' ? 'waiting' : 'verdict')} onOpenHowItWorks={openHelp} /> : null;
+  return <>{navigation}{body}<details className="dev-preview-controls"><summary>Local preview screens</summary><div>{pages.map(([id, label]) => <button key={id} onClick={() => id === 'how-it-works' ? openRequiredBriefing() : setPage(id)} aria-pressed={page === id}>{label}</button>)}</div></details></>;
 }

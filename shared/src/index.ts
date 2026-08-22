@@ -305,6 +305,9 @@ export const resultContextSchema = z
 export const personalResultExplanationSchema = z
   .object({
     themes: z.array(z.string().min(1)).min(2).max(4),
+    // A compact, presentation-safe bridge to the post-completion mood art.
+    // It deliberately contains no scores, probabilities, activities, or places.
+    moodKeys: z.array(z.enum(ATTRIBUTE_KEYS)).min(1).max(2).optional(),
     matchedActivityCount: z.number().int().min(0),
     encounteredActivityCount: z.number().int().min(0),
   })
@@ -563,6 +566,7 @@ export const transparentGroupResultsResponseSchema = z
         z
           .object({
             user: rosterUserSchema,
+            moodKeys: z.array(z.enum(ATTRIBUTE_KEYS)).min(1).max(2),
             topFive: z
               .array(
                 z

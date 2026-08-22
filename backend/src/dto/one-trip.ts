@@ -230,6 +230,7 @@ export function buildGroupResultsResponse(
     }),
     members: ROSTER.map((user) => ({
       user,
+      moodKeys: snapshot.users[user].profile.dimensions.slice(0, 2).map((dimension) => dimension.key),
       topFive: snapshot.users[user].topFive.map((id, index) => {
         const destination = destinationForResult(id, destinationsById);
         return { rank: index + 1, id, name: destination.name, imageUrl: destination.gallery[0]!.path };

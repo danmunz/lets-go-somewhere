@@ -18,11 +18,10 @@ type Props = {
   travelerName: (user: RosterUser) => string;
   /** Refreshes the parent-owned safe status DTO. It may resolve without a value. */
   onRefresh: () => Promise<unknown> | unknown;
-  onBackToAtlas: () => void;
   onOpenReveal?: () => void;
   onOpenVerdict?: () => void;
   /** Only use after a user-triggered navigation from an actionable state. */
-  focusHeading?: boolean;
+  focusHeading?: number;
 };
 
 const travelerArt: Record<RosterUser, string> = {
@@ -41,10 +40,9 @@ export function WaitingScreen({
   user,
   travelerName,
   onRefresh,
-  onBackToAtlas,
   onOpenReveal,
   onOpenVerdict,
-  focusHeading = false,
+  focusHeading,
 }: Props) {
   const previousStatus = useRef<GroupStatus | null>(null);
   const requestInFlight = useRef(false);
@@ -176,9 +174,8 @@ export function WaitingScreen({
           {isRefreshing ? 'Checking who’s finished' : 'Check who’s finished'}
         </button>
         <button className="lgs-button lgs-button--secondary" onClick={() => void copyNudge()}>Copy a nudge</button>
-        <button className="lgs-button lgs-button--secondary" onClick={onBackToAtlas}>Back to all 24 places</button>
         {canOpenReveal && onOpenReveal && <button className="lgs-button lgs-button--primary" onClick={onOpenReveal}>Open the group reveal</button>}
-        {status.revealOpen && onOpenVerdict && <button className="lgs-button lgs-button--primary" onClick={onOpenVerdict}>See the verdict</button>}
+        {status.revealOpen && onOpenVerdict && <button className="lgs-button lgs-button--primary" onClick={onOpenVerdict}>See how the group voted</button>}
       </div>
       {refreshError && <p className="waiting-screen__error" role="alert">{refreshError}</p>}
       <p className="waiting-screen__updated">This page only shows who has finished. Nobody’s picks or rankings are shared here.</p>

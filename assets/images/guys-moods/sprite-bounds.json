@@ -1,0 +1,52 @@
+{
+  "dan-moods.png": {
+    "adventure": { "top-left-x": 0, "top-left-y": 0, "bottom-right-x": 344, "bottom-right-y": 466 },
+    "nature": { "top-left-x": 362, "top-left-y": 0, "bottom-right-x": 695, "bottom-right-y": 466 },
+    "culture": { "top-left-x": 724, "top-left-y": 0, "bottom-right-x": 1082, "bottom-right-y": 479 },
+    "food": { "top-left-x": 1086, "top-left-y": 0, "bottom-right-x": 1429, "bottom-right-y": 464 },
+    "history": { "top-left-x": 0, "top-left-y": 543, "bottom-right-x": 361, "bottom-right-y": 987 },
+    "urban": { "top-left-x": 362, "top-left-y": 543, "bottom-right-x": 710, "bottom-right-y": 1007 },
+    "novelty": { "top-left-x": 724, "top-left-y": 543, "bottom-right-x": 1076, "bottom-right-y": 1033 },
+    "physicalIntensity": { "top-left-x": 1086, "top-left-y": 543, "bottom-right-x": 1447, "bottom-right-y": 1034 }
+  },
+  "james-moods.png": {
+    "adventure": { "top-left-x": 0, "top-left-y": 0, "bottom-right-x": 329, "bottom-right-y": 450 },
+    "nature": { "top-left-x": 362, "top-left-y": 0, "bottom-right-x": 723, "bottom-right-y": 487 },
+    "culture": { "top-left-x": 724, "top-left-y": 0, "bottom-right-x": 1085, "bottom-right-y": 418 },
+    "food": { "top-left-x": 1086, "top-left-y": 0, "bottom-right-x": 1436, "bottom-right-y": 406 },
+    "history": { "top-left-x": 0, "top-left-y": 543, "bottom-right-x": 357, "bottom-right-y": 1007 },
+    "urban": { "top-left-x": 362, "top-left-y": 543, "bottom-right-x": 721, "bottom-right-y": 1051 },
+    "novelty": { "top-left-x": 724, "top-left-y": 543, "bottom-right-x": 1074, "bottom-right-y": 1002 },
+    "physicalIntensity": { "top-left-x": 1086, "top-left-y": 543, "bottom-right-x": 1439, "bottom-right-y": 992 }
+  },
+  "john-moods.png": {
+    "adventure": { "top-left-x": 0, "top-left-y": 0, "bottom-right-x": 322, "bottom-right-y": 519 },
+    "nature": { "top-left-x": 362, "top-left-y": 0, "bottom-right-x": 716, "bottom-right-y": 494 },
+    "culture": { "top-left-x": 724, "top-left-y": 0, "bottom-right-x": 1044, "bottom-right-y": 479 },
+    "food": { "top-left-x": 1086, "top-left-y": 0, "bottom-right-x": 1420, "bottom-right-y": 451 },
+    "history": { "top-left-x": 0, "top-left-y": 543, "bottom-right-x": 338, "bottom-right-y": 1015 },
+    "urban": { "top-left-x": 362, "top-left-y": 543, "bottom-right-x": 709, "bottom-right-y": 1064 },
+    "novelty": { "top-left-x": 724, "top-left-y": 543, "bottom-right-x": 1076, "bottom-right-y": 1030 },
+    "physicalIntensity": { "top-left-x": 1086, "top-left-y": 543, "bottom-right-x": 1431, "bottom-right-y": 985 }
+  },
+  "matt-moods.png": {
+    "adventure": { "top-left-x": 0, "top-left-y": 0, "bottom-right-x": 338, "bottom-right-y": 512 },
+    "nature": { "top-left-x": 362, "top-left-y": 0, "bottom-right-x": 693, "bottom-right-y": 481 },
+    "culture": { "top-left-x": 724, "top-left-y": 0, "bottom-right-x": 1072, "bottom-right-y": 495 },
+    "food": { "top-left-x": 1086, "top-left-y": 0, "bottom-right-x": 1415, "bottom-right-y": 479 },
+    "history": { "top-left-x": 0, "top-left-y": 543, "bottom-right-x": 351, "bottom-right-y": 1047 },
+    "urban": { "top-left-x": 362, "top-left-y": 543, "bottom-right-x": 702, "bottom-right-y": 1020 },
+    "novelty": { "top-left-x": 724, "top-left-y": 543, "bottom-right-x": 1085, "bottom-right-y": 1050 },
+    "physicalIntensity": { "top-left-x": 1086, "top-left-y": 543, "bottom-right-x": 1430, "bottom-right-y": 997 }
+  },
+  "peter-moods.png": {
+    "adventure": { "top-left-x": 0, "top-left-y": 0, "bottom-right-x": 337, "bottom-right-y": 507 },
+    "nature": { "top-left-x": 362, "top-left-y": 0, "bottom-right-x": 723, "bottom-right-y": 527 },
+    "culture": { "top-left-x": 724, "top-left-y": 0, "bottom-right-x": 1085, "bottom-right-y": 521 },
+    "food": { "top-left-x": 1086, "top-left-y": 0, "bottom-right-x": 1429, "bottom-right-y": 489 },
+    "history": { "top-left-x": 0, "top-left-y": 543, "bottom-right-x": 354, "bottom-right-y": 1037 },
+    "urban": { "top-left-x": 362, "top-left-y": 543, "bottom-right-x": 718, "bottom-right-y": 1050 },
+    "novelty": { "top-left-x": 724, "top-left-y": 543, "bottom-right-x": 1085, "bottom-right-y": 1000 },
+    "physicalIntensity": { "top-left-x": 1086, "top-left-y": 543, "bottom-right-x": 1447, "bottom-right-y": 977 }
+  }
+}

@@ -115,7 +115,7 @@ export function HowItWorksScreen({ travelers, required = false, backLabel, onBac
             <div>{[5, 4, 3, 2, 1].map((points) => <span key={points}>{points}</span>)}</div>
           </div>
         </div>
-        <div className="briefing-step__copy"><p className="eyebrow">The envelope opens last</p><h2>See how the group voted</h2><p>Once all five people finish, Dan opens the envelope. You’ll see everybody’s top five, where the group agrees, where it splits, and a simple 5/4/3/2/1 tally to guide the conversation.</p><p className="briefing-step__closing">The app helps everyone discover what they like. The five of you choose the trip.</p></div>
+        <div className="briefing-step__copy"><h2>See how the group voted</h2><p>Once all five of us finish, Dan opens the envelope. You’ll see everybody’s top five, where the group agrees, where it splits, and a simple 5/4/3/2/1 tally to guide the conversation.</p></div>
       </li>
     </ol>
 

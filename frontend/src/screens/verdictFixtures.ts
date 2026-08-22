@@ -26,6 +26,7 @@ const baseFixture = (): TransparentGroupResultsResponse => {
     group,
     members: fixtureTravelers.map((user, userIndex) => ({
       user,
+      moodKeys: [['adventure', 'nature'], ['culture', 'food'], ['history', 'urban'], ['novelty', 'physicalIntensity'], ['nature', 'food']][userIndex] as ['adventure', 'nature'],
       topFive: group.map((place, placeIndex) => {
         const offset = (placeIndex + userIndex) % group.length;
         const destination = group[offset]!;

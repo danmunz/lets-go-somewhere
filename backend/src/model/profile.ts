@@ -41,6 +41,7 @@ export type AttributePosteriorSummary = Readonly<{
 /** Structural twin of the shared post-reveal explanation contract. */
 export type SafeDestinationExplanation = Readonly<{
   themes: string[];
+  moodKeys: AttributeKey[];
   matchedActivityCount: number;
   encounteredActivityCount: number;
 }>;
@@ -115,7 +116,7 @@ export function buildPreferenceProfileFromAttributes(
     .map(({ certainty: _certainty, magnitude: _magnitude, ...dimension }) => dimension);
   const labels = selected.map((dimension) => dimension.label);
   return {
-    headline: 'A few patterns showed up in your calls.',
+    headline: 'A few patterns showed up in your choices.',
     synthesis: `You kept gravitating toward ${joinLabels(labels)}.`,
     dimensions: selected,
   };
@@ -165,6 +166,16 @@ export function safeExplanationThemes(contributions: readonly AttributePosterior
   return themes;
 }
 
+/** The artwork gets a small, stable set of evidence-backed dimension keys. */
+export function safeExplanationMoodKeys(contributions: readonly AttributePosteriorSummary[]): AttributeKey[] {
+  return [...contributions]
+    .sort((left, right) => right.expectedContribution - left.expectedContribution
+      || right.positiveProbability - left.positiveProbability
+      || left.key.localeCompare(right.key))
+    .slice(0, 2)
+    .map((contribution) => contribution.key);
+}
+
 export type DestinationExplanationInput = Readonly<{
   fit: FitSuccess;
   destinationId: string;
@@ -209,6 +220,7 @@ export function buildDestinationExplanation(input: DestinationExplanationInput):
   });
   return {
     themes: safeExplanationThemes(contributions),
+    moodKeys: safeExplanationMoodKeys(contributions),
     matchedActivityCount,
     encounteredActivityCount: destinationEncountered.length,
   };

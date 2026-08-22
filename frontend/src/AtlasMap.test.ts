@@ -15,8 +15,8 @@ describe('atlas fallback contract', () => {
     expect(atlasFallbackShouldTakeFocus({ retryAttempted: true })).toBe(true);
   });
 
-  it('reserves map space for the always-visible explorer panels', () => {
-    expect(atlasMapInset(false)).toMatchObject({ left: 360, right: 480 });
+  it('uses padding that fits inside the map viewport, not its neighboring explorer panels', () => {
+    expect(atlasMapInset(false)).toMatchObject({ left: 36, right: 36 });
     expect(atlasMapInset(true)).toMatchObject({ bottom: 360 });
   });
 

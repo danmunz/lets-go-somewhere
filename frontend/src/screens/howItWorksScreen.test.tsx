@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { HOW_IT_WORKS_HASH, howItWorksBackLabel, needsHowItWorksBriefing } from '../howItWorks.js';
+import { HOW_IT_WORKS_HASH, canOpenHowItWorksHelp, howItWorksBackLabel, needsHowItWorksBriefing } from '../howItWorks.js';
 import { HowItWorksScreen } from './HowItWorksScreen.js';
 
 const travelers = [
@@ -32,6 +32,20 @@ describe('pre-game how-it-works briefing', () => {
     expect(needsHowItWorksBriefing(1)).toBe(false);
     expect(needsHowItWorksBriefing(32)).toBe(false);
     expect(HOW_IT_WORKS_HASH).toBe('#how-it-works');
-    expect(howItWorksBackLabel('atlas')).toBe('Back to the trip atlas');
+    expect(howItWorksBackLabel('atlas')).toBe('Back to all 24 places');
+  });
+
+  it('keeps the floating help out of onboarding and exposes it only after sign-in', () => {
+    expect(canOpenHowItWorksHelp('welcome', true)).toBe(false);
+    expect(canOpenHowItWorksHelp('character', true)).toBe(false);
+    expect(canOpenHowItWorksHelp('comparison', false)).toBe(false);
+    expect(canOpenHowItWorksHelp('comparison', true)).toBe(true);
+    expect(canOpenHowItWorksHelp('completed-transition', true)).toBe(true);
+    expect(canOpenHowItWorksHelp('profile', true)).toBe(false);
+    expect(canOpenHowItWorksHelp('atlas', true)).toBe(false);
+    expect(canOpenHowItWorksHelp('waiting', true)).toBe(false);
+    expect(canOpenHowItWorksHelp('verdict', true)).toBe(false);
+    expect(canOpenHowItWorksHelp('my-results', true)).toBe(false);
+    expect(canOpenHowItWorksHelp('how-it-works', true)).toBe(false);
   });
 });

@@ -11,6 +11,8 @@
     "test:emulator": "firebase emulators:exec --project lgs-emulator-test --only auth,firestore \"LGS_TEST_MODE=emulator arch -arm64 $npm_node_execpath ./node_modules/vitest/vitest.mjs run --no-file-parallelism backend/tests/emulator-config.test.ts backend/tests/emulator-store.test.ts backend/tests/five-identity-rehearsal.test.ts\"",
     "typecheck": "tsc -b shared backend frontend",
     "validate:seed": "npm run build -w shared && tsx scripts/validate-seed.ts",
+    "build:moods": "tsx scripts/build-mood-sprites.ts",
+    "validate:moods": "npm run build -w shared && tsx scripts/validate-moods.ts",
     "evaluate:model": "tsx scripts/evaluate-model.ts",
     "audit:model-policy": "tsx scripts/audit-adaptive-policy.ts",
     "audit:model-policy:status": "tsx scripts/model-policy-status.ts",

@@ -8,12 +8,14 @@ const destinations: AtlasDestination[] = ['first', 'second'].map((id, index) => 
 
 describe('AtlasExplorer', () => {
   it('keeps browse controls, the selected inspector, and the sealed-ranking rule together', () => {
-    const markup = renderToStaticMarkup(<AtlasExplorer destinations={destinations} user="dan" travelerName={() => 'Dan'} onOpenWaiting={() => undefined} onOpenProfile={() => undefined} />);
+    const markup = renderToStaticMarkup(<AtlasExplorer destinations={destinations} user="dan" travelerName={() => 'Dan'} onOpenWaiting={() => undefined} />);
     expect(markup).toContain('All 2 places');
-    expect(markup).toContain('Explore every place that was in the running. This is not your ranking.');
+    expect(markup).toContain('Use this map to explore every place that was in the running.');
     expect(markup).toContain('First Place');
     expect(markup).toContain('Your own top five is ready.');
     expect(markup).toContain('Open larger photo of First Place');
+    expect(markup).toContain('See all locations');
+    expect(markup).not.toContain('Finished trip navigation');
   });
 
   it('gives the selected thumbnail an accessible second activation to open the photo viewer', () => {
