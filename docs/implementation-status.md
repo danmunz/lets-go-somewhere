@@ -33,6 +33,8 @@ The released build includes a plain-language destination-free **What you liked**
 
 The post-choice presentation also has a typed **mood companion** system: every traveler has eight optimized local portrait crops, one for each existing preference dimension. Portraits appear only with safe, evidence-linked profile/result/reveal explanations and never in the blind game, atlas destination details, or waiting state.
 
+The current release is commit `fa23dec` (product code in `775130d`), deployed on 2026-08-22 as Cloud Run revision `lgs-api-00009-x8r` and Firebase Hosting version `ab1c50b7b1550cc8`. The API health route and public Hosting route returned successfully, and the required count-only production preflight was empty both before and after deployment.
+
 ## Release evidence
 
 1. **Fixed-shortlist verification — passed locally:** `npm test -- --run backend/tests/model/shortlist-release-evidence.test.ts` records deterministic fixed-32 replay, representative clear/close/noisy/divergent fit, pair safety, coverage through question 24, every eligible final-eight boundary selection, comparison redaction, and v2 snapshot stability for `bayes-attribute-shortlist-v1`. The completed complex-model audit remains historical evidence, not this model's gate; see [model evaluation](model-evaluation.md) and ADR 0003.

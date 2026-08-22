@@ -13,10 +13,13 @@ Google sign-in is enabled. The deployed Cloud Run service verifies Firebase ID t
 
 ## Release procedure
 
-This application is **not yet approved for the real one-shot trip**. Follow the
-hard gates in [the one-trip release specification](one-trip-release-gates-spec.md)
-and [operator runbook](one-trip-runbook.md); do not treat this summary as a
-deployment authorization.
+The release candidate was deployed on 2026-08-22 as Cloud Run revision
+`lgs-api-00009-x8r` and Firebase Hosting version `ab1c50b7b1550cc8`. Both
+the pre-deployment and post-deployment count-only preflights were empty, so no
+real trip state was created. Follow the hard gates in [the one-trip release
+specification](one-trip-release-gates-spec.md) and [operator
+runbook](one-trip-runbook.md) for every later change; this summary is not a
+license to use production for testing.
 
 1. Run `npm run validate:seed`, `npm test`, `npm run typecheck`, and `npm run build` on the exact candidate commit.
 2. Run production's count-only preflight and require it to be empty. Do not use production documents for behavioral smoke testing.

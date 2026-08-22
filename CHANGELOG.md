@@ -7,6 +7,11 @@
 - Added 40 optimized, evidence-linked traveler mood portraits for post-completion preference explanations. They reinforce what each person liked on profile, personal-result, and post-reveal views while remaining absent from blind comparison, atlas, and waiting screens.
 - Removed the retired “Champion a place” interaction from the reveal. The app no longer records a post-reveal vote or decision; it ends with the transparent group results and a prompt for the five travelers to talk it through together. Retired decision records, if any, are left untouched and ignored.
 
+## 2026-08-22 — One-trip release
+
+- Deployed the verified one-trip release to Cloud Run revision `lgs-api-00009-x8r` and Firebase Hosting version `ab1c50b7b1550cc8`.
+- Confirmed API health, public Hosting delivery, and an empty count-only production preflight both before and after deployment.
+
 All notable changes to this project will be documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
