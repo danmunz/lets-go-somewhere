@@ -35,5 +35,6 @@ This is the implementation source of truth for Let’s Go Somewhere’s visual l
 | Avatar | Decorative character imagery gets meaningful alt text only when it conveys participant identity. |
 | Toast | Non-blocking status; do not use it for errors that require action. |
 | Input | Visible label, error text, and keyboard focus. |
+| Post-completion navigation | Render only after all 32 choices. Desktop uses a 72px sticky bar; below 1024px it becomes a 64px header and accessible navigation sheet. Use plain labels, a visible active state, 44px targets, and never surface sealed results or player-switching controls. |
 
 Import `base.css` once at the frontend entry point, then `components.css` where component contracts are needed.

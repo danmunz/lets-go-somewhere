@@ -14,7 +14,7 @@ This is the operational status companion to the product specification. It record
   immutable v2 public top-five points scoreboard, each member's post-reveal
   top five and stored social insights.
 - Responsive character-select, comparison, atlas, and result surfaces with keyboard focus and reduced-motion behavior.
-- A required, destination-safe first-run briefing between verified character selection and the first comparison. It uses a plain-language five-step explanation of Dan’s fixed 24-trip curation, the fixed 32-choice game, private personal shortlists, and the sealed group reveal; the persistent help control returns to the prior screen.
+- A required, destination-safe first-run briefing between verified character selection and the first comparison. It uses a plain-language five-step explanation of Dan’s fixed 24-trip curation, the fixed 32-choice game, private personal shortlists, and the sealed group reveal; the contextual help control returns to the prior screen.
 
 ## Intentional V3/V4 product decisions
 
@@ -29,7 +29,9 @@ claims.
 
 ## Released one-trip experience
 
-The released build includes a plain-language destination-free **What you liked** summary, immediate caller-only **Your top five**, a completion-only **Who’s finished** page, durable post-completion navigation, snapshot-backed group reveal, qualitative result explanations, and a group-finalist matrix. **How the group voted** is the stored `5/4/3/2/1` tally—not a normalized group score—and v2 snapshots are cross-field validated before they are served. The guarded count-only preflight/reset tooling in `4ce95f0` is unit-tested locally. A disposable Cloud Run/Firebase/Firestore project passed health, Hosting routing, disposable approved-account authentication, one Firestore-backed destination-blind comparison, response redaction, and count-only state inspection before it was deletion-requested.
+The released build includes a plain-language destination-free **What you liked** summary, immediate caller-only **Your top five**, a completion-only **Who’s finished** page, a phase-aware post-completion navigator, snapshot-backed group reveal, qualitative result explanations, and a group-finalist matrix. The navigator is absent during onboarding, briefing, and blind comparison; it renders only safe destinations and adds **How the group voted** only after Dan opens the reveal. **How the group voted** is the stored `5/4/3/2/1` tally—not a normalized group score—and v2 snapshots are cross-field validated before they are served. The guarded count-only preflight/reset tooling in `4ce95f0` is unit-tested locally. A disposable Cloud Run/Firebase/Firestore project passed health, Hosting routing, disposable approved-account authentication, one Firestore-backed destination-blind comparison, response redaction, and count-only state inspection before it was deletion-requested.
+
+The post-choice presentation also has a typed **mood companion** system: every traveler has eight optimized local portrait crops, one for each existing preference dimension. Portraits appear only with safe, evidence-linked profile/result/reveal explanations and never in the blind game, atlas destination details, or waiting state.
 
 ## Release evidence
 

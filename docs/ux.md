@@ -1981,7 +1981,9 @@ Raw comparisons could optionally be soft-deleted rather than destroyed.
 
 # 35. Navigation Architecture
 
-Participant navigation should be intentionally minimal.
+Participant navigation should be intentionally minimal and phase-aware. It must
+never turn the blind game into a destination browser, nor make a sealed result
+look available.
 
 ## During quiz
 
@@ -1990,9 +1992,8 @@ No full application navigation.
 Only:
 
 ```text
-Logo / trip name
 Progress
-Exit
+The contextual `? How it works` control after character/account confirmation
 ```
 
 The comparison is the experience.
@@ -2001,15 +2002,28 @@ The comparison is the experience.
 
 ## After completion
 
-Standard app navigation may appear:
+The released one-trip experience has one persistent navigator, and only after
+all 32 choices are saved. Its exact labels are:
 
 ```text
-My Result
-Group Result
-Destinations
-Trip
-Profile
+What I liked
+My top five
+All 24 places
+Who's finished
+? How it works
 ```
+
+After Dan opens the envelope, **How the group voted** appears first. Before
+that point, it is absent—not disabled—and a direct `#reveal` link returns the
+traveler to **Who's finished** with a clear sealed-results message. The
+completion navigator appears as a 72px sticky desktop bar at 1024px and up;
+below that it becomes a 64px header with an accessible modal navigation sheet.
+The help page itself uses its contextual Back action and never renders this
+global navigator.
+
+The canonical hashes are `#rhythm`, `#shortlist`, `#atlas`, `#crew`, and,
+only once revealed, `#reveal`. Server-side gates remain authoritative on every
+destination.
 
 ---
 

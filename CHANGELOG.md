@@ -2,7 +2,9 @@
 
 ## Unreleased
 
+- Replaced scattered post-completion links with one phase-aware navigator: a sticky desktop bar and accessible mobile menu sheet expose only available screens, keep sealed group results out of navigation, and retain contextual help during blind play.
 - Completed a platform-wide layout, typography, plain-language, and interaction polish pass. The post-completion journey now consistently uses “What you liked,” “Your top five,” “All 24 places,” “Who’s finished,” and “How the group voted,” while retaining the existing privacy gates and ranking behavior.
+- Added 40 optimized, evidence-linked traveler mood portraits for post-completion preference explanations. They reinforce what each person liked on profile, personal-result, and post-reveal views while remaining absent from blind comparison, atlas, and waiting screens.
 - Removed the retired “Champion a place” interaction from the reveal. The app no longer records a post-reveal vote or decision; it ends with the transparent group results and a prompt for the five travelers to talk it through together. Retired decision records, if any, are left untouched and ignored.
 
 All notable changes to this project will be documented in this file.
