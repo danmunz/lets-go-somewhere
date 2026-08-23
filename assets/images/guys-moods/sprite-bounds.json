@@ -33,10 +33,10 @@
     "adventure": { "top-left-x": 0, "top-left-y": 0, "bottom-right-x": 338, "bottom-right-y": 512 },
     "nature": { "top-left-x": 362, "top-left-y": 0, "bottom-right-x": 693, "bottom-right-y": 481 },
     "culture": { "top-left-x": 724, "top-left-y": 0, "bottom-right-x": 1072, "bottom-right-y": 495 },
-    "food": { "top-left-x": 1086, "top-left-y": 0, "bottom-right-x": 1415, "bottom-right-y": 479 },
+    "food": { "top-left-x": 1124, "top-left-y": 0, "bottom-right-x": 1415, "bottom-right-y": 479 },
     "history": { "top-left-x": 0, "top-left-y": 543, "bottom-right-x": 351, "bottom-right-y": 1047 },
     "urban": { "top-left-x": 362, "top-left-y": 543, "bottom-right-x": 702, "bottom-right-y": 1020 },
-    "novelty": { "top-left-x": 724, "top-left-y": 543, "bottom-right-x": 1085, "bottom-right-y": 1050 },
+    "novelty": { "top-left-x": 756, "top-left-y": 543, "bottom-right-x": 1085, "bottom-right-y": 1050 },
     "physicalIntensity": { "top-left-x": 1086, "top-left-y": 543, "bottom-right-x": 1430, "bottom-right-y": 997 }
   },
   "peter-moods.png": {
