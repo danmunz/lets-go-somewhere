@@ -2,6 +2,7 @@ import { getApp, getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { GoogleAuth } from 'google-auth-library';
 import { resultSnapshotReaderSchema } from '@lgs/shared';
+import { isShortlistComplete } from './model/shortlist.js';
 import { readStoredUserState } from './store.js';
 
 /** The only Firestore collections an operator command is ever allowed to see. */
@@ -104,7 +105,10 @@ export async function inspectOneTrip(repository: OneTripOperatorRepository, proj
     for (const user of users) {
       const state = readStoredUserState(user.data);
       if (state.comparisons.length > 0 || state.pending !== null || state.completedAt) startedUsers += 1;
-      if (state.completedAt) completedUsers += 1;
+      // Fixed-32 completion is derived from the append-only comparison log.
+      // `completedAt` is legacy metadata and is not written by the current
+      // shortlist flow, so it must not be the source of truth for operators.
+      if (isShortlistComplete(state.comparisons)) completedUsers += 1;
     }
   } catch {
     return { projectId, startedUsers, completedUsers, snapshots: snapshots.length, reveal: 'invalid' };

@@ -95,6 +95,18 @@ describe('one-trip operator preflight', () => {
     await expect(inspectOneTrip(new FakeRepository('another-project'), project)).rejects.toMatchObject({ code: 'project-mismatch' });
   });
 
+  it('counts a current fixed-32 traveler as completed without legacy timestamp metadata', async () => {
+    const repository = new FakeRepository();
+    repository.documents.get('lgsV4Users')!.set('dan', {
+      comparisons: Array.from({ length: 32 }, () => ({ activityA: 'a', activityB: 'b', winner: 'a' })),
+    });
+    await expect(inspectOneTrip(repository, project)).resolves.toMatchObject({
+      startedUsers: 1,
+      completedUsers: 1,
+      reveal: 'closed',
+    });
+  });
+
   it.each([
     ['legacy open state', { open: true }, new Map(), 'open-v1'],
     ['missing snapshot', { open: true, snapshotId: 'missing' }, new Map(), 'missing-snapshot'],
