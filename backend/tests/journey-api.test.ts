@@ -104,6 +104,10 @@ describe('one-trip route DTOs', () => {
     expect(JSON.stringify(payload)).not.toMatch(/comparisons|progress|destination|profile|score|rank/i);
   });
 
+  // This is intentionally an end-to-end in-memory journey: it completes all
+  // five fixed 32-choice rounds and builds the immutable reveal. On a shared
+  // CI CPU that can exceed Vitest's otherwise useful five-second unit-test
+  // default, so keep the wider limit local to this integration assertion.
   it('returns only the completed caller’s private shortlist before reveal, then preserves it in the immutable snapshot', async () => {
     await complete('dan');
     const privateResponse = await app.request('/v1/results/me', { headers: headersFor('dan') });
@@ -146,7 +150,7 @@ describe('one-trip route DTOs', () => {
     }
     expect(raw).not.toContain('james');
     expect(raw).not.toContain('peter');
-  });
+  }, 20_000);
 
   it('keeps immutable results sealed behind a seed-version mismatch after reveal', async () => {
     for (const user of ['dan', 'james', 'john', 'matt', 'peter']) await complete(user);
@@ -165,5 +169,5 @@ describe('one-trip route DTOs', () => {
     const afterGroup = await (await app.request('/v1/results/group', { headers: headersFor('dan') })).json();
     expect(afterPersonal).toEqual(await beforePersonal.json());
     expect(afterGroup).toEqual(await beforeGroup.json());
-  });
+  }, 20_000);
 });

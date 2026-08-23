@@ -48,6 +48,10 @@ describe('API boundary', () => {
     expect(payload.destinations[0].gallery[0]).toMatchObject({ path: expect.stringMatching(/^\/media\/cards\/[^/]+\.webp$/), photographerName: expect.any(String), photographerUrl: expect.stringMatching(/^https:\/\//), sourceUrl: expect.stringMatching(/^https:\/\/unsplash\.com\/photos\//) });
     expect(payload.destinations[0]).not.toHaveProperty('preferenceScore');
   });
+  // This completes several real fixed-32 journeys before exercising the
+  // reveal. It is an integration check, not a fast unit test; allow for the
+  // slower shared CPU available in GitHub Actions without relaxing timeouts
+  // for the rest of the suite.
   it('keeps the social reveal gated, then returns snapshot-backed social ballot finalists and full member top fives', async () => {
     for (const user of ['dan', 'james', 'john', 'peter']) await complete(user);
     const blocked = await app.request('/v1/results/group', { headers: { 'X-Demo-User': 'dan' } });
@@ -65,5 +69,5 @@ describe('API boundary', () => {
     for (const forbidden of ['activityA', 'activityB', 'winner', 'comparisons', 'covariance', 'destinationScores', 'attributeScores', 'groupScore', 'normalized', 'interval', 'posterior', 'decisions', 'finalDecision']) {
       expect(raw).not.toContain(`\"${forbidden}\"`);
     }
-  });
+  }, 20_000);
 });
