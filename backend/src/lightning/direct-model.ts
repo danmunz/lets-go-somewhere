@@ -24,6 +24,10 @@ export const LIGHTNING_MODEL_VERSION = 'bayes-direct-destination-v1';
 export const LIGHTNING_CORE_COMPARISONS = 48;
 export const LIGHTNING_MAX_COMPARISONS = 60;
 export const LIGHTNING_BALANCED_COMPARISONS = 36;
+/** Fixed deterministic joint posterior sample count for result evidence. */
+export const LIGHTNING_EVIDENCE_DRAW_COUNT = 4096;
+/** Adjacent MAP items need this much support to form a visible break. */
+export const LIGHTNING_CLEAR_BREAK_PROBABILITY = 0.75;
 
 export type DirectDestination = Readonly<{ id: string }>;
 
@@ -90,6 +94,20 @@ export type LightningBordaRow = Readonly<{
   topFiveSupport: number;
   startRank: number;
   endRank: number;
+}>;
+
+export type LightningRankRange = Readonly<{ low: number; high: number }>;
+export type LightningWorkingOrderEvidence = Readonly<{
+  destinationId: string;
+  workingRank: number;
+  topFivePercent: number;
+  rankRange: LightningRankRange;
+}>;
+export type LightningWorkingOrder = Readonly<{
+  workingOrder: readonly string[];
+  clearBreaksAfter: readonly number[];
+  topFiveGroups: Readonly<{ likelyTopFive: readonly string[]; possibleTopFive: readonly string[]; unlikelyTopFive: readonly string[] }>;
+  privateEvidence: readonly LightningWorkingOrderEvidence[];
 }>;
 
 function logistic(value: number): number {
@@ -348,7 +366,7 @@ export function selectNextLightningPair(
   }
 
   if (!safeFit || !hasUnresolvedLightningBoundaries(safeFit, seed, config)) return undefined;
-  const ranking = rankedIds(safeFit);
+  const ranking = rankedDirectDestinationIds(safeFit);
   const counts = appearanceCounts(ids, comparisons);
   const candidates: Array<{ left: string; right: string; score: number }> = [];
   for (let index = 0; index < ranking.length - 1; index += 1) {
@@ -385,7 +403,7 @@ export function posteriorDraws(fit: DirectFitSuccess, count: number, seed: strin
   });
 }
 
-function rankedIds(fit: DirectFitSuccess): readonly string[] {
+export function rankedDirectDestinationIds(fit: DirectFitSuccess): readonly string[] {
   return fit.destinationIds
     .map((id, index) => ({ id, score: fit.parameters[index]! }))
     .sort((left, right) => right.score - left.score || left.id.localeCompare(right.id))
@@ -411,7 +429,7 @@ export function hasUnresolvedLightningBoundaries(
   seed: string | number,
   config: Pick<DirectModelConfig, 'posteriorDrawCount' | 'tierSeparationProbability'> = directModelConfig,
 ): boolean {
-  const ranking = rankedIds(fit);
+  const ranking = rankedDirectDestinationIds(fit);
   return ranking.slice(0, -1).some((id, index) => posteriorBeatsProbability(fit, id, ranking[index + 1]!, `${seed}:tier:${index}`, config) < config.tierSeparationProbability);
 }
 
@@ -421,7 +439,7 @@ export function buildLightningRanking(
   seed: string | number,
   config: Pick<DirectModelConfig, 'posteriorDrawCount' | 'tierSeparationProbability'> = directModelConfig,
 ): LightningRanking {
-  const ids = rankedIds(fit);
+  const ids = rankedDirectDestinationIds(fit);
   const tiers: LightningTier[] = [];
   let tierStart = 0;
   for (let index = 0; index < ids.length - 1; index += 1) {
@@ -433,6 +451,67 @@ export function buildLightningRanking(
   }
   tiers.push({ startRank: tierStart + 1, endRank: ids.length, destinationIds: ids.slice(tierStart) });
   return { destinationIds: ids, tiers };
+}
+
+function percentile(sorted: readonly number[], fraction: number): number {
+  if (sorted.length === 0) throw new Error('Lightning evidence requires posterior samples.');
+  const index = Math.max(0, Math.min(sorted.length - 1, Math.ceil(sorted.length * fraction) - 1));
+  return sorted[index]!;
+}
+
+/**
+ * Produces an exact, deterministic working order plus modest evidence markers.
+ * It is result-only: saved comparisons remain the sole input and this output
+ * never feeds into direct-question selection.
+ */
+export function buildLightningWorkingOrder(
+  fit: DirectFitSuccess,
+  seed: string | number,
+  drawCount = LIGHTNING_EVIDENCE_DRAW_COUNT,
+): LightningWorkingOrder {
+  if (!Number.isInteger(drawCount) || drawCount < 1) throw new Error('Lightning evidence draw count must be a positive integer.');
+  const workingOrder = rankedDirectDestinationIds(fit);
+  const indexById = new Map(fit.destinationIds.map((id, index) => [id, index]));
+  const sampleRanks = new Map(workingOrder.map((id) => [id, [] as number[]]));
+  const topFiveCounts = new Map(workingOrder.map((id) => [id, 0]));
+  const adjacentWins = Array.from({ length: workingOrder.length - 1 }, () => 0);
+  const draws = posteriorDraws(fit, drawCount, `${seed}:working-order-v2`);
+
+  for (const draw of draws) {
+    const ordered = fit.destinationIds
+      .map((id, index) => ({ id, score: draw[index]! }))
+      .sort((left, right) => right.score - left.score || left.id.localeCompare(right.id));
+    const rankById = new Map(ordered.map(({ id }, index) => [id, index + 1]));
+    for (const id of workingOrder) {
+      const rank = rankById.get(id)!;
+      sampleRanks.get(id)!.push(rank);
+      if (rank <= 5) topFiveCounts.set(id, topFiveCounts.get(id)! + 1);
+    }
+    for (let index = 0; index < workingOrder.length - 1; index += 1) {
+      const higher = indexById.get(workingOrder[index]!)!;
+      const lower = indexById.get(workingOrder[index + 1]!)!;
+      if (draw[higher]! > draw[lower]!) adjacentWins[index]! += 1;
+    }
+  }
+
+  const privateEvidence = workingOrder.map((destinationId, index) => {
+    const ranks = sampleRanks.get(destinationId)!.sort((left, right) => left - right);
+    const topFivePercent = Math.round((topFiveCounts.get(destinationId)! / draws.length) * 100);
+    return {
+      destinationId,
+      workingRank: index + 1,
+      topFivePercent,
+      rankRange: { low: percentile(ranks, 0.10), high: percentile(ranks, 0.90) },
+    };
+  });
+  const clearBreaksAfter = adjacentWins
+    .map((wins, index) => ({ rank: index + 1, probability: wins / draws.length }))
+    .filter(({ probability }) => probability >= LIGHTNING_CLEAR_BREAK_PROBABILITY)
+    .map(({ rank }) => rank);
+  const likelyTopFive = privateEvidence.filter(({ topFivePercent }) => topFivePercent >= 50).map(({ destinationId }) => destinationId);
+  const possibleTopFive = privateEvidence.filter(({ topFivePercent }) => topFivePercent >= 15 && topFivePercent < 50).map(({ destinationId }) => destinationId);
+  const unlikelyTopFive = privateEvidence.filter(({ topFivePercent }) => topFivePercent < 15).map(({ destinationId }) => destinationId);
+  return { workingOrder, clearBreaksAfter, topFiveGroups: { likelyTopFive, possibleTopFive, unlikelyTopFive }, privateEvidence };
 }
 
 export function shouldCompleteLightningRound(
@@ -490,6 +569,39 @@ export function tallyLightningBorda(
       const row = ordered[position]!;
       rows.push({ ...row, startRank: index + 1, endRank: end + 1 });
     }
+    index = end + 1;
+  }
+  return rows;
+}
+
+/** Transparent exact-order 24..1 Borda tally for the v2 working order. */
+export function tallyLightningWorkingOrderBorda(
+  destinationIds: readonly string[],
+  workingOrders: readonly (readonly string[])[],
+): readonly LightningBordaRow[] {
+  const ids = [...destinationIds].sort((left, right) => left.localeCompare(right));
+  if (ids.length !== 24 || new Set(ids).size !== ids.length) throw new Error('Lightning Borda tally requires exactly 24 unique destinations.');
+  const totals = new Map(ids.map((id) => [id, { points: 0, firstPlaceVotes: 0, topFiveSupport: 0 }]));
+  for (const order of workingOrders) {
+    if (order.length !== ids.length || new Set(order).size !== ids.length || order.some((id) => !totals.has(id))) throw new Error('Lightning working order must contain every destination exactly once.');
+    for (const [index, id] of order.entries()) {
+      const row = totals.get(id)!;
+      row.points += 24 - index;
+      if (index === 0) row.firstPlaceVotes += 1;
+      if (index < 5) row.topFiveSupport += 1;
+    }
+  }
+  const ordered = ids.map((id) => ({ destinationId: id, ...totals.get(id)! }))
+    .sort((left, right) => right.points - left.points || right.firstPlaceVotes - left.firstPlaceVotes || right.topFiveSupport - left.topFiveSupport || left.destinationId.localeCompare(right.destinationId));
+  const rows: LightningBordaRow[] = [];
+  let index = 0;
+  while (index < ordered.length) {
+    let end = index;
+    while (end + 1 < ordered.length
+      && ordered[end]!.points === ordered[end + 1]!.points
+      && ordered[end]!.firstPlaceVotes === ordered[end + 1]!.firstPlaceVotes
+      && ordered[end]!.topFiveSupport === ordered[end + 1]!.topFiveSupport) end += 1;
+    for (let position = index; position <= end; position += 1) rows.push({ ...ordered[position]!, startRank: index + 1, endRank: end + 1 });
     index = end + 1;
   }
   return rows;

@@ -7,7 +7,7 @@ import {
   profileResponseSchema,
   rosterUserSchema,
   lightningComparisonSubmissionSchema,
-  lightningGroupResultsSchema,
+  lightningGroupResultsResponseSchema,
   lightningGroupStatusSchema,
   lightningNextComparisonResponseSchema,
   lightningPersonalResultsSchema,
@@ -109,7 +109,7 @@ export function createApiClient(authentication: ApiAuthentication, fetchImpl: Fe
       request('/v1/lightning-round/vetoes', lightningVetoSubmissionResponseSchema, { method: 'POST', body: JSON.stringify(lightningVetoSubmissionSchema.parse({ destinationIds })) }),
     getLightningGroupStatus: () => request('/v1/lightning-round/group-status', lightningGroupStatusSchema),
     openLightningReveal: () => request('/v1/lightning-round/reveal', revealResponseParser, { method: 'POST' }),
-    getLightningGroupResults: () => request('/v1/lightning-round/results/group', lightningGroupResultsSchema),
+    getLightningGroupResults: () => request('/v1/lightning-round/results/group', lightningGroupResultsResponseSchema),
   };
 }
 

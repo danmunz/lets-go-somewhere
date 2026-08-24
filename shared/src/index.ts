@@ -594,6 +594,12 @@ export type TransparentGroupResultsResponse = z.infer<typeof transparentGroupRes
 // direct, named-destination round is introduced.
 export const LIGHTNING_MODEL_VERSION = 'bayes-direct-destination-v1' as const;
 export const LIGHTNING_POLICY_VERSION = 'direct-24-adaptive-v1' as const;
+/**
+ * A result-presentation version, deliberately separate from the fitted direct
+ * model.  It changes how the fixed, saved comparisons are summarized; it does
+ * not change, replay, or mutate a traveler's answers.
+ */
+export const LIGHTNING_WORKING_ORDER_RESULT_VERSION = 'working-order-borda-v2' as const;
 /** A traveler may flag up to four named Lightning destinations as clear no-goes. */
 export const LIGHTNING_VETO_POLICY_VERSION = 'lightning-veto-v1' as const;
 export const lightningSourceSchema = z.object({ label: z.string().min(1), url: z.string().url() }).strict();
@@ -694,10 +700,43 @@ export const lightningVetoSubmissionResponseSchema = z.object({
   vetoes: lightningVetoStateSchema,
 }).strict();
 export type LightningVetoSubmissionResponse = z.infer<typeof lightningVetoSubmissionResponseSchema>;
+export const lightningRankRangeSchema = z.object({ low: z.number().int().min(1).max(24), high: z.number().int().min(1).max(24) }).strict().superRefine((value, context) => {
+  if (value.low > value.high) context.addIssue({ code: z.ZodIssueCode.custom, message: 'A plausible rank range must be ordered.' });
+});
+export const lightningPrivateEvidenceSchema = z.object({
+  destinationId: z.string().min(1),
+  workingRank: z.number().int().min(1).max(24),
+  /** Rounded whole-percent chance of belonging in this traveler's top five. */
+  topFivePercent: z.number().int().min(0).max(100),
+  rankRange: lightningRankRangeSchema,
+}).strict();
+export type LightningPrivateEvidence = z.infer<typeof lightningPrivateEvidenceSchema>;
+export const lightningTopFiveGroupsSchema = z.object({
+  likelyTopFive: z.array(z.string().min(1)),
+  possibleTopFive: z.array(z.string().min(1)),
+  unlikelyTopFive: z.array(z.string().min(1)),
+}).strict();
+export type LightningTopFiveGroups = z.infer<typeof lightningTopFiveGroupsSchema>;
+export const lightningWorkingOrderSchema = z.object({
+  workingOrder: z.array(z.string().min(1)).length(24),
+  /** 1-indexed rank after which the evidence shows a clear visible break. */
+  clearBreaksAfter: z.array(z.number().int().min(1).max(23)),
+  topFiveGroups: lightningTopFiveGroupsSchema,
+  privateEvidence: z.array(lightningPrivateEvidenceSchema).length(24),
+}).strict().superRefine((value, context) => {
+  if (new Set(value.workingOrder).size !== value.workingOrder.length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'A working order must contain every place once.' });
+  if (new Set(value.clearBreaksAfter).size !== value.clearBreaksAfter.length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Clear breaks must be unique.' });
+  const evidenceIds = value.privateEvidence.map((entry) => entry.destinationId);
+  if (new Set(evidenceIds).size !== evidenceIds.length || evidenceIds.some((id) => !value.workingOrder.includes(id))) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Private evidence must match the working order.' });
+  if (value.privateEvidence.some((entry, index) => entry.destinationId !== value.workingOrder[index] || entry.workingRank !== index + 1)) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Private evidence must follow the working order.' });
+  const topFiveGroups = [...value.topFiveGroups.likelyTopFive, ...value.topFiveGroups.possibleTopFive, ...value.topFiveGroups.unlikelyTopFive];
+  if (new Set(topFiveGroups).size !== topFiveGroups.length || topFiveGroups.some((id) => !value.workingOrder.includes(id))) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Top-five groups must be distinct working-order destinations.' });
+});
+export type LightningWorkingOrder = z.infer<typeof lightningWorkingOrderSchema>;
 export const lightningPersonalResultsSchema = z.object({
-  modelVersion: z.literal(LIGHTNING_MODEL_VERSION), contentVersion: z.string().min(1), tiers: z.array(lightningTierSchema).min(1), destinations: z.array(lightningDestinationBriefSchema).length(24),
-  comparisonTrail: z.array(lightningComparisonTrailEntrySchema).min(48).max(60),
-  vetoes: lightningVetoStateSchema,
+  resultVersion: z.literal(LIGHTNING_WORKING_ORDER_RESULT_VERSION),
+  modelVersion: z.literal(LIGHTNING_MODEL_VERSION), contentVersion: z.string().min(1), ranking: lightningWorkingOrderSchema, destinations: z.array(lightningDestinationBriefSchema).length(24),
+  comparisonTrail: z.array(lightningComparisonTrailEntrySchema).min(48).max(60), vetoes: lightningVetoStateSchema,
 }).strict();
 export type LightningPersonalResults = z.infer<typeof lightningPersonalResultsSchema>;
 export const lightningStatusSchema = z.object({
@@ -724,12 +763,12 @@ export const lightningGroupStatusSchema = z.object({
   members: z.array(rosterCompletionSchema).length(ROSTER_USERS.length), updatedAt: z.string().datetime({ offset: true }),
 }).strict();
 export type LightningGroupStatus = z.infer<typeof lightningGroupStatusSchema>;
-export const lightningGroupRowSchema = z.object({
+const lightningLegacyGroupRowSchema = z.object({
   rankStart: z.number().int().min(1).max(24), rankEnd: z.number().int().min(1).max(24), destinationId: z.string().min(1), bordaHalfPoints: z.number().int().min(0), firstPlaceVotes: z.number().min(0).max(ROSTER_USERS.length), supporters: z.array(rosterUserSchema), vetoedBy: z.array(rosterUserSchema).max(ROSTER_USERS.length),
 }).strict().superRefine((value, context) => {
   if (new Set(value.vetoedBy).size !== value.vetoedBy.length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Vetoing travelers must be unique.' });
 });
-const lightningGroupMemberSchema = z.object({
+const lightningLegacyGroupMemberSchema = z.object({
   user: rosterUserSchema,
   tiers: z.array(lightningTierSchema).min(1),
   vetoedDestinationIds: z.array(z.string().min(1)).max(4),
@@ -738,9 +777,9 @@ const lightningGroupMemberSchema = z.object({
     context.addIssue({ code: z.ZodIssueCode.custom, message: 'A member cannot veto the same place twice.' });
   }
 });
-export const lightningGroupResultsSchema = z.object({
+const lightningLegacyGroupResultsSchema = z.object({
   snapshotId: z.string().min(1), modelVersion: z.literal(LIGHTNING_MODEL_VERSION), contentVersion: z.string().min(1),
-  group: z.array(lightningGroupRowSchema).length(24), members: z.array(lightningGroupMemberSchema).length(ROSTER_USERS.length), destinations: z.array(lightningDestinationBriefSchema).length(24),
+  group: z.array(lightningLegacyGroupRowSchema).length(24), members: z.array(lightningLegacyGroupMemberSchema).length(ROSTER_USERS.length), destinations: z.array(lightningDestinationBriefSchema).length(24),
 }).strict().superRefine((value, context) => {
   const destinationIds = new Set(value.destinations.map((destination) => destination.id));
   if (destinationIds.size !== value.destinations.length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Snapshot destinations must be unique.' });
@@ -764,7 +803,57 @@ export const lightningGroupResultsSchema = z.object({
     }
   }
 });
+export const lightningGroupRowSchema = z.object({
+  rankStart: z.number().int().min(1).max(24), rankEnd: z.number().int().min(1).max(24), destinationId: z.string().min(1), bordaPoints: z.number().int().min(1), firstPlaceVotes: z.number().int().min(0).max(ROSTER_USERS.length), topFiveSupport: z.number().int().min(0).max(ROSTER_USERS.length), supporters: z.array(rosterUserSchema), vetoedBy: z.array(rosterUserSchema).max(ROSTER_USERS.length),
+}).strict().superRefine((value, context) => {
+  if (new Set(value.vetoedBy).size !== value.vetoedBy.length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Vetoing travelers must be unique.' });
+});
+const lightningEvidenceGroupMemberSnapshotSchema = z.object({
+  user: rosterUserSchema, ranking: lightningWorkingOrderSchema, vetoedDestinationIds: z.array(z.string().min(1)).max(4),
+}).strict();
+export const lightningGroupResultsSnapshotSchema = z.object({
+  snapshotId: z.string().min(1), resultVersion: z.literal(LIGHTNING_WORKING_ORDER_RESULT_VERSION), modelVersion: z.literal(LIGHTNING_MODEL_VERSION), contentVersion: z.string().min(1),
+  group: z.array(lightningGroupRowSchema).length(24), members: z.array(lightningEvidenceGroupMemberSnapshotSchema).length(ROSTER_USERS.length), destinations: z.array(lightningDestinationBriefSchema).length(24),
+}).strict().superRefine((value, context) => {
+  const destinationIds = new Set(value.destinations.map((destination) => destination.id));
+  const groupIds = new Set(value.group.map((row) => row.destinationId));
+  if (destinationIds.size !== 24 || groupIds.size !== 24 || [...groupIds].some((id) => !destinationIds.has(id))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Every v2 group row must reference one unique snapshot destination.' });
+  }
+  const members = new Set(value.members.map((member) => member.user));
+  if (members.size !== ROSTER_USERS.length || ROSTER_USERS.some((user) => !members.has(user))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'A v2 snapshot must match the complete roster.' });
+  }
+  for (const member of value.members) {
+    if (member.ranking.workingOrder.some((id) => !destinationIds.has(id)) || member.vetoedDestinationIds.some((id) => !destinationIds.has(id))) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: `Unknown v2 ranking destination for ${member.user}.` });
+    }
+  }
+  for (const row of value.group) {
+    const expected = ROSTER_USERS.filter((user) => value.members.find((member) => member.user === user)?.vetoedDestinationIds.includes(row.destinationId));
+    if (expected.length !== row.vetoedBy.length || expected.some((user, index) => row.vetoedBy[index] !== user)) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: `V2 veto summary does not match member data for ${row.destinationId}.` });
+    }
+  }
+});
+/** Persisted snapshots accept the original tiered format as immutable legacy data. */
+export const lightningGroupResultsSchema = z.union([lightningGroupResultsSnapshotSchema, lightningLegacyGroupResultsSchema]);
 export type LightningGroupResults = z.infer<typeof lightningGroupResultsSchema>;
+const lightningEvidenceGroupMemberResponseSchema = z.object({
+  user: rosterUserSchema,
+  workingOrder: z.array(z.string().min(1)).length(24),
+  clearBreaksAfter: z.array(z.number().int().min(1).max(23)),
+  topFiveGroups: lightningTopFiveGroupsSchema,
+  vetoedDestinationIds: z.array(z.string().min(1)).max(4),
+}).strict();
+export const lightningGroupResultsResponseSchema = z.union([
+  z.object({
+    snapshotId: z.string().min(1), resultVersion: z.literal(LIGHTNING_WORKING_ORDER_RESULT_VERSION), modelVersion: z.literal(LIGHTNING_MODEL_VERSION), contentVersion: z.string().min(1),
+    group: z.array(lightningGroupRowSchema).length(24), members: z.array(lightningEvidenceGroupMemberResponseSchema).length(ROSTER_USERS.length), destinations: z.array(lightningDestinationBriefSchema).length(24),
+  }).strict(),
+  lightningLegacyGroupResultsSchema,
+]);
+export type LightningGroupResultsResponse = z.infer<typeof lightningGroupResultsResponseSchema>;
 
 export const modelDiagnosticsSchema = z
   .object({

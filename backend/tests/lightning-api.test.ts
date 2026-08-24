@@ -115,6 +115,9 @@ describe('Lightning Round route boundary', () => {
     const personal = await app.request('/v1/lightning-round/results/me', { headers });
     expect(personal.status).toBe(200);
     const parsedPersonal = lightningPersonalResultsSchema.parse(await personal.json());
+    expect(parsedPersonal.resultVersion).toBe('working-order-borda-v2');
+    expect(parsedPersonal.ranking.workingOrder).toHaveLength(24);
+    expect(parsedPersonal.ranking.privateEvidence).toHaveLength(24);
     expect(parsedPersonal.comparisonTrail.length).toBeGreaterThanOrEqual(48);
     expect(parsedPersonal.comparisonTrail.length).toBeLessThanOrEqual(60);
     expect(parsedPersonal.comparisonTrail.map((entry) => entry.order)).toEqual(Array.from({ length: parsedPersonal.comparisonTrail.length }, (_, index) => index + 1));
@@ -166,14 +169,26 @@ describe('Lightning Round route boundary', () => {
     const group = await app.request('/v1/lightning-round/results/group', { headers });
     expect(group.status).toBe(200);
     const results = await group.json();
+    expect(results.resultVersion).toBe('working-order-borda-v2');
+    expect(results.members.every((member: { ranking?: unknown }) => member.ranking === undefined)).toBe(true);
+    expect(results.members.every((member: { workingOrder: unknown[] }) => member.workingOrder.length === 24)).toBe(true);
+    expect(JSON.stringify(results)).not.toContain('privateEvidence');
+    expect(JSON.stringify(results)).not.toContain('topFivePercent');
     expect(results.members.find((member: { user: string }) => member.user === 'dan').vetoedDestinationIds).toEqual([lightningDestinations[0]!.id, lightningDestinations[3]!.id].sort());
     expect(results.group.find((row: { destinationId: string }) => row.destinationId === lightningDestinations[0]!.id).vetoedBy).toEqual(['dan']);
 
     // A previously opened, no-veto second envelope stays read-only and renders
     // safely with empty veto data; it is never rewritten in storage.
-    const legacy = structuredClone(results) as { group: Array<Record<string, unknown>>; members: Array<Record<string, unknown>> };
-    legacy.group.forEach((row) => delete row.vetoedBy);
-    legacy.members.forEach((member) => delete member.vetoedDestinationIds);
+    const legacy = {
+      snapshotId: 'legacy-second-envelope', modelVersion: results.modelVersion, contentVersion: results.contentVersion,
+      destinations: results.destinations,
+      group: results.group.map((row: { rankStart: number; rankEnd: number; destinationId: string; bordaPoints: number; firstPlaceVotes: number; supporters: string[] }) => ({
+        rankStart: row.rankStart, rankEnd: row.rankEnd, destinationId: row.destinationId, bordaHalfPoints: row.bordaPoints * 2, firstPlaceVotes: row.firstPlaceVotes, supporters: row.supporters,
+      })),
+      members: results.members.map((member: { user: string; workingOrder: string[] }) => ({
+        user: member.user, tiers: [{ rankStart: 1, rankEnd: 24, destinationIds: member.workingOrder }],
+      })),
+    };
     __lightningStoreTest.setMemorySnapshot('legacy-second-envelope', legacy);
     const legacyRead = await app.request('/v1/lightning-round/results/group', { headers });
     expect(legacyRead.status).toBe(200);

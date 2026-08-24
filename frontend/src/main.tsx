@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import NumberFlow from '@number-flow/react';
 import { MeshGradient } from '@paper-design/shaders-react';
 import { createRoot } from 'react-dom/client';
-import type { AtlasDestination, GroupStatus, LightningGroupResults, LightningGroupStatus, LightningNextComparisonResponse, LightningPersonalResults, LightningStatus, NextComparisonResponse, PreferenceProfile, RosterUser, TransparentGroupResultsResponse } from '@lgs/shared';
+import type { AtlasDestination, GroupStatus, LightningGroupResultsResponse, LightningGroupStatus, LightningNextComparisonResponse, LightningPersonalResults, LightningStatus, NextComparisonResponse, PreferenceProfile, RosterUser, TransparentGroupResultsResponse } from '@lgs/shared';
 import '../../design-system/base.css';
 import '../../design-system/components.css';
 import logoUrl from '../../design-system/assets/logo.png';
@@ -18,7 +18,7 @@ import { getRestoredGoogleToken, signInWithEmulatorRehearsalUser, signInWithGoog
 import { HowItWorksButton, HowItWorksScreen, LightningComparisonScreen, LightningHowItWorksScreen, LightningIntroScreen, LightningPersonalResultsScreen, LightningVerdictScreen, LightningVetoScreen, LightningWaitingScreen, MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
 import { HOW_IT_WORKS_HASH, canOpenHowItWorksHelp, howItWorksBackLabel, needsHowItWorksBriefing } from './howItWorks.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
-import { DevPreview } from './DevPreview.js';
+import { DevPreview, LiveLightningPreview } from './DevPreview.js';
 import { canDisplayJourneyDestination, journeyDestinationForScreen, journeyDestinationFromHash, journeyHashFor, lightningDestinationFromHash, lightningHashFor, lightningNavigationDestinationForScreen, type JourneyDestination, type LightningDestination, type LightningNavigationDestination } from './journeyNavigation.js';
 import type { AppScreen } from './types.js';
 import './app.css';
@@ -50,7 +50,7 @@ function App() {
   const [howItWorksRequired, setHowItWorksRequired] = useState(false);
   const [user, setUser] = useState<RosterUser>(); const [token, setToken] = useState<string>(); const [selected, setSelected] = useState<RosterUser>(); const [spinning, setSpinning] = useState<RosterUser>();
   const [next, setNext] = useState<NextComparisonResponse>(); const [profile, setProfile] = useState<PreferenceProfile>(); const [atlas, setAtlas] = useState<AtlasDestination[]>([]); const [status, setStatus] = useState<GroupStatus>(); const [results, setResults] = useState<TransparentGroupResultsResponse>(); const [myResults, setMyResults] = useState<Awaited<ReturnType<OneTripApiClient['getPersonalResults']>>>();
-  const [lightningNext, setLightningNext] = useState<LightningNextComparisonResponse>(); const [lightningStatus, setLightningStatus] = useState<LightningStatus>(); const [lightningPersonal, setLightningPersonal] = useState<LightningPersonalResults>(); const [lightningGroupStatus, setLightningGroupStatus] = useState<LightningGroupStatus>(); const [lightningGroupResults, setLightningGroupResults] = useState<LightningGroupResults>(); const [lightningPicked, setLightningPicked] = useState('');
+  const [lightningNext, setLightningNext] = useState<LightningNextComparisonResponse>(); const [lightningStatus, setLightningStatus] = useState<LightningStatus>(); const [lightningPersonal, setLightningPersonal] = useState<LightningPersonalResults>(); const [lightningGroupStatus, setLightningGroupStatus] = useState<LightningGroupStatus>(); const [lightningGroupResults, setLightningGroupResults] = useState<LightningGroupResultsResponse>(); const [lightningPicked, setLightningPicked] = useState('');
   const [picked, setPicked] = useState(''); const [toast, setToast] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [booting, setBooting] = useState(true); const [revealSeen, setRevealSeen] = useState(false); const [journeyFocus, setJourneyFocus] = useState<{ destination: JourneyDestination; token: number }>(); const [lightningHelpReturn, setLightningHelpReturn] = useState<AppScreen>('lightning-results'); const bootstrapOnce = useRef(false); const handledJourneyHash = useRef(''); const screenRef = useRef<AppScreen>('welcome'); const howItWorksReturnRef = useRef<AppScreen>('welcome'); const lightningHelpReturnRef = useRef<AppScreen>('lightning-results'); const signedInTravelerRef = useRef<RosterUser | undefined>(undefined);
   const api = useMemo(() => user ? createApiClient({ user, token }) : undefined, [token, user]);
   const setJourneyHash = useCallback((destination: JourneyDestination, replace = false) => {
@@ -337,7 +337,9 @@ const fixtureAvatar = (id: RosterUser) => travelerById(id).image;
 // Local visual-QA route only. It uses deterministic, post-gate fixture data
 // and is excluded from production behavior by the Vite DEV guard above.
 const root = createRoot(document.getElementById('root')!);
-if (fixtureMode === 'trip-preview' || fixtureMode === 'lightning-round') {
+if (fixtureMode === 'lightning-live') {
+  root.render(<LiveLightningPreview />);
+} else if (fixtureMode === 'trip-preview' || fixtureMode === 'lightning-round') {
   root.render(<DevPreview initialPage={fixtureMode === 'lightning-round' ? 'lightning-intro' : 'comparison'} />);
 } else if (fixtureMode === 'transparent-reveal') {
   const displayMode = fixtureOverlay === 'near-tie' ? 'near-tie' : fixtureOverlay === 'no-consensus' ? 'no-consensus' : fixtureOverlay === 'broad-leader' ? 'broad-leader' : 'shared-shortlist';

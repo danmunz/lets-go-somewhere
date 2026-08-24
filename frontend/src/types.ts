@@ -1,7 +1,7 @@
 import type {
   AtlasDestination,
   TransparentGroupResultsResponse,
-  LightningGroupResults,
+  LightningGroupResultsResponse,
   LightningGroupStatus,
   LightningNextComparisonResponse,
   LightningPersonalResults,
@@ -65,7 +65,7 @@ export type OneTripApiContracts = {
   lightningNextComparison: LightningNextComparisonResponse;
   lightningPersonalResults: LightningPersonalResults;
   lightningGroupStatus: LightningGroupStatus;
-  lightningGroupResults: LightningGroupResults;
+  lightningGroupResults: LightningGroupResultsResponse;
 };
 
 export type { PreferenceProfile, RosterUser };

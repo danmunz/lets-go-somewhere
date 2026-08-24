@@ -36,3 +36,7 @@ pnpm-debug.log*
 
 # Local agent scratch space
 .agents/local/
+
+# Explicitly generated, local-only preview data. This may contain completed
+# travelers' Lightning Round results and must never be committed.
+frontend/public/__local/

@@ -1,5 +1,5 @@
 import { Hono, type Context } from 'hono';
-import { comparisonSchema, lightningComparisonSubmissionSchema, lightningGroupResultsSchema, lightningGroupStatusSchema, lightningNextComparisonResponseSchema, lightningPersonalResultsSchema, lightningStatusSchema, lightningVetoSubmissionResponseSchema, lightningVetoSubmissionSchema, nextComparisonResponseSchema, toAtlasDestination, toSafeActivity } from '@lgs/shared';
+import { LIGHTNING_WORKING_ORDER_RESULT_VERSION, comparisonSchema, lightningComparisonSubmissionSchema, lightningGroupResultsResponseSchema, lightningGroupResultsSchema, lightningGroupStatusSchema, lightningNextComparisonResponseSchema, lightningPersonalResultsSchema, lightningStatusSchema, lightningVetoSubmissionResponseSchema, lightningVetoSubmissionSchema, nextComparisonResponseSchema, toAtlasDestination, toSafeActivity, type LightningGroupResults } from '@lgs/shared';
 import {
   activities,
   assertRevealSnapshotSeedVersionCompatible,
@@ -33,11 +33,11 @@ import {
 import {
   LIGHTNING_CORE_COMPARISONS,
   LIGHTNING_MAX_COMPARISONS,
-  buildLightningRanking,
+  buildLightningWorkingOrder,
   fitDirectDestinationBradleyTerry,
   selectNextLightningPair,
   shouldCompleteLightningRound,
-  tallyLightningBorda,
+  tallyLightningWorkingOrderBorda,
 } from './lightning/direct-model.js';
 import {
   claimLightningComparison,
@@ -210,6 +210,35 @@ const lightningRankingComplete = (user: RosterUser, state: Awaited<ReturnType<ty
   Boolean(state.completedAt) || lightningComplete(user, state.comparisons);
 const lightningParticipationComplete = (user: RosterUser, state: Awaited<ReturnType<typeof getLightningState>>) =>
   lightningRankingComplete(user, state) && Boolean(state.vetoSubmittedAt);
+const buildLightningPersonalRanking = (user: RosterUser, state: Awaited<ReturnType<typeof getLightningState>>) => {
+  const fit = fitDirectDestinationBradleyTerry(lightningDirectDestinations, toDirectComparisons(state.comparisons));
+  if (!fit.ok) throw new StoreDataError('The Lightning Round could not prepare this personal list.');
+  return buildLightningWorkingOrder(fit, lightningSeedFor(user));
+};
+const sameLightningRanking = (left: ReturnType<typeof buildLightningPersonalRanking>, right: ReturnType<typeof buildLightningPersonalRanking>) =>
+  JSON.stringify(left) === JSON.stringify(right);
+type LightningWorkingOrderSnapshot = Extract<LightningGroupResults, { resultVersion: typeof LIGHTNING_WORKING_ORDER_RESULT_VERSION }>;
+const isLightningWorkingOrderSnapshot = (snapshot: LightningGroupResults | undefined): snapshot is LightningWorkingOrderSnapshot =>
+  Boolean(snapshot && 'resultVersion' in snapshot && snapshot.resultVersion === LIGHTNING_WORKING_ORDER_RESULT_VERSION);
+const publicLightningSnapshot = (snapshot: Awaited<ReturnType<typeof getLightningRevealSnapshot>>) => {
+  if (!snapshot) return undefined;
+  if (!isLightningWorkingOrderSnapshot(snapshot)) return snapshot;
+  return lightningGroupResultsResponseSchema.parse({
+    snapshotId: snapshot.snapshotId,
+    resultVersion: snapshot.resultVersion,
+    modelVersion: snapshot.modelVersion,
+    contentVersion: snapshot.contentVersion,
+    group: snapshot.group,
+    members: snapshot.members.map(({ user, ranking, vetoedDestinationIds }) => ({
+      user,
+      workingOrder: ranking.workingOrder,
+      clearBreaksAfter: ranking.clearBreaksAfter,
+      topFiveGroups: ranking.topFiveGroups,
+      vetoedDestinationIds,
+    })),
+    destinations: snapshot.destinations,
+  });
+};
 
 app.get('/v1/lightning-round/status', async (context) => {
   const user = context.get('user') as RosterUser;
@@ -281,11 +310,16 @@ app.post('/v1/lightning-round/vetoes', async (context) => {
 app.get('/v1/lightning-round/results/me', async (context) => {
   const user = context.get('user') as RosterUser; await ensureLightningRound(); const state = await getLightningState(user);
   if (!lightningRankingComplete(user, state)) return context.json({ code: 'completion-required', error: 'Finish your direct destination choices first.' }, 409);
-  const fit = fitDirectDestinationBradleyTerry(lightningDirectDestinations, toDirectComparisons(state.comparisons));
-  if (!fit.ok) throw new StoreDataError('The Lightning Round could not prepare this personal list.');
+  const derivedRanking = buildLightningPersonalRanking(user, state);
+  const snapshot = await getLightningRevealSnapshot();
+  const ranking = isLightningWorkingOrderSnapshot(snapshot)
+    ? snapshot.members.find((member) => member.user === user)?.ranking
+    : undefined;
+  if (ranking && !sameLightningRanking(derivedRanking, ranking)) throw new StoreDataError('The Lightning Round personal list no longer matches its sealed envelope.');
   return context.json(lightningPersonalResultsSchema.parse({
+    resultVersion: LIGHTNING_WORKING_ORDER_RESULT_VERSION,
     modelVersion: 'bayes-direct-destination-v1', contentVersion: lightningContentVersion,
-    tiers: buildLightningRanking(fit, lightningSeedFor(user)).tiers.map((tier) => ({ rankStart: tier.startRank, rankEnd: tier.endRank, destinationIds: tier.destinationIds })),
+    ranking: ranking ?? derivedRanking,
     destinations: lightningDestinations,
     // This is caller-only and allowed because Lightning happens after the first
     // envelope: the UI can honestly show how this traveler's direct list formed.
@@ -315,28 +349,28 @@ app.post('/v1/lightning-round/reveal', async (context) => {
   if (!ROSTER.every((member) => lightningParticipationComplete(member, all[member]))) return context.json({ error: 'Wait for the whole crew to finish their rankings and submit their vetoes.' }, 409);
   const snapshot = await createOrGetLightningRevealSnapshot(() => {
     const rankings = ROSTER.map((member) => {
-      const fit = fitDirectDestinationBradleyTerry(lightningDirectDestinations, toDirectComparisons(all[member].comparisons));
-      if (!fit.ok) throw new StoreDataError(`Could not prepare ${member}'s Lightning list.`);
-      return { user: member, ranking: buildLightningRanking(fit, lightningSeedFor(member)) };
+      return { user: member, ranking: buildLightningPersonalRanking(member, all[member]) };
     });
-    const rows = tallyLightningBorda(lightningDirectDestinations.map(({ id }) => id), rankings.map(({ ranking }) => ranking));
-    const supportersFor = (id: string) => rankings.filter(({ ranking }) => ranking.tiers.some((tier) => tier.destinationIds.includes(id) && tier.startRank <= 5)).map(({ user }) => user);
+    const rows = tallyLightningWorkingOrderBorda(lightningDirectDestinations.map(({ id }) => id), rankings.map(({ ranking }) => ranking.workingOrder));
+    const supportersFor = (id: string) => rankings.filter(({ ranking }) => ranking.workingOrder.slice(0, 5).includes(id)).map(({ user }) => user);
     return lightningGroupResultsSchema.parse({
       snapshotId: 'pending',
+      resultVersion: LIGHTNING_WORKING_ORDER_RESULT_VERSION,
       modelVersion: 'bayes-direct-destination-v1',
       contentVersion: lightningContentVersion,
       group: rows.map((row) => ({
         rankStart: row.startRank,
         rankEnd: row.endRank,
         destinationId: row.destinationId,
-        bordaHalfPoints: Math.round(row.points * 2),
+        bordaPoints: row.points,
         firstPlaceVotes: row.firstPlaceVotes,
+        topFiveSupport: row.topFiveSupport,
         supporters: supportersFor(row.destinationId),
         vetoedBy: ROSTER.filter((member) => all[member].vetoedDestinationIds?.includes(row.destinationId)),
       })),
       members: rankings.map(({ user, ranking }) => ({
         user,
-        tiers: ranking.tiers.map((tier) => ({ rankStart: tier.startRank, rankEnd: tier.endRank, destinationIds: tier.destinationIds })),
+        ranking,
         vetoedDestinationIds: all[user].vetoedDestinationIds ?? [],
       })),
       destinations: lightningDestinations,
@@ -347,5 +381,5 @@ app.post('/v1/lightning-round/reveal', async (context) => {
 app.get('/v1/lightning-round/results/group', async (context) => {
   await ensureLightningRound(); const snapshot = await getLightningRevealSnapshot();
   if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The second envelope is still sealed.' }, 423);
-  return context.json(snapshot);
+  return context.json(publicLightningSnapshot(snapshot));
 });

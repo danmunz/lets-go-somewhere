@@ -3,6 +3,8 @@ import {
   LIGHTNING_BALANCED_COMPARISONS,
   LIGHTNING_CORE_COMPARISONS,
   LIGHTNING_MAX_COMPARISONS,
+  LIGHTNING_EVIDENCE_DRAW_COUNT,
+  buildLightningWorkingOrder,
   buildLightningRanking,
   fitDirectDestinationBradleyTerry,
   initialLightningSchedule,
@@ -10,6 +12,7 @@ import {
   selectNextLightningPair,
   shouldCompleteLightningRound,
   tallyLightningBorda,
+  tallyLightningWorkingOrderBorda,
   type DirectComparison,
   type DirectDestination,
   type LightningRanking,
@@ -78,6 +81,22 @@ describe('Lightning direct-destination model', () => {
     expect(ranking.tiers.flatMap((tier) => tier.destinationIds)).toHaveLength(24);
     expect(new Set(ranking.tiers.flatMap((tier) => tier.destinationIds)).size).toBe(24);
   });
+
+  it('derives a deterministic 4,096-draw working order without turning uncertainty into a 24-way tie', () => {
+    const comparisons = advance(LIGHTNING_MAX_COMPARISONS);
+    const fit = fitDirectDestinationBradleyTerry(destinations, comparisons);
+    expect(fit.ok).toBe(true);
+    if (!fit.ok) return;
+    const first = buildLightningWorkingOrder(fit, 'test-seed');
+    const second = buildLightningWorkingOrder(fit, 'test-seed');
+    expect(first).toEqual(second);
+    expect(first.workingOrder).toHaveLength(24);
+    expect(new Set(first.workingOrder).size).toBe(24);
+    expect(first.privateEvidence).toHaveLength(24);
+    expect(first.privateEvidence.every((entry, index) => entry.workingRank === index + 1 && entry.destinationId === first.workingOrder[index])).toBe(true);
+    expect(first.privateEvidence.every((entry) => entry.topFivePercent >= 0 && entry.topFivePercent <= 100 && entry.rankRange.low <= entry.rankRange.high)).toBe(true);
+    expect(LIGHTNING_EVIDENCE_DRAW_COUNT).toBe(4096);
+  });
 });
 
 function ranking(ids: readonly string[], tiers: readonly (readonly string[])[]): LightningRanking {
@@ -112,6 +131,15 @@ describe('Lightning transparent Borda tally', () => {
     const second = ranking(ids, [ids.map((id) => id)]);
     const rows = tallyLightningBorda(ids, [first, second]);
     expect(rows).toHaveLength(24);
+    expect(rows.every((row) => row.startRank === 1 && row.endRank === 24)).toBe(true);
+  });
+
+  it('uses every exact working-order position for 24..1 Borda points', () => {
+    const ids = destinations.map(({ id }) => id);
+    const orders = ids.map((_, offset) => [...ids.slice(offset), ...ids.slice(0, offset)]);
+    const rows = tallyLightningWorkingOrderBorda(ids, orders);
+    expect(rows).toHaveLength(24);
+    expect(rows.every((row) => row.points === 300)).toBe(true);
     expect(rows.every((row) => row.startRank === 1 && row.endRank === 24)).toBe(true);
   });
 });

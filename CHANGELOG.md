@@ -8,7 +8,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
-- Added a local, isolated Lightning Round follow-up for a completed original trip: 24 researched direct-destination briefs, a Bayesian Bradley–Terry 48-core/up-to-12-tie-breaker policy, uncertainty-honest personal tiers, private full rankings, a second-envelope group gate, and a transparent 24-to-1 Borda result board with the five expandable full lists. It uses separate content sealing and Firestore collections and has not been deployed.
+- Added an unshipped Lightning working-order evidence model: deterministic 4,096-draw private top-five/rank-range checks, 75% clear-break markers, exact-rank group Borda results, and qualitative group-only bands. A guarded local preview can read completed production Lightning data into an ignored local file without calling application routes or writing Firestore.
+- Added a local, isolated Lightning Round follow-up for a completed original trip: 24 researched direct-destination briefs, a Bayesian Bradley–Terry 48-core/up-to-12-tie-breaker policy, private full rankings, a second-envelope group gate, and a transparent 24-to-1 Borda result board with the five expandable full lists. It uses separate content sealing and Firestore collections.
 - Refined the local Lightning Round into a denser direct-choice experience: an enlarged, free-standing round-two cast; more compact responsive cards; a caller-only “X beat Y” decision trail; a departure-board completion view; and a sortable five-person group-rank table. The trail remains private until its owner’s list is available and is never included in the group snapshot.
 - Added a required, private Lightning Round veto step after each direct ranking. Travelers may save zero to four immutable advisory vetoes; they stay sealed until the second envelope, render as clear veto markers in personal and group results, and never change the Bayesian ranking, Borda tally, or group ordering.
 
@@ -20,6 +21,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Made Lightning’s shared evidence bands scannable as two distinct sets of named destination chips per person. Hovering or keyboard-focusing a place now highlights that same place across every person’s bands, without exposing private numerical evidence.
 - Hardened Lightning Round comparison cards on phone-sized screens: each card now uses a bounded, media-first stack so Safari cannot stretch its image beneath the destination details.
 - Split post-completion navigation into explicit Round 1 and Lightning contexts. Lightning now keeps direct choices and the required veto save focused behind a compact status header, then exposes its own menu and help screen after vetoes are saved; the original results remain available through a round switcher rather than being mixed into every Lightning page.
 - Fixed the count-only operator preflight so fixed-32 completion is derived from saved choices, matching the participant-facing completion status instead of relying on retired timestamp metadata.

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NumberFlow from '@number-flow/react';
-import { LIGHTNING_MODEL_VERSION, ROSTER_USERS, type AtlasDestination, type LightningDestinationBrief, type LightningGroupResults, type LightningGroupStatus, type LightningPersonalResults, type PersonalResultsResponse, type PreferenceProfile, type RosterUser } from '@lgs/shared';
+import { LIGHTNING_MODEL_VERSION, LIGHTNING_WORKING_ORDER_RESULT_VERSION, ROSTER_USERS, lightningGroupResultsResponseSchema, lightningPersonalResultsSchema, type AtlasDestination, type LightningDestinationBrief, type LightningGroupResultsResponse, type LightningGroupStatus, type LightningPersonalResults, type PersonalResultsResponse, type PreferenceProfile, type RosterUser } from '@lgs/shared';
 import logoUrl from '../../design-system/assets/logo.png';
 import lightningBriefSeed from '../../seed/lightning-round/destination-briefs.json';
 import danAvatar from '../../assets/images/dan_cutout.png';
@@ -64,10 +64,13 @@ const lightningDestinations: LightningDestinationBrief[] = lightningBriefSeed.ma
 }));
 const lightningPlaces = [lightningDestinations[0]!, lightningDestinations[2]!] as const;
 const lightningTiers = lightningDestinations.map((destination, index) => ({ rankStart: index + 1, rankEnd: index + 1, destinationIds: [destination.id] }));
+const lightningWorkingOrder = lightningDestinations.map((destination) => destination.id);
+const lightningPrivateEvidence = lightningWorkingOrder.map((destinationId, index) => ({ destinationId, workingRank: index + 1, topFivePercent: Math.max(4, 88 - index * 4), rankRange: { low: Math.max(1, index), high: Math.min(24, index + 3) } }));
 const lightningResults: LightningPersonalResults = {
+  resultVersion: LIGHTNING_WORKING_ORDER_RESULT_VERSION,
   modelVersion: LIGHTNING_MODEL_VERSION,
   contentVersion: 'local-preview',
-  tiers: lightningTiers,
+  ranking: { workingOrder: lightningWorkingOrder, clearBreaksAfter: [2, 5, 10, 16], topFiveGroups: { likelyTopFive: lightningWorkingOrder.slice(0, 4), possibleTopFive: lightningWorkingOrder.slice(4, 8), unlikelyTopFive: lightningWorkingOrder.slice(8) }, privateEvidence: lightningPrivateEvidence },
   destinations: lightningDestinations,
   comparisonTrail: Array.from({ length: 48 }, (_, index) => {
     const destinationA = lightningDestinations[index % lightningDestinations.length]!;
@@ -77,10 +80,10 @@ const lightningResults: LightningPersonalResults = {
   vetoes: { submitted: false, destinationIds: [] },
 };
 const lightningStatus: LightningGroupStatus = { revealOpen: false, allComplete: false, updatedAt: '2026-08-23T00:00:00.000Z', members: ROSTER_USERS.map((user, index) => ({ user, complete: index < 3 })) };
-const lightningGroupResults: LightningGroupResults = {
-  snapshotId: 'local-lightning-preview', modelVersion: LIGHTNING_MODEL_VERSION, contentVersion: 'local-preview', destinations: lightningDestinations,
-  group: lightningDestinations.map((destination, index) => ({ rankStart: index + 1, rankEnd: index + 1, destinationId: destination.id, bordaHalfPoints: (24 - index) * 10, firstPlaceVotes: index === 0 ? 3 : index === 1 ? 1 : 0, supporters: ROSTER_USERS.slice(0, Math.max(1, 5 - Math.floor(index / 5))), vetoedBy: destination.id === lightningDestinations[3]?.id ? ['james', 'matt'] : destination.id === lightningDestinations[6]?.id ? ['john'] : [] })),
-  members: ROSTER_USERS.map((user, offset) => ({ user, tiers: lightningDestinations.map((destination, index) => ({ rankStart: index + 1, rankEnd: index + 1, destinationIds: [lightningDestinations[(index + offset) % lightningDestinations.length]!.id] })), vetoedDestinationIds: user === 'james' ? [lightningDestinations[3]!.id] : user === 'matt' ? [lightningDestinations[3]!.id] : user === 'john' ? [lightningDestinations[6]!.id] : [] })),
+const lightningGroupResults: LightningGroupResultsResponse = {
+  snapshotId: 'local-lightning-preview', resultVersion: LIGHTNING_WORKING_ORDER_RESULT_VERSION, modelVersion: LIGHTNING_MODEL_VERSION, contentVersion: 'local-preview', destinations: lightningDestinations,
+  group: lightningDestinations.map((destination, index) => ({ rankStart: index + 1, rankEnd: index + 1, destinationId: destination.id, bordaPoints: (24 - index) * 5, firstPlaceVotes: index === 0 ? 3 : index === 1 ? 1 : 0, topFiveSupport: Math.max(1, 5 - Math.floor(index / 5)), supporters: ROSTER_USERS.slice(0, Math.max(1, 5 - Math.floor(index / 5))), vetoedBy: destination.id === lightningDestinations[3]?.id ? ['james', 'matt'] : destination.id === lightningDestinations[6]?.id ? ['john'] : [] })),
+  members: ROSTER_USERS.map((user, offset) => { const workingOrder = lightningDestinations.map((_, index) => lightningDestinations[(index + offset) % lightningDestinations.length]!.id); return { user, workingOrder, clearBreaksAfter: [3, 8, 15], topFiveGroups: { likelyTopFive: workingOrder.slice(0, 4), possibleTopFive: workingOrder.slice(4, 8), unlikelyTopFive: workingOrder.slice(8) }, vetoedDestinationIds: user === 'james' ? [lightningDestinations[3]!.id] : user === 'matt' ? [lightningDestinations[3]!.id] : user === 'john' ? [lightningDestinations[6]!.id] : [] }; }),
 };
 
 function PreviewAtlas({ onOpenWaiting }: { onOpenWaiting: () => void }) {
@@ -92,12 +95,27 @@ function PreviewComparison() {
 }
 
 /** Development-only visual journey navigator. It never calls the API or stores a choice. */
-export function DevPreview({ initialPage = 'comparison' }: { initialPage?: PreviewPage }) {
+type LiveLightningPreviewData = Readonly<{
+  generatedAt: string;
+  source: string;
+  personalByUser: Record<RosterUser, LightningPersonalResults>;
+  group: LightningGroupResultsResponse;
+}>;
+
+export function DevPreview({ initialPage = 'comparison', lightningLiveData }: { initialPage?: PreviewPage; lightningLiveData?: LiveLightningPreviewData }) {
   const [page, setPage] = useState<PreviewPage>(initialPage);
   const [helpReturn, setHelpReturn] = useState<PreviewPage>(initialPage);
   const [briefingRequired, setBriefingRequired] = useState(false);
+  const [previewTraveler, setPreviewTraveler] = useState<RosterUser>('dan');
   const [previewVetoes, setPreviewVetoes] = useState<readonly string[] | undefined>();
-  const previewLightningResults: LightningPersonalResults = { ...lightningResults, vetoes: { submitted: previewVetoes !== undefined, destinationIds: [...(previewVetoes ?? [])] } };
+  const activeLightningResults = lightningLiveData?.personalByUser[previewTraveler] ?? lightningResults;
+  const previewLightningResults: LightningPersonalResults = previewVetoes === undefined
+    ? activeLightningResults
+    : { ...activeLightningResults, vetoes: { submitted: true, destinationIds: [...previewVetoes] } };
+  const previewLightningGroup = lightningLiveData?.group ?? lightningGroupResults;
+  const previewLightningStatus: LightningGroupStatus = lightningLiveData
+    ? { revealOpen: false, allComplete: true, updatedAt: lightningLiveData.generatedAt, members: ROSTER_USERS.map((user) => ({ user, complete: true })) }
+    : lightningStatus;
   const openHelp = () => { setHelpReturn(page); setBriefingRequired(false); setPage('how-it-works'); };
   const openRequiredBriefing = () => { setBriefingRequired(true); setPage('how-it-works'); };
   const helpReturnLabel = pages.find(([id]) => id === helpReturn)?.[1].toLowerCase() ?? 'your choices';
@@ -106,8 +124,8 @@ export function DevPreview({ initialPage = 'comparison' }: { initialPage?: Previ
     : page === 'lightning-cards' ? <LightningComparisonScreen progress={{ comparisons: 39, core: 48, maximum: 60, phase: 'core' }} destinations={lightningPlaces} onChoose={() => undefined} />
     : page === 'lightning-list' ? <LightningPersonalResultsScreen results={previewLightningResults} onOpenWaiting={() => setPage('lightning-waiting')} onOpenVeto={() => setPage('lightning-veto')} />
     : page === 'lightning-veto' ? <LightningVetoScreen results={previewLightningResults} onSubmit={async (destinationIds) => { setPreviewVetoes(destinationIds); setPage('lightning-list'); return true; }} />
-    : page === 'lightning-waiting' ? <LightningWaitingScreen status={lightningStatus} user="dan" onRefresh={() => undefined} onReveal={() => setPage('lightning-reveal')} onOpenResults={() => setPage('lightning-reveal')} />
-    : page === 'lightning-reveal' ? <LightningVerdictScreen results={lightningGroupResults} />
+    : page === 'lightning-waiting' ? <LightningWaitingScreen status={previewLightningStatus} user={previewTraveler} onRefresh={() => undefined} onReveal={() => setPage('lightning-reveal')} onOpenResults={() => setPage('lightning-reveal')} />
+    : page === 'lightning-reveal' ? <LightningVerdictScreen results={previewLightningGroup} />
     : page === 'lightning-help' ? <LightningHowItWorksScreen backLabel="Back to my full list" onBack={() => setPage('lightning-list')} />
     : page === 'comparison' ? <PreviewComparison />
     : page === 'profile' ? <ProfileScreen profile={profile} traveler="dan" onOpenMyResults={() => setPage('shortlist')} />
@@ -127,5 +145,26 @@ export function DevPreview({ initialPage = 'comparison' }: { initialPage?: Previ
     ? <LightningFocusHeader status={page === 'lightning-intro' ? 'Ready to begin' : page === 'lightning-cards' ? '39 of 48 choices' : 'Choose your vetoes'} onOpenRoundOne={() => setPage('verdict')} />
     : null;
   const navigation = roundOneNavigation ?? lightningNavigation ?? lightningFocus;
-  return <>{navigation}{body}<details className="dev-preview-controls"><summary>Local preview screens</summary><div>{pages.map(([id, label]) => <button key={id} onClick={() => id === 'how-it-works' ? openRequiredBriefing() : setPage(id)} aria-pressed={page === id}>{label}</button>)}</div></details></>;
+  return <>{navigation}{body}<details className="dev-preview-controls"><summary>{lightningLiveData ? 'Local preview controls: real completed Lightning data' : 'Local preview screens'}</summary>{lightningLiveData && <><p>Read locally at {new Date(lightningLiveData.generatedAt).toLocaleString()}. This preview file is ignored by Git and is not a second envelope.</p><div>{ROSTER_USERS.map((user) => <button key={user} onClick={() => { setPreviewTraveler(user); setPreviewVetoes(undefined); }} aria-pressed={previewTraveler === user}>Preview {fixtureTravelerNames[user]}</button>)}</div></>}<div>{pages.map(([id, label]) => <button key={id} onClick={() => id === 'how-it-works' ? openRequiredBriefing() : setPage(id)} aria-pressed={page === id}>{label}</button>)}</div></details></>;
+}
+
+export function LiveLightningPreview() {
+  const [data, setData] = useState<LiveLightningPreviewData>();
+  const [error, setError] = useState('');
+  useEffect(() => {
+    let cancelled = false;
+    void fetch('/__local/lightning-live-preview.json', { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Run the explicit local read-only preview command first.');
+        const value = await response.json() as { generatedAt?: unknown; source?: unknown; personalByUser?: unknown; group?: unknown };
+        const personalByUser = Object.fromEntries(ROSTER_USERS.map((user) => [user, lightningPersonalResultsSchema.parse((value.personalByUser as Record<string, unknown> | undefined)?.[user])])) as Record<RosterUser, LightningPersonalResults>;
+        return { generatedAt: String(value.generatedAt), source: String(value.source), personalByUser, group: lightningGroupResultsResponseSchema.parse(value.group) };
+      })
+      .then((loaded) => { if (!cancelled) setData(loaded); })
+      .catch((reason: unknown) => { if (!cancelled) setError(reason instanceof Error ? reason.message : 'The local preview data could not be loaded.'); });
+    return () => { cancelled = true; };
+  }, []);
+  if (error) return <main className="one-trip-screen"><p className="eyebrow">LOCAL LIGHTNING PREVIEW</p><h1>Preview data is not loaded.</h1><p>{error}</p></main>;
+  if (!data) return <main className="one-trip-screen"><p className="eyebrow">LOCAL LIGHTNING PREVIEW</p><h1>Loading the local preview.</h1></main>;
+  return <DevPreview initialPage="lightning-list" lightningLiveData={data} />;
 }
