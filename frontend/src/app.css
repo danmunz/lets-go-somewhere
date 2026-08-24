@@ -128,6 +128,42 @@
 @media (max-width: 1180px) { .lightning-choices { grid-template-columns:1fr; max-width:760px; }.lightning-card { grid-template-columns:minmax(210px,.42fr) minmax(0,1fr); }.lightning-card > .media-image { grid-row:1 / span 4; height:auto; }.lightning-card__title,.lightning-card__highlights,.lightning-card__facts,.lightning-card__choose { grid-column:2; }.lightning-choices__or { display:flex; grid-column:1; }.lightning-results__top { grid-template-columns:1fr; }.lightning-results__top > div:last-child { grid-template-columns:repeat(5,minmax(125px,1fr)); overflow-x:auto; padding-bottom:4px; }.lightning-verdict__matrix-heading { grid-template-columns:1fr; } }
 @media (max-width: 700px) { .lightning-intro__moods > .lightning-intro__mood-cast { min-height:104px; padding:3px 4px 0; }.lightning-intro__mood { width:72px; height:102px; margin-left:-9px; }.lightning-intro__mood .mood-portrait { width:104px; height:104px; }.lightning-game__heading h1 { font-size:36px; }.lightning-card { grid-template-columns:1fr; }.lightning-card > .media-image { grid-row:auto; height:150px; }.lightning-card__title,.lightning-card__highlights,.lightning-card__facts,.lightning-card__choose { grid-column:1; }.lightning-card__facts { grid-template-columns:1fr 1fr; }.lightning-results,.lightning-waiting,.lightning-verdict { padding:42px 18px; }.lightning-results aside { align-items:flex-start; }.lightning-results__top > div:last-child { grid-template-columns:repeat(5,130px); }.lightning-trail { margin-inline:-2px; padding:18px; }.lightning-trail__heading { grid-template-columns:1fr; gap:10px; }.lightning-results__ranking > ol > li { grid-template-columns:1fr; gap:3px; }.lightning-waiting__hero { grid-template-columns:1fr; gap:22px; }.lightning-waiting__count { justify-content:flex-start; width:178px; min-height:120px; padding-inline:20px; }.lightning-waiting__count > span:first-child { font-size:62px; }.lightning-waiting__board { padding:14px; }.lightning-waiting__board ul { grid-template-columns:1fr 1fr; }.lightning-waiting__board li,.lightning-waiting__board li:first-child { border-left:0; border-top:1px solid rgba(255,248,237,.35); }.lightning-waiting__board li:nth-child(-n+2) { border-top:0; }.lightning-waiting__person { margin-bottom:12px; }.lightning-waiting__actions { justify-content:flex-start; }.lightning-verdict__matrix { margin-top:42px; padding-top:26px; }.lightning-verdict__matrix aside { font-size:14px; }.lightning-rank-table { min-width:820px; } }
 
+/*
+ * Safari can retain a grid item's desktop min-height while resolving its
+ * mobile placement. The comparison media then spans the card and paints under
+ * the details. At phone widths the card is deliberately a simple media-first
+ * flex stack, so its image has one fixed, bounded slot.
+ */
+@media (max-width: 700px) {
+  .lightning-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .lightning-card > .media-image {
+    display: block;
+    flex: 0 0 150px;
+    width: 100%;
+    min-height: 0;
+    max-height: 150px;
+    height: 150px;
+    object-fit: cover;
+  }
+
+  .lightning-card__title,
+  .lightning-card__highlights,
+  .lightning-card__facts,
+  .lightning-card__choose {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .lightning-card__choose {
+    margin-top: auto;
+  }
+}
+
 /* One-trip route/component scaffold (OT-13). These classes are deliberately
    inert until OT-18 composes the new screens into the existing app shell. */
 .one-trip-screen {
@@ -308,10 +344,109 @@
   gap: 4px;
   align-items: center;
 }
-.journey-nav__desktop[aria-label="Your trip"] {
+.journey-nav__desktop[aria-label] {
   min-width: 0;
   flex: 1 1 auto;
 }
+.journey-nav__rounds {
+  flex: 0 0 auto;
+}
+.round-switcher {
+  display: inline-flex;
+  min-height: 44px;
+  gap: 2px;
+  align-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  background: color-mix(in srgb, var(--surface-elevated) 90%, var(--color-night));
+}
+.round-switcher button {
+  min-height: 36px !important;
+  border-radius: var(--radius-full) !important;
+  padding: 6px 10px !important;
+  font-size: 16px !important;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.round-switcher button.is-active {
+  background: var(--accent-primary) !important;
+  color: var(--color-night) !important;
+  box-shadow: 0 2px 0 var(--color-amber-dark);
+}
+.journey-nav__round-sheet {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 var(--space-4);
+  padding: 0 0 var(--space-4);
+  border-bottom: 1px solid var(--border-default);
+}
+.journey-nav__round-sheet > p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 16px;
+  font-weight: 700;
+}
+.journey-nav__round-sheet .round-switcher {
+  width: fit-content;
+}
+.lightning-focus-nav {
+  position: sticky;
+  z-index: var(--layer-sticky-nav, 20);
+  top: 0;
+  display: grid;
+  grid-template-columns: 110px minmax(150px, 1fr) auto auto;
+  min-height: 64px;
+  gap: 14px;
+  align-items: center;
+  border-bottom: 1px solid #665947;
+  padding: 8px max(20px, calc((100vw - 1240px) / 2));
+  background: color-mix(in srgb, var(--color-night, #211c17) 96%, transparent);
+  color: #fff8ed;
+  box-shadow: 0 8px 22px rgba(27, 23, 20, .18);
+  backdrop-filter: blur(14px);
+}
+.lightning-focus-nav img {
+  width: 108px;
+  height: 40px;
+  object-fit: contain;
+  object-position: left center;
+}
+.lightning-focus-nav p {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin: 0;
+}
+.lightning-focus-nav p strong {
+  color: #efb95a;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.lightning-focus-nav p span {
+  color: #fff8ed;
+  font-size: 20px;
+  font-weight: 700;
+}
+.lightning-focus-nav output {
+  color: #d8c8b5;
+  font-size: 18px;
+  white-space: nowrap;
+}
+.lightning-focus-nav button {
+  min-height: 44px;
+  border: 1px solid #8a7b68;
+  border-radius: var(--radius-full);
+  padding: 8px 14px;
+  background: transparent;
+  color: #fff8ed;
+  font-size: 18px;
+  font-weight: 700;
+}
+.lightning-focus-nav button:hover { background: #3a2c1d; }
+.lightning-focus-nav button:focus-visible { outline: 3px solid var(--color-trail-blue); outline-offset: 3px; }
 .journey-nav__desktop button {
   display: inline-flex;
   min-height: 44px;
@@ -5288,8 +5423,8 @@
   .profile-tile--lead .profile-tile__heading { max-width: none; }
 }
 
-/* Post-completion navigation: a quiet trip header on desktop, a contained map-sheet on smaller screens. */
-@media (max-width: 1023px) {
+/* The two-round desktop bar needs breathing room; use the compact sheet before it crowds. */
+@media (max-width: 1199px) {
   .journey-nav {
     min-height: 64px;
   }
@@ -5451,7 +5586,7 @@
     font-weight: 700;
   }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .journey-nav__inner {
     padding-inline: max(var(--page-gutter), calc((100vw - var(--content-wide)) / 2));
   }
@@ -5464,6 +5599,41 @@
 @keyframes journey-nav-sheet-in {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.lightning-help {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding: 72px max(24px, calc((100vw - 1080px) / 2)) 96px;
+  background: var(--color-cream, #f5ede2);
+  color: #211c17;
+}
+.lightning-help__hero { max-width: 780px; }
+.lightning-help__hero h1 { max-width: 700px; margin: 8px 0 18px; font-size: clamp(48px, 6vw, 76px); line-height: .98; }
+.lightning-help__hero h1 em { color: #a84836; }
+.lightning-help__hero > p:not(.eyebrow) { max-width: 700px; margin: 0; color: #5d5146; font-size: 22px; line-height: 1.4; }
+.lightning-help__steps { display: grid; gap: 0; max-width: 880px; margin: 42px 0 34px; padding: 0; border-top: 1px solid #bba88c; list-style: none; }
+.lightning-help__steps li { display: grid; grid-template-columns: 68px 1fr; gap: 18px; padding: 20px 0; border-bottom: 1px solid #bba88c; }
+.lightning-help__steps li > b { color: #9d5d37; font-family: var(--font-display); font-size: 36px; line-height: 1; }
+.lightning-help__steps li > div { display: grid; gap: 6px; }
+.lightning-help__steps strong { font-size: 24px; }
+.lightning-help__steps span { color: #5d5146; font-size: 20px; line-height: 1.35; }
+.lightning-help__back { min-height: 48px; }
+
+@media (max-width: 1023px) {
+  .lightning-focus-nav {
+    grid-template-columns: 60px 72px minmax(0, 1fr) auto;
+    min-height: 64px;
+    gap: 7px;
+    padding-inline: max(14px, env(safe-area-inset-right));
+  }
+  .lightning-focus-nav img { width: 56px; height: 36px; }
+  .lightning-focus-nav p { display: grid; gap: 0; min-width: 0; }
+  .lightning-focus-nav p strong { font-size: 13px; }
+  .lightning-focus-nav p span { display: none; }
+  .lightning-focus-nav output { display: block; overflow: hidden; font-size: 15px; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+  .lightning-focus-nav button { min-height: 44px; padding: 7px 9px; font-size: 15px; }
+  .lightning-help { padding: 50px 20px 72px; }
 }
 
 /* Lightning Round final visual pass: compact status, durable top-five cards, and veto rows. */

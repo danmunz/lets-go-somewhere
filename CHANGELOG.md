@@ -19,6 +19,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Hardened Lightning Round comparison cards on phone-sized screens: each card now uses a bounded, media-first stack so Safari cannot stretch its image beneath the destination details.
+- Split post-completion navigation into explicit Round 1 and Lightning contexts. Lightning now keeps direct choices and the required veto save focused behind a compact status header, then exposes its own menu and help screen after vetoes are saved; the original results remain available through a round switcher rather than being mixed into every Lightning page.
 - Fixed the count-only operator preflight so fixed-32 completion is derived from saved choices, matching the participant-facing completion status instead of relying on retired timestamp metadata.
 - Replaced scattered post-completion links with one phase-aware navigator: a sticky desktop bar and accessible mobile menu sheet expose only available screens, keep sealed group results out of navigation, and retain contextual help during blind play.
 - Completed a platform-wide layout, typography, plain-language, and interaction polish pass. The post-completion journey now consistently uses “What you liked,” “Your top five,” “All 24 places,” “Who’s finished,” and “How the group voted,” while retaining the existing privacy gates and ranking behavior.

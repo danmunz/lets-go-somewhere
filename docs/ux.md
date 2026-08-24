@@ -1928,7 +1928,7 @@ The comparison is the experience.
 
 ---
 
-## After completion
+## After original-round completion
 
 The released one-trip experience has one persistent navigator, and only after
 all 32 choices are saved. Its exact labels are:
@@ -1944,14 +1944,52 @@ Who's finished
 After Dan opens the envelope, **How the group voted** appears first. Before
 that point, it is absent—not disabled—and a direct `#reveal` link returns the
 traveler to **Who's finished** with a clear sealed-results message. The
-completion navigator appears as a 72px sticky desktop bar at 1024px and up;
+completion navigator appears as a 72px sticky desktop bar at 1200px and up;
 below that it becomes a 64px header with an accessible modal navigation sheet.
+This intentionally promotes the compact menu before the two-round controls would
+become crowded.
 The help page itself uses its contextual Back action and never renders this
 global navigator.
 
 The canonical hashes are `#rhythm`, `#shortlist`, `#atlas`, `#crew`, and,
 only once revealed, `#reveal`. Server-side gates remain authoritative on every
 destination.
+
+## Lightning Round navigation
+
+The original reveal remains a complete, reachable result once the Lightning
+Round becomes available. The two rounds are separate navigation contexts so a
+participant never has to scan a single mixed list of first- and second-round
+pages.
+
+- **Before Lightning starts**, the original revealed-results bar adds a compact
+  `Round 1` / `Lightning Round` switcher. Choosing Lightning asks the server
+  for the participant's saved Lightning status and resumes the exact safe
+  state: introduction, current direct choice, private full list, veto step,
+  waiting, or second reveal.
+- **During the Lightning introduction and direct choices**, a compact focus
+  header shows `Round 2 · Lightning Round`, truthful progress, and a `Round 1
+  results` exit. There is no hamburger or full menu while a participant is
+  making choices.
+- **After the direct list is ready but before vetoes are saved**, the same
+  focused header keeps `Choose your vetoes` as the clearly next task. The full
+  Lightning menu is deliberately unavailable, so waiting and result pages
+  cannot be used to skip the required save.
+- **After vetoes are saved**, the full Lightning navigator offers `My full
+  list`, `Who’s ready`, and `About this round`. Once Dan opens the second
+  envelope, `How everyone ranked` appears first. Original result pages remain
+  available only through the explicit round switcher.
+
+The Lightning hashes are `#lightning`, `#lightning-list`, `#lightning-veto`,
+`#lightning-ready`, `#lightning-reveal`, and `#lightning-help`. Invalid or
+premature hashes resolve through server status: direct choices resume in place,
+pending vetoes return to the personal list, sealed second results go to
+waiting, and Lightning stays unavailable until the original reveal exists.
+Direct-card answers do not add browser-history entries.
+
+`About this round` is Lightning-specific help with contextual Back behavior.
+The original destination-blind `How it works` screen and `#how-it-works` remain
+exclusive to Round 1.
 
 ---
 
@@ -2435,4 +2473,7 @@ The Lightning Round begins only from the already-opened original group reveal. I
 5. **Second-envelope waiting** — everybody can see only who has finished. “Finished” means direct choices and the private veto step are both saved; the screen does not reveal whether someone chose any vetoes. It uses a compact departure-board treatment to make the group’s current state scannable. When all five are ready, Dan can open the second envelope.
 6. **Group direct ranking** — an interactive 24-place list shows the transparent 24-to-1 point total, ties, and a detailed practical panel for the selected destination. Any affected destination also names the travelers who vetoed it. An accessible five-column table shows everyone’s ranks, can sort by any traveler, and updates a selected-place summary with all five ranks; a vetoed cell reads `Vetoed` with a red X instead of a rank. It ends by handing the decision back to the group.
 
-The original post-completion navigator deliberately does not appear during this direct follow-up. The original result remains intact and the Lightning Round has its own focused progression.
+The Lightning Round has its own phase-aware navigation. It uses a focused
+header while direct choices or vetoes still need attention, then its own full
+navigator after the veto save; Round 1 remains available through an explicit
+round switcher rather than being mixed into this round’s links.

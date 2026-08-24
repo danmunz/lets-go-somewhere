@@ -29,6 +29,23 @@ export function LightningIntroScreen({ onStart }: { onStart: () => void }) {
   </main>;
 }
 
+export function LightningHowItWorksScreen({ backLabel, onBack }: { backLabel: string; onBack: () => void }) {
+  return <main className="lightning-help screen-enter">
+    <header className="lightning-help__hero">
+      <p className="eyebrow">ABOUT THE LIGHTNING ROUND</p>
+      <h1>Real places. <em>Your honest picks.</em></h1>
+      <p>This is the follow-up round: you are comparing the actual 24 places, with enough practical detail to make a real choice.</p>
+    </header>
+    <ol className="lightning-help__steps">
+      <li><b>1</b><div><strong>Everyone sees the same places.</strong><span>Names, photos, weather, travel effort, activities, and the honest catch are all on the cards.</span></div></li>
+      <li><b>2</b><div><strong>Every place gets a fair look.</strong><span>You will make 48 core choices. If a few places are still too close to separate, the app may ask up to 12 extra close calls.</span></div></li>
+      <li><b>3</b><div><strong>Your list and vetoes stay private.</strong><span>After your list is ready, you can flag up to four places you would not take. That does not change the points or your ranking.</span></div></li>
+      <li><b>4</b><div><strong>The second envelope opens for everyone.</strong><span>Once all five people are ready, you will see everyone’s full rankings, the transparent point tally, and any vetoes.</span></div></li>
+    </ol>
+    <button className="lgs-button lgs-button--secondary lightning-help__back" type="button" onClick={onBack}>← {backLabel}</button>
+  </main>;
+}
+
 function Detail({ icon, title, children }: { icon: string; title: string; children: ReactNode }) { return <div className="lightning-card__detail"><span aria-hidden="true">{icon}</span><div><b>{title}</b>{children}</div></div>; }
 
 export function LightningComparisonScreen({ progress, destinations, selected, onChoose }: { progress: LightningProgress; destinations: readonly [LightningDestinationBrief, LightningDestinationBrief]; selected?: string; onChoose: (id: string) => void }) {

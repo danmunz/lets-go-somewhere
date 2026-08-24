@@ -9,16 +9,16 @@ import johnAvatar from '../../assets/images/john_cutout.png';
 import mattAvatar from '../../assets/images/matt_cutout.png';
 import peterAvatar from '../../assets/images/peter_cutout.png';
 import { AtlasExplorer } from './AtlasExplorer.js';
-import { JourneyNav } from './components/JourneyNav.js';
-import { journeyDestinationForScreen } from './journeyNavigation.js';
+import { JourneyNav, LightningFocusHeader, LightningNav } from './components/JourneyNav.js';
+import { journeyDestinationForScreen, lightningNavigationDestinationForScreen } from './journeyNavigation.js';
 import type { AppScreen } from './types.js';
-import { HowItWorksScreen, LightningComparisonScreen, LightningIntroScreen, LightningPersonalResultsScreen, LightningVerdictScreen, LightningVetoScreen, LightningWaitingScreen, MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
+import { HowItWorksScreen, LightningComparisonScreen, LightningHowItWorksScreen, LightningIntroScreen, LightningPersonalResultsScreen, LightningVerdictScreen, LightningVetoScreen, LightningWaitingScreen, MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
 
-type PreviewPage = 'how-it-works' | 'comparison' | 'profile' | 'atlas' | 'waiting' | 'ready' | 'verdict' | 'shortlist' | 'lightning-intro' | 'lightning-cards' | 'lightning-list' | 'lightning-veto' | 'lightning-waiting' | 'lightning-reveal';
+type PreviewPage = 'how-it-works' | 'comparison' | 'profile' | 'atlas' | 'waiting' | 'ready' | 'verdict' | 'shortlist' | 'lightning-intro' | 'lightning-cards' | 'lightning-list' | 'lightning-veto' | 'lightning-waiting' | 'lightning-reveal' | 'lightning-help';
 const pages: readonly [PreviewPage, string][] = [
   ['how-it-works', 'How it works'], ['comparison', 'Choice cards'], ['profile', 'What I liked'], ['atlas', 'All 24 places'], ['waiting', 'Who’s finished'], ['ready', 'All five'], ['verdict', 'Reveal'], ['shortlist', 'My top five'],
-  ['lightning-intro', 'Round two - intro'], ['lightning-cards', 'Round two - cards'], ['lightning-list', 'Round two - my full list'], ['lightning-veto', 'Round two - vetoes'], ['lightning-waiting', 'Round two - who’s finished'], ['lightning-reveal', 'Round two - reveal'],
+  ['lightning-intro', 'Round two - intro'], ['lightning-cards', 'Round two - cards'], ['lightning-list', 'Round two - my full list'], ['lightning-veto', 'Round two - vetoes'], ['lightning-waiting', 'Round two - who’s finished'], ['lightning-reveal', 'Round two - reveal'], ['lightning-help', 'Round two - about'],
 ];
 const avatarByUser: Record<RosterUser, string> = { dan: danAvatar, james: jamesAvatar, john: johnAvatar, matt: mattAvatar, peter: peterAvatar };
 const profile: PreferenceProfile = {
@@ -108,15 +108,24 @@ export function DevPreview({ initialPage = 'comparison' }: { initialPage?: Previ
     : page === 'lightning-veto' ? <LightningVetoScreen results={previewLightningResults} onSubmit={async (destinationIds) => { setPreviewVetoes(destinationIds); setPage('lightning-list'); return true; }} />
     : page === 'lightning-waiting' ? <LightningWaitingScreen status={lightningStatus} user="dan" onRefresh={() => undefined} onReveal={() => setPage('lightning-reveal')} onOpenResults={() => setPage('lightning-reveal')} />
     : page === 'lightning-reveal' ? <LightningVerdictScreen results={lightningGroupResults} />
+    : page === 'lightning-help' ? <LightningHowItWorksScreen backLabel="Back to my full list" onBack={() => setPage('lightning-list')} />
     : page === 'comparison' ? <PreviewComparison />
     : page === 'profile' ? <ProfileScreen profile={profile} traveler="dan" onOpenMyResults={() => setPage('shortlist')} />
       : page === 'atlas' ? <PreviewAtlas onOpenWaiting={() => setPage('waiting')} />
         : page === 'waiting' || page === 'ready' ? <WaitingScreen status={{ revealOpen: false, allComplete: page === 'ready', updatedAt: '2026-08-19T00:00:00.000Z', members: ['dan', 'james', 'john', 'matt', 'peter'].map((user, index) => ({ user: user as RosterUser, complete: page === 'ready' || index < 3 })) }} user="dan" travelerName={(user) => fixtureTravelerNames[user]} onRefresh={() => undefined} onOpenReveal={() => setPage('verdict')} />
           : page === 'verdict' ? <VerdictScreen results={verdict} currentUser="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarFor={(user) => avatarByUser[user]} onOpenMyResults={() => setPage('shortlist')} />
             : <MyResultsScreen results={myResults} traveler="dan" />;
-  const screen: AppScreen = page === 'profile' ? 'profile' : page === 'atlas' ? 'atlas' : page === 'waiting' || page === 'ready' ? 'waiting' : page === 'verdict' ? 'verdict' : page === 'shortlist' ? 'my-results' : 'comparison';
+  const screen: AppScreen = page === 'profile' ? 'profile' : page === 'atlas' ? 'atlas' : page === 'waiting' || page === 'ready' ? 'waiting' : page === 'verdict' ? 'verdict' : page === 'shortlist' ? 'my-results' : page === 'lightning-list' ? 'lightning-results' : page === 'lightning-waiting' ? 'lightning-waiting' : page === 'lightning-reveal' ? 'lightning-verdict' : page === 'lightning-veto' ? 'lightning-veto' : page === 'lightning-intro' ? 'lightning-intro' : page === 'lightning-cards' ? 'lightning-comparison' : page === 'lightning-help' ? 'lightning-help' : 'comparison';
   const active = journeyDestinationForScreen(screen);
+  const lightningActive = lightningNavigationDestinationForScreen(screen);
   const revealOpen = page === 'verdict';
-  const navigation = active ? <JourneyNav active={active} revealOpen={revealOpen} revealSeen={page === 'verdict'} onNavigate={(destination) => setPage(destination === 'profile' ? 'profile' : destination === 'shortlist' ? 'shortlist' : destination === 'atlas' ? 'atlas' : destination === 'waiting' ? 'waiting' : 'verdict')} onOpenHowItWorks={openHelp} /> : null;
+  const roundOneNavigation = active ? <JourneyNav active={active} revealOpen={revealOpen} revealSeen={page === 'verdict'} onNavigate={(destination) => setPage(destination === 'profile' ? 'profile' : destination === 'shortlist' ? 'shortlist' : destination === 'atlas' ? 'atlas' : destination === 'waiting' ? 'waiting' : 'verdict')} onOpenHowItWorks={openHelp} onOpenLightning={() => setPage('lightning-intro')} /> : null;
+  const lightningNavigation = lightningActive && (page === 'lightning-waiting' || page === 'lightning-reveal' || (page === 'lightning-list' && previewLightningResults.vetoes.submitted))
+    ? <LightningNav active={lightningActive} revealOpen={page === 'lightning-reveal'} onNavigate={(destination) => setPage(destination === 'list' ? 'lightning-list' : destination === 'waiting' ? 'lightning-waiting' : 'lightning-reveal')} onOpenRoundOne={() => setPage('verdict')} onOpenLightning={() => setPage('lightning-list')} onOpenHelp={() => setPage('lightning-help')} />
+    : null;
+  const lightningFocus = page === 'lightning-intro' || page === 'lightning-cards' || page === 'lightning-veto' || (page === 'lightning-list' && !previewLightningResults.vetoes.submitted)
+    ? <LightningFocusHeader status={page === 'lightning-intro' ? 'Ready to begin' : page === 'lightning-cards' ? '39 of 48 choices' : 'Choose your vetoes'} onOpenRoundOne={() => setPage('verdict')} />
+    : null;
+  const navigation = roundOneNavigation ?? lightningNavigation ?? lightningFocus;
   return <>{navigation}{body}<details className="dev-preview-controls"><summary>Local preview screens</summary><div>{pages.map(([id, label]) => <button key={id} onClick={() => id === 'how-it-works' ? openRequiredBriefing() : setPage(id)} aria-pressed={page === id}>{label}</button>)}</div></details></>;
 }

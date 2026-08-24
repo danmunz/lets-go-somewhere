@@ -7,5 +7,5 @@ export { FinalistMatrix } from './FinalistMatrix.js';
 export { MediaImage } from './MediaImage.js';
 export { TravelEffortKey } from './TravelEffortKey.js';
 export { VerdictExplainer } from './VerdictExplainer.js';
-export { JourneyNav } from './JourneyNav.js';
-export type { JourneyDestination } from '../journeyNavigation.js';
+export { JourneyNav, LightningFocusHeader, LightningNav } from './JourneyNav.js';
+export type { JourneyDestination, LightningNavigationDestination } from '../journeyNavigation.js';

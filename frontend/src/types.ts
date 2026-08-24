@@ -33,7 +33,8 @@ export type AppScreen =
   | 'lightning-results'
   | 'lightning-veto'
   | 'lightning-waiting'
-  | 'lightning-verdict';
+  | 'lightning-verdict'
+  | 'lightning-help';
 
 export type ApiRequestSource =
   | 'comparison'
