@@ -2,7 +2,7 @@
 
 This document describes the architecture for **Let's Go Somewhere**, including the released one-trip journey and its operational safeguards.
 
-**Current release (2026-08-21):** the production one-trip build includes the profile, completion-only waiting lobby, immutable v2 transparent social-ballot results, seed-version sealing, emulator configuration, guarded count-only preflight/reset tooling, and `bayes-attribute-shortlist-v1`. The social snapshot is cross-field validated and independently audited; fixed-32 verification, the five-identity authenticated API Emulator rehearsal, a focused literal-browser flow, disposable cloud smoke, and final empty production preflight all passed. No real trip data has been written.
+**Current release (2026-08-24):** the production build includes the profile, completion-only waiting lobby, immutable v2 transparent social-ballot results, seed-version sealing, emulator configuration, guarded count-only preflight/reset tooling, and `bayes-attribute-shortlist-v1`, plus the isolated direct-destination Lightning Round follow-up. The social snapshot is cross-field validated and independently audited; fixed-32 verification, the five-identity authenticated API Emulator rehearsal, a focused literal-browser flow, disposable cloud smoke, and final empty production preflight passed before the real first round began. That original round has now completed and its reveal is open; the Lightning Round writes only its separate `lgsV4Lightning*` collections.
 
 The application presents users with repeated destination-blind, pairwise activity choices such as:
 

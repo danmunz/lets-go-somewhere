@@ -33,6 +33,19 @@ unexpected nonempty preflight are in the [one-trip operator
 runbook](one-trip-runbook.md). A nonempty production preflight is a release
 stop; do not use the reset command as routine deployment cleanup.
 
+## 2026-08-24 Lightning Round follow-up release
+
+Commit `c1a39bb` deployed the direct-destination Lightning Round to Cloud Run
+revision `lgs-api-00013-hsh` and Firebase Hosting. The public API health route
+and Hosting URL both returned successfully, with 100% of Cloud Run traffic on
+that revision.
+
+The original group had already completed its first round and opened its
+immutable reveal. Therefore, the historical count-only preflight was not
+rerun: it is correctly nonempty and must never be reset. The follow-up stores
+only in its isolated `lgsV4Lightning*` collections and does not read, rewrite,
+or reset the original journey documents.
+
 ## Operational notes
 
 - Cloud Run supplies `K_SERVICE`; its presence forces the Firestore repository so a production restart cannot fall back to process memory.

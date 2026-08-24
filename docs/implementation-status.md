@@ -1,6 +1,6 @@
 # Implementation status
 
-Last reconciled: 2026-08-24 (Lightning Round pre-deployment candidate).
+Last reconciled: 2026-08-24 (Lightning Round deployed).
 
 This is the operational status companion to the product specification. It records what is shipped without weakening the product requirements in [spec.md](spec.md) or the intended journey in [ux.md](ux.md).
 
@@ -27,16 +27,17 @@ count tiebreaks cannot resolve them. It exposes no raw activity-by-activity
 choices, normalized utilities, polarization penalties, or group confidence
 claims.
 
-## Lightning Round prototype
+## Lightning Round
 
-The original group reveal is complete and remains immutable. A separate direct-destination Lightning Round is implemented locally for the group’s follow-up decision: 24 researched destination briefs, 48 fair-coverage comparisons plus at most 12 deterministic tie-breakers, Bayesian direct-destination tiering, compact direct-choice cards, private full rankings with a caller-only decision trail, a required zero-to-four advisory-veto step, a departure-board waiting state, second-envelope gating, and a transparent 24-to-1 Borda group board with a sortable five-person rank table. A saved veto tells the group that its owner would not take that trip; it does not alter model ranks, Borda points, or group order. It uses isolated content versioning and `lgsV4Lightning*` Firestore collections, so it cannot change original comparisons or their snapshot. This candidate has passed static validation, fast tests, a real Auth/Firestore Emulator five-identity rehearsal, and local desktop/mobile visual review on 2026-08-24. It has not been deployed yet.
+The original group reveal is complete and remains immutable. A separate direct-destination Lightning Round is deployed for the group’s follow-up decision: 24 researched destination briefs, 48 fair-coverage comparisons plus at most 12 deterministic tie-breakers, Bayesian direct-destination tiering, compact direct-choice cards, private full rankings with a caller-only decision trail, a required zero-to-four advisory-veto step, a departure-board waiting state, second-envelope gating, and a transparent 24-to-1 Borda group board with a sortable five-person rank table. A saved veto tells the group that its owner would not take that trip; it does not alter model ranks, Borda points, or group order. It uses isolated content versioning and `lgsV4Lightning*` Firestore collections, so it cannot change original comparisons or their snapshot. This candidate passed static validation, fast tests, a real Auth/Firestore Emulator five-identity rehearsal, and local desktop/mobile visual review on 2026-08-24 before deployment.
 
-### Lightning Round pre-deployment evidence — passed locally (2026-08-24)
+### Lightning Round verification and deployment — passed (2026-08-24)
 
 - `npm run validate:seed`, `npm run validate:lightning-seed`, and `npm run validate:moods` all passed.
 - The fast suite passed with 166 tests and eight intentionally skipped Emulator-only checks. `npm run typecheck`, `npm run build`, and `git diff --check` passed.
 - `npm run test:emulator`, with only the local Java/Firebase emulators, passed all eight tests. Its five-identity rehearsal drove both the original fixed-32 round and the persisted Lightning Round through real API routes, resume-safe direct comparisons, zero-to-four veto submissions, Dan-only second-envelope opening, immutable reload parity, and post-reveal mutation rejection.
 - Fixture-based browser review covered desktop and 390px mobile Lightning introduction, direct cards, private ranking/veto selection, waiting board, and group reveal. Development fixture controls are excluded from production builds.
+- Commit `c1a39bb` was deployed to Cloud Run revision `lgs-api-00013-hsh` and Firebase Hosting. The service routes 100% of traffic to that revision; its public health endpoint and the Hosting URL both returned successfully. The original trip and its opened reveal were deliberately left untouched.
 
 The production build still reports one non-blocking initial JavaScript bundle warning (about 418 kB gzip), driven primarily by MapLibre and ambient visual dependencies. It is a performance optimization opportunity, not a functional or release-gate failure; the warning is retained rather than suppressed.
 
@@ -46,7 +47,7 @@ The released build includes a plain-language destination-free **What you liked**
 
 The post-choice presentation also has a typed **mood companion** system: every traveler has eight optimized local portrait crops, one for each existing preference dimension. Portraits appear only with safe, evidence-linked profile/result/reveal explanations and never in the blind game, atlas destination details, or waiting state.
 
-The current release is commit `fa23dec` (product code in `775130d`), deployed on 2026-08-22 as Cloud Run revision `lgs-api-00009-x8r` and Firebase Hosting version `ab1c50b7b1550cc8`. The API health route and public Hosting route returned successfully, and the required count-only production preflight was empty both before and after deployment.
+The original one-trip release was deployed on 2026-08-22 as Cloud Run revision `lgs-api-00009-x8r` and Firebase Hosting version `ab1c50b7b1550cc8`. The current production release is commit `c1a39bb`, deployed on 2026-08-24 as Cloud Run revision `lgs-api-00013-hsh` and Firebase Hosting. The API health route and public Hosting route returned successfully. The original trip has now started and its reveal is open, so the historical empty-state preflight does not apply to this isolated Lightning follow-up deployment.
 
 ## Release evidence
 

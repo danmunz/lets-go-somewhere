@@ -10,7 +10,7 @@ The app is a TypeScript workspace with a destination-blind React flow, activity-
 
 Production preview: <https://lets-go-somewhere-3549f.web.app>. For shipped scope and the remaining one-trip release boundary, see [implementation status](docs/implementation-status.md).
 
-The repository also contains a local **Lightning Round** follow-up prototype for an already-opened first reveal. It directly compares named destinations with practical trip facts, asks each traveler to save zero to four advisory vetoes after their personal list is ready, keeps original trip data isolated, and creates a second sealed group result. Vetoes are displayed only after that envelope opens and never change the direct ranking or tally. It is not deployed yet.
+The deployed **Lightning Round** is a follow-up for an already-opened first reveal. It directly compares named destinations with practical trip facts, asks each traveler to save zero to four advisory vetoes after their personal list is ready, keeps original trip data isolated, and creates a second sealed group result. Vetoes are displayed only after that envelope opens and never change the direct ranking or tally.
 
 ## Repository map
 
