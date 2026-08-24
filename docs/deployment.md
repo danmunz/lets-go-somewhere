@@ -40,6 +40,12 @@ revision `lgs-api-00013-hsh` and Firebase Hosting. The public API health route
 and Hosting URL both returned successfully, with 100% of Cloud Run traffic on
 that revision.
 
+Commit `23f83e6` then deployed the verified round-aware navigation revision and
+an iPhone Safari comparison-card layout fix to Cloud Run revision
+`lgs-api-00014-5sb` and Firebase Hosting. The public API health route and
+Hosting URL returned successfully. This was a service/static-client deployment
+only: no participant endpoint, preflight, reset, or Firestore write was run.
+
 The original group had already completed its first round and opened its
 immutable reveal. Therefore, the historical count-only preflight was not
 rerun: it is correctly nonempty and must never be reset. The follow-up stores

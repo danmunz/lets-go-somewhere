@@ -16,6 +16,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Completed the Lightning Round pre-deployment gate locally: canonical seed/mood validation, 166 fast tests, strict type checking, production build, and an eight-test Auth/Firestore Emulator suite including a persisted five-identity original-plus-Lightning rehearsal. Fixture review covered the Lightning flow at desktop and 390px mobile widths. No production project or production trip data was used.
 - Released commit `c1a39bb` to Cloud Run revision `lgs-api-00013-hsh` and Firebase Hosting. The public health route and Hosting URL passed; original first-round data and its opened snapshot were left unchanged.
+- Released commit `23f83e6` to Cloud Run revision `lgs-api-00014-5sb` and Firebase Hosting. The public health route and Hosting URL passed; this UI-only follow-up did not inspect, reset, or modify either round’s Firestore data.
 
 ### Changed
 

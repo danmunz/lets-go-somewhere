@@ -37,7 +37,7 @@ The original group reveal is complete and remains immutable. A separate direct-d
 - The fast suite passed with 166 tests and eight intentionally skipped Emulator-only checks. `npm run typecheck`, `npm run build`, and `git diff --check` passed.
 - `npm run test:emulator`, with only the local Java/Firebase emulators, passed all eight tests. Its five-identity rehearsal drove both the original fixed-32 round and the persisted Lightning Round through real API routes, resume-safe direct comparisons, zero-to-four veto submissions, Dan-only second-envelope opening, immutable reload parity, and post-reveal mutation rejection.
 - Fixture-based browser review covered desktop and 390px mobile Lightning introduction, direct cards, private ranking/veto selection, waiting board, and group reveal. Development fixture controls are excluded from production builds.
-- Commit `c1a39bb` was deployed to Cloud Run revision `lgs-api-00013-hsh` and Firebase Hosting. The service routes 100% of traffic to that revision; its public health endpoint and the Hosting URL both returned successfully. The original trip and its opened reveal were deliberately left untouched.
+- Commit `23f83e6` was deployed to Cloud Run revision `lgs-api-00014-5sb` and Firebase Hosting. The service routes 100% of traffic to that revision; its public health endpoint and the Hosting URL both returned successfully. This UI-only navigation/mobile-layout follow-up did not inspect, reset, or modify either round’s Firestore data.
 
 The production build still reports one non-blocking initial JavaScript bundle warning (about 418 kB gzip), driven primarily by MapLibre and ambient visual dependencies. It is a performance optimization opportunity, not a functional or release-gate failure; the warning is retained rather than suppressed.
 
@@ -47,7 +47,7 @@ The released build includes a plain-language destination-free **What you liked**
 
 The post-choice presentation also has a typed **mood companion** system: every traveler has eight optimized local portrait crops, one for each existing preference dimension. Portraits appear only with safe, evidence-linked profile/result/reveal explanations and never in the blind game, atlas destination details, or waiting state.
 
-The original one-trip release was deployed on 2026-08-22 as Cloud Run revision `lgs-api-00009-x8r` and Firebase Hosting version `ab1c50b7b1550cc8`. The current production release is commit `c1a39bb`, deployed on 2026-08-24 as Cloud Run revision `lgs-api-00013-hsh` and Firebase Hosting. The API health route and public Hosting route returned successfully. The original trip has now started and its reveal is open, so the historical empty-state preflight does not apply to this isolated Lightning follow-up deployment.
+The original one-trip release was deployed on 2026-08-22 as Cloud Run revision `lgs-api-00009-x8r` and Firebase Hosting version `ab1c50b7b1550cc8`. The current production release is commit `23f83e6`, deployed on 2026-08-24 as Cloud Run revision `lgs-api-00014-5sb` and Firebase Hosting. The API health route and public Hosting route returned successfully. The original trip has now started and its reveal is open, so the historical empty-state preflight does not apply to this isolated Lightning follow-up deployment.
 
 ## Release evidence
 
