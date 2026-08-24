@@ -46,6 +46,14 @@ an iPhone Safari comparison-card layout fix to Cloud Run revision
 Hosting URL returned successfully. This was a service/static-client deployment
 only: no participant endpoint, preflight, reset, or Firestore write was run.
 
+Commit `60eb326` then deployed the Lightning working-order evidence model and
+cross-person qualitative-band interaction to Cloud Run revision
+`lgs-api-00015-92r` and Firebase Hosting. The API health endpoint and Hosting
+URL returned successfully. A read-only authenticated check confirmed that the
+sealed Lightning waiting screen reported all five lists saved and that a
+submitted personal list rendered its saved vetoes and private evidence labels.
+No envelope, reset, participant submission, or other Firestore write was run.
+
 The original group had already completed its first round and opened its
 immutable reveal. Therefore, the historical count-only preflight was not
 rerun: it is correctly nonempty and must never be reset. The follow-up stores

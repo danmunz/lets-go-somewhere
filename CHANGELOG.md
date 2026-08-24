@@ -8,7 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
-- Added an unshipped Lightning working-order evidence model: deterministic 4,096-draw private top-five/rank-range checks, 75% clear-break markers, exact-rank group Borda results, and qualitative group-only bands. A guarded local preview can read completed production Lightning data into an ignored local file without calling application routes or writing Firestore.
+- Added a Lightning working-order evidence model: deterministic 4,096-draw private top-five/rank-range checks, 75% clear-break markers, exact-rank group Borda results, and qualitative group-only bands. A guarded local preview can read completed production Lightning data into an ignored local file without calling application routes or writing Firestore.
 - Added a local, isolated Lightning Round follow-up for a completed original trip: 24 researched direct-destination briefs, a Bayesian Bradley–Terry 48-core/up-to-12-tie-breaker policy, private full rankings, a second-envelope group gate, and a transparent 24-to-1 Borda result board with the five expandable full lists. It uses separate content sealing and Firestore collections.
 - Refined the local Lightning Round into a denser direct-choice experience: an enlarged, free-standing round-two cast; more compact responsive cards; a caller-only “X beat Y” decision trail; a departure-board completion view; and a sortable five-person group-rank table. The trail remains private until its owner’s list is available and is never included in the group snapshot.
 - Added a required, private Lightning Round veto step after each direct ranking. Travelers may save zero to four immutable advisory vetoes; they stay sealed until the second envelope, render as clear veto markers in personal and group results, and never change the Bayesian ranking, Borda tally, or group ordering.
@@ -18,6 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Completed the Lightning Round pre-deployment gate locally: canonical seed/mood validation, 166 fast tests, strict type checking, production build, and an eight-test Auth/Firestore Emulator suite including a persisted five-identity original-plus-Lightning rehearsal. Fixture review covered the Lightning flow at desktop and 390px mobile widths. No production project or production trip data was used.
 - Released commit `c1a39bb` to Cloud Run revision `lgs-api-00013-hsh` and Firebase Hosting. The public health route and Hosting URL passed; original first-round data and its opened snapshot were left unchanged.
 - Released commit `23f83e6` to Cloud Run revision `lgs-api-00014-5sb` and Firebase Hosting. The public health route and Hosting URL passed; this UI-only follow-up did not inspect, reset, or modify either round’s Firestore data.
+- Released commit `60eb326` to Cloud Run revision `lgs-api-00015-92r` and Firebase Hosting. The public health route, Hosting URL, sealed Lightning waiting view, and a submitted caller-only Lightning list all rendered correctly against production data. No envelope, reset, or participant-data write was invoked.
 
 ### Changed
 
