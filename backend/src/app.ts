@@ -1,5 +1,5 @@
 import { Hono, type Context } from 'hono';
-import { comparisonSchema, nextComparisonResponseSchema, toAtlasDestination, toSafeActivity } from '@lgs/shared';
+import { comparisonSchema, lightningComparisonSubmissionSchema, lightningGroupResultsSchema, lightningGroupStatusSchema, lightningNextComparisonResponseSchema, lightningPersonalResultsSchema, lightningStatusSchema, lightningVetoSubmissionResponseSchema, lightningVetoSubmissionSchema, nextComparisonResponseSchema, toAtlasDestination, toSafeActivity } from '@lgs/shared';
 import {
   activities,
   assertRevealSnapshotSeedVersionCompatible,
@@ -30,6 +30,28 @@ import {
   buildProfileResponse,
   withRevealState,
 } from './dto/one-trip.js';
+import {
+  LIGHTNING_CORE_COMPARISONS,
+  LIGHTNING_MAX_COMPARISONS,
+  buildLightningRanking,
+  fitDirectDestinationBradleyTerry,
+  selectNextLightningPair,
+  shouldCompleteLightningRound,
+  tallyLightningBorda,
+} from './lightning/direct-model.js';
+import {
+  claimLightningComparison,
+  createOrGetLightningRevealSnapshot,
+  ensureLightningRound,
+  getAllLightningStates,
+  getLightningRevealSnapshot,
+  getLightningState,
+  issueLightningPending,
+  lightningContentVersion,
+  lightningDestinationById,
+  lightningDestinations,
+  submitLightningVetoes,
+} from './lightning/store.js';
 
 export const app = new Hono<{ Variables: { user: RosterUser } }>();
 app.onError((error, context) => {
@@ -37,6 +59,9 @@ app.onError((error, context) => {
   // returning schema internals, document IDs, or comparison information.
   if (error instanceof StoreDataError) {
     return context.json({ code: 'temporarily-unavailable', error: 'This trip data is temporarily unavailable. Ask the organizer for help.' }, 503);
+  }
+  if (error instanceof StoreConflictError) {
+    return context.json({ code: 'conflict', error: error.message }, 409);
   }
   return context.json({ code: 'temporarily-unavailable', error: 'The trip is temporarily unavailable. Please try again shortly.' }, 503);
 });
@@ -164,4 +189,163 @@ app.get('/v1/results/group', async (context) => {
     return context.json({ code: 'temporarily-unavailable', error: 'This legacy reveal remains read-only until the trip reset.' }, 503);
   }
   return context.json(buildGroupResultsResponse(snapshot, destinations));
+});
+
+// ────────────────────────────────────────────────────────────────────────────
+// Lightning Round — a completely separate, named-destination second exercise.
+// Nothing below reads or writes original comparisons, user documents, or the
+// original immutable envelope except the opening gate in ensureLightningRound.
+const lightningDirectDestinations = lightningDestinations.map(({ id }) => ({ id }));
+const lightningSeedFor = (user: RosterUser) => `${lightningContentVersion}:${user}`;
+const lightningProgress = (comparisons: number) => ({
+  comparisons,
+  core: 48 as const,
+  maximum: 60 as const,
+  phase: comparisons >= LIGHTNING_CORE_COMPARISONS ? 'tie-breakers' as const : 'core' as const,
+});
+const toDirectComparisons = (comparisons: Awaited<ReturnType<typeof getLightningState>>['comparisons']) => comparisons.map(({ destinationA, destinationB, winner }) => ({ destinationA, destinationB, winner }));
+const lightningComplete = (user: RosterUser, comparisons: Awaited<ReturnType<typeof getLightningState>>['comparisons']) =>
+  shouldCompleteLightningRound(lightningDirectDestinations, toDirectComparisons(comparisons), lightningSeedFor(user));
+const lightningRankingComplete = (user: RosterUser, state: Awaited<ReturnType<typeof getLightningState>>) =>
+  Boolean(state.completedAt) || lightningComplete(user, state.comparisons);
+const lightningParticipationComplete = (user: RosterUser, state: Awaited<ReturnType<typeof getLightningState>>) =>
+  lightningRankingComplete(user, state) && Boolean(state.vetoSubmittedAt);
+
+app.get('/v1/lightning-round/status', async (context) => {
+  const user = context.get('user') as RosterUser;
+  await ensureLightningRound();
+  const state = await getLightningState(user);
+  const snapshot = await getLightningRevealSnapshot();
+  const rankingComplete = lightningRankingComplete(user, state);
+  const vetoSubmitted = Boolean(state.vetoSubmittedAt);
+  return context.json(lightningStatusSchema.parse({
+    available: true,
+    rankingComplete,
+    vetoSubmitted,
+    // An already-open legacy second envelope predates vetoes. Its historical
+    // result remains readable without pretending that veto choices existed.
+    complete: rankingComplete && (vetoSubmitted || Boolean(snapshot)),
+    revealOpen: Boolean(snapshot),
+    progress: lightningProgress(state.comparisons.length),
+  }));
+});
+app.get('/v1/lightning-round/comparison/next', async (context) => {
+  const user = context.get('user') as RosterUser;
+  await ensureLightningRound();
+  const state = await getLightningState(user);
+  const comparisons = toDirectComparisons(state.comparisons);
+  if (lightningRankingComplete(user, state)) {
+    return context.json(lightningNextComparisonResponseSchema.parse({ complete: true, progress: lightningProgress(comparisons.length) }));
+  }
+  const pair = selectNextLightningPair(lightningDirectDestinations, comparisons, lightningSeedFor(user));
+  if (!pair) return context.json(lightningNextComparisonResponseSchema.parse({ complete: true, progress: lightningProgress(comparisons.length) }));
+  await issueLightningPending(user, [pair[0].id, pair[1].id]);
+  const refreshed = await getLightningState(user);
+  return context.json(lightningNextComparisonResponseSchema.parse({ complete: false, progress: lightningProgress(comparisons.length), revision: refreshed.revision, destinationA: lightningDestinationById.get(pair[0].id), destinationB: lightningDestinationById.get(pair[1].id) }));
+});
+app.post('/v1/lightning-round/comparisons', async (context) => {
+  const user = context.get('user') as RosterUser;
+  let body: unknown;
+  try { body = await context.req.json(); } catch { return context.json({ error: 'Comparison body must be JSON.' }, 400); }
+  const parsed = lightningComparisonSubmissionSchema.safeParse(body);
+  if (!parsed.success) return context.json({ error: 'Invalid direct comparison.' }, 400);
+  const { revision, ...comparison } = parsed.data;
+  const state = await getLightningState(user);
+  if (lightningRankingComplete(user, state)) return context.json({ code: 'conflict', error: 'Your direct destination ranking is already complete.' }, 409);
+  const completeAfter = shouldCompleteLightningRound(lightningDirectDestinations, [...toDirectComparisons(state.comparisons), comparison], lightningSeedFor(user));
+  try { await claimLightningComparison(user, { ...comparison, revision }, completeAfter); }
+  catch (error) { if (error instanceof StoreConflictError) return context.json({ code: 'conflict', error: error.message }, 409); throw error; }
+  return context.json({ accepted: true });
+});
+app.post('/v1/lightning-round/vetoes', async (context) => {
+  const user = context.get('user') as RosterUser;
+  let body: unknown;
+  try { body = await context.req.json(); } catch { return context.json({ error: 'Veto choices must be JSON.' }, 400); }
+  const parsed = lightningVetoSubmissionSchema.safeParse(body);
+  if (!parsed.success) return context.json({ error: 'Choose up to four different places to veto.', details: parsed.error.flatten() }, 400);
+  if (parsed.data.destinationIds.some((id) => !lightningDestinationById.has(id))) {
+    return context.json({ error: 'A veto must name one of the 24 Lightning Round places.' }, 400);
+  }
+  await ensureLightningRound();
+  const state = await getLightningState(user);
+  const rankingComplete = lightningRankingComplete(user, state);
+  if (!rankingComplete) return context.json({ code: 'completion-required', error: 'Finish your direct destination choices before choosing vetoes.' }, 409);
+  try {
+    const destinationIds = await submitLightningVetoes(user, parsed.data.destinationIds, rankingComplete);
+    return context.json(lightningVetoSubmissionResponseSchema.parse({ accepted: true, vetoes: { submitted: true, destinationIds } }));
+  } catch (error) {
+    if (error instanceof StoreConflictError) return context.json({ code: 'conflict', error: error.message }, 409);
+    throw error;
+  }
+});
+app.get('/v1/lightning-round/results/me', async (context) => {
+  const user = context.get('user') as RosterUser; await ensureLightningRound(); const state = await getLightningState(user);
+  if (!lightningRankingComplete(user, state)) return context.json({ code: 'completion-required', error: 'Finish your direct destination choices first.' }, 409);
+  const fit = fitDirectDestinationBradleyTerry(lightningDirectDestinations, toDirectComparisons(state.comparisons));
+  if (!fit.ok) throw new StoreDataError('The Lightning Round could not prepare this personal list.');
+  return context.json(lightningPersonalResultsSchema.parse({
+    modelVersion: 'bayes-direct-destination-v1', contentVersion: lightningContentVersion,
+    tiers: buildLightningRanking(fit, lightningSeedFor(user)).tiers.map((tier) => ({ rankStart: tier.startRank, rankEnd: tier.endRank, destinationIds: tier.destinationIds })),
+    destinations: lightningDestinations,
+    // This is caller-only and allowed because Lightning happens after the first
+    // envelope: the UI can honestly show how this traveler's direct list formed.
+    comparisonTrail: state.comparisons.map((comparison) => ({
+      order: comparison.ordinal,
+      winnerId: comparison.winner,
+      loserId: comparison.winner === comparison.destinationA ? comparison.destinationB : comparison.destinationA,
+      phase: comparison.ordinal <= LIGHTNING_CORE_COMPARISONS ? 'core' as const : 'tie-breakers' as const,
+    })),
+    vetoes: { submitted: Boolean(state.vetoSubmittedAt), destinationIds: state.vetoedDestinationIds ?? [] },
+  }));
+});
+app.get('/v1/lightning-round/group-status', async (context) => {
+  await ensureLightningRound(); const all = await getAllLightningStates(); const snapshot = await getLightningRevealSnapshot();
+  const members = ROSTER.map((user) => ({
+    user,
+    complete: Boolean(snapshot)
+      ? lightningRankingComplete(user, all[user])
+      : lightningParticipationComplete(user, all[user]),
+  }));
+  return context.json(lightningGroupStatusSchema.parse({ revealOpen: Boolean(snapshot), allComplete: members.every((member) => member.complete), members, updatedAt: new Date().toISOString() }));
+});
+app.post('/v1/lightning-round/reveal', async (context) => {
+  const user = context.get('user') as RosterUser;
+  if (user !== 'dan') return context.json({ error: 'Only Dan can open the second envelope.' }, 403);
+  await ensureLightningRound(); const all = await getAllLightningStates();
+  if (!ROSTER.every((member) => lightningParticipationComplete(member, all[member]))) return context.json({ error: 'Wait for the whole crew to finish their rankings and submit their vetoes.' }, 409);
+  const snapshot = await createOrGetLightningRevealSnapshot(() => {
+    const rankings = ROSTER.map((member) => {
+      const fit = fitDirectDestinationBradleyTerry(lightningDirectDestinations, toDirectComparisons(all[member].comparisons));
+      if (!fit.ok) throw new StoreDataError(`Could not prepare ${member}'s Lightning list.`);
+      return { user: member, ranking: buildLightningRanking(fit, lightningSeedFor(member)) };
+    });
+    const rows = tallyLightningBorda(lightningDirectDestinations.map(({ id }) => id), rankings.map(({ ranking }) => ranking));
+    const supportersFor = (id: string) => rankings.filter(({ ranking }) => ranking.tiers.some((tier) => tier.destinationIds.includes(id) && tier.startRank <= 5)).map(({ user }) => user);
+    return lightningGroupResultsSchema.parse({
+      snapshotId: 'pending',
+      modelVersion: 'bayes-direct-destination-v1',
+      contentVersion: lightningContentVersion,
+      group: rows.map((row) => ({
+        rankStart: row.startRank,
+        rankEnd: row.endRank,
+        destinationId: row.destinationId,
+        bordaHalfPoints: Math.round(row.points * 2),
+        firstPlaceVotes: row.firstPlaceVotes,
+        supporters: supportersFor(row.destinationId),
+        vetoedBy: ROSTER.filter((member) => all[member].vetoedDestinationIds?.includes(row.destinationId)),
+      })),
+      members: rankings.map(({ user, ranking }) => ({
+        user,
+        tiers: ranking.tiers.map((tier) => ({ rankStart: tier.startRank, rankEnd: tier.endRank, destinationIds: tier.destinationIds })),
+        vetoedDestinationIds: all[user].vetoedDestinationIds ?? [],
+      })),
+      destinations: lightningDestinations,
+    });
+  });
+  return context.json({ revealOpen: true, snapshotId: snapshot.snapshotId });
+});
+app.get('/v1/lightning-round/results/group', async (context) => {
+  await ensureLightningRound(); const snapshot = await getLightningRevealSnapshot();
+  if (!snapshot) return context.json({ code: 'reveal-locked', error: 'The second envelope is still sealed.' }, 423);
+  return context.json(snapshot);
 });

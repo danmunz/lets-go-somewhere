@@ -1519,3 +1519,17 @@ Identifier for the specific ranking algorithm used to compute a result.
 
 **Travel Friction**  
 A practical measure of logistical difficulty such as flight duration, layovers, transfers, and ground travel.
+
+---
+
+## Lightning Round isolation
+
+The direct-destination Lightning Round is intentionally a sibling workflow, not a second mode of the original model. Its candidate briefs are loaded from `seed/lightning-round/destination-briefs.json`, mapped through `lightningDestinationBriefSchema`, and frozen with a separate SHA-256 content version. The backend owns `bayes-direct-destination-v1`, direct-pair scheduling, posterior tiering, and the 24-to-1 Borda result builder.
+
+Its persistence is wholly separate from the original one-trip collections:
+
+- `lgsV4LightningUsers` — per-roster direct comparisons, revision, pending pair, direct-ranking completion, and one immutable veto submission of zero to four destination IDs. The caller-only personal-results response derives an ordered winner/loser decision trail from persisted comparisons and includes only the caller’s veto state; the direct trail is never copied into a group snapshot.
+- `lgsV4LightningState/round` — frozen Lightning content version and second-envelope state. A traveler counts as ready only when both the direct ranking and veto submission are complete.
+- `lgsV4LightningResultSnapshots` — immutable group direct-ranking results, including each member’s saved veto IDs and a canonical per-destination `vetoedBy` summary. The Borda result remains independent of veto state.
+
+Lightning initialization requires the original immutable reveal snapshot to exist. No Lightning route mutates `lgsV4Users`, `lgsV4State/reveal`, or `lgsV4ResultSnapshots`. Existing opened Lightning snapshots remain read-only legacy data: the system never inserts or recalculates vetoes after their envelope has opened.

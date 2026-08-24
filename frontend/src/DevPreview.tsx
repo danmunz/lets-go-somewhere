@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import NumberFlow from '@number-flow/react';
-import type { AtlasDestination, PersonalResultsResponse, PreferenceProfile, RosterUser } from '@lgs/shared';
+import { LIGHTNING_MODEL_VERSION, ROSTER_USERS, type AtlasDestination, type LightningDestinationBrief, type LightningGroupResults, type LightningGroupStatus, type LightningPersonalResults, type PersonalResultsResponse, type PreferenceProfile, type RosterUser } from '@lgs/shared';
 import logoUrl from '../../design-system/assets/logo.png';
+import lightningBriefSeed from '../../seed/lightning-round/destination-briefs.json';
 import danAvatar from '../../assets/images/dan_cutout.png';
 import jamesAvatar from '../../assets/images/james_cutout.png';
 import johnAvatar from '../../assets/images/john_cutout.png';
@@ -11,12 +12,13 @@ import { AtlasExplorer } from './AtlasExplorer.js';
 import { JourneyNav } from './components/JourneyNav.js';
 import { journeyDestinationForScreen } from './journeyNavigation.js';
 import type { AppScreen } from './types.js';
-import { HowItWorksScreen, MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
+import { HowItWorksScreen, LightningComparisonScreen, LightningIntroScreen, LightningPersonalResultsScreen, LightningVerdictScreen, LightningVetoScreen, LightningWaitingScreen, MyResultsScreen, ProfileScreen, VerdictScreen, WaitingScreen } from './screens/index.js';
 import { createVerdictFixture, fixtureTravelerNames } from './screens/verdictFixtures.js';
 
-type PreviewPage = 'how-it-works' | 'comparison' | 'profile' | 'atlas' | 'waiting' | 'ready' | 'verdict' | 'shortlist';
+type PreviewPage = 'how-it-works' | 'comparison' | 'profile' | 'atlas' | 'waiting' | 'ready' | 'verdict' | 'shortlist' | 'lightning-intro' | 'lightning-cards' | 'lightning-list' | 'lightning-veto' | 'lightning-waiting' | 'lightning-reveal';
 const pages: readonly [PreviewPage, string][] = [
   ['how-it-works', 'How it works'], ['comparison', 'Choice cards'], ['profile', 'What I liked'], ['atlas', 'All 24 places'], ['waiting', 'Who’s finished'], ['ready', 'All five'], ['verdict', 'Reveal'], ['shortlist', 'My top five'],
+  ['lightning-intro', 'Round two - intro'], ['lightning-cards', 'Round two - cards'], ['lightning-list', 'Round two - my full list'], ['lightning-veto', 'Round two - vetoes'], ['lightning-waiting', 'Round two - who’s finished'], ['lightning-reveal', 'Round two - reveal'],
 ];
 const avatarByUser: Record<RosterUser, string> = { dan: danAvatar, james: jamesAvatar, john: johnAvatar, matt: mattAvatar, peter: peterAvatar };
 const profile: PreferenceProfile = {
@@ -46,6 +48,40 @@ const myResults: PersonalResultsResponse = {
     explanation: { themes: ['big adventures', 'local texture'], moodKeys: ['adventure', 'culture'], matchedActivityCount: 5, encounteredActivityCount: 16 }, context: place.context,
   })),
 };
+const highlightTitles = ['A good day could include', 'Another good day', 'Leave room for'] as const;
+const lightningDestinations: LightningDestinationBrief[] = lightningBriefSeed.map((destination) => ({
+  id: destination.id,
+  name: destination.name,
+  country: destination.country,
+  imageUrl: destination.photoPath,
+  pitch: destination.shortPitch,
+  highlights: destination.highlights.map((detail, index) => ({ title: highlightTitles[index]!, detail })),
+  weather: destination.weather,
+  travel: { effort: destination.travel.effort, summary: destination.travel.description, fares: destination.airfare, fareNote: destination.airfare.qualifier },
+  caveat: destination.caveat,
+  researchedAt: destination.researchedAt,
+  sources: destination.sources.map((source) => ({ label: source.title, url: source.url })),
+}));
+const lightningPlaces = [lightningDestinations[0]!, lightningDestinations[2]!] as const;
+const lightningTiers = lightningDestinations.map((destination, index) => ({ rankStart: index + 1, rankEnd: index + 1, destinationIds: [destination.id] }));
+const lightningResults: LightningPersonalResults = {
+  modelVersion: LIGHTNING_MODEL_VERSION,
+  contentVersion: 'local-preview',
+  tiers: lightningTiers,
+  destinations: lightningDestinations,
+  comparisonTrail: Array.from({ length: 48 }, (_, index) => {
+    const destinationA = lightningDestinations[index % lightningDestinations.length]!;
+    const destinationB = lightningDestinations[(index * 7 + 5) % lightningDestinations.length]!;
+    return { order: index + 1, winnerId: destinationA.id, loserId: destinationB.id, phase: 'core' as const };
+  }),
+  vetoes: { submitted: false, destinationIds: [] },
+};
+const lightningStatus: LightningGroupStatus = { revealOpen: false, allComplete: false, updatedAt: '2026-08-23T00:00:00.000Z', members: ROSTER_USERS.map((user, index) => ({ user, complete: index < 3 })) };
+const lightningGroupResults: LightningGroupResults = {
+  snapshotId: 'local-lightning-preview', modelVersion: LIGHTNING_MODEL_VERSION, contentVersion: 'local-preview', destinations: lightningDestinations,
+  group: lightningDestinations.map((destination, index) => ({ rankStart: index + 1, rankEnd: index + 1, destinationId: destination.id, bordaHalfPoints: (24 - index) * 10, firstPlaceVotes: index === 0 ? 3 : index === 1 ? 1 : 0, supporters: ROSTER_USERS.slice(0, Math.max(1, 5 - Math.floor(index / 5))), vetoedBy: destination.id === lightningDestinations[3]?.id ? ['james', 'matt'] : destination.id === lightningDestinations[6]?.id ? ['john'] : [] })),
+  members: ROSTER_USERS.map((user, offset) => ({ user, tiers: lightningDestinations.map((destination, index) => ({ rankStart: index + 1, rankEnd: index + 1, destinationIds: [lightningDestinations[(index + offset) % lightningDestinations.length]!.id] })), vetoedDestinationIds: user === 'james' ? [lightningDestinations[3]!.id] : user === 'matt' ? [lightningDestinations[3]!.id] : user === 'john' ? [lightningDestinations[6]!.id] : [] })),
+};
 
 function PreviewAtlas({ onOpenWaiting }: { onOpenWaiting: () => void }) {
   return <AtlasExplorer destinations={atlasDestinations} user="dan" travelerName={(user) => fixtureTravelerNames[user]} avatarSrc={danAvatar} onOpenWaiting={onOpenWaiting} />;
@@ -56,14 +92,22 @@ function PreviewComparison() {
 }
 
 /** Development-only visual journey navigator. It never calls the API or stores a choice. */
-export function DevPreview() {
-  const [page, setPage] = useState<PreviewPage>('comparison');
-  const [helpReturn, setHelpReturn] = useState<PreviewPage>('comparison');
+export function DevPreview({ initialPage = 'comparison' }: { initialPage?: PreviewPage }) {
+  const [page, setPage] = useState<PreviewPage>(initialPage);
+  const [helpReturn, setHelpReturn] = useState<PreviewPage>(initialPage);
   const [briefingRequired, setBriefingRequired] = useState(false);
+  const [previewVetoes, setPreviewVetoes] = useState<readonly string[] | undefined>();
+  const previewLightningResults: LightningPersonalResults = { ...lightningResults, vetoes: { submitted: previewVetoes !== undefined, destinationIds: [...(previewVetoes ?? [])] } };
   const openHelp = () => { setHelpReturn(page); setBriefingRequired(false); setPage('how-it-works'); };
   const openRequiredBriefing = () => { setBriefingRequired(true); setPage('how-it-works'); };
   const helpReturnLabel = pages.find(([id]) => id === helpReturn)?.[1].toLowerCase() ?? 'your choices';
   const body = page === 'how-it-works' ? <HowItWorksScreen travelers={Object.entries(avatarByUser).map(([id, image]) => ({ id, name: fixtureTravelerNames[id as RosterUser], image }))} required={briefingRequired} backLabel={briefingRequired ? 'Back to character selection' : `Back to ${helpReturnLabel}`} onBack={() => setPage(briefingRequired ? 'comparison' : helpReturn)} onStartChoices={briefingRequired ? () => setPage('comparison') : undefined} />
+    : page === 'lightning-intro' ? <LightningIntroScreen onStart={() => setPage('lightning-cards')} />
+    : page === 'lightning-cards' ? <LightningComparisonScreen progress={{ comparisons: 39, core: 48, maximum: 60, phase: 'core' }} destinations={lightningPlaces} onChoose={() => undefined} />
+    : page === 'lightning-list' ? <LightningPersonalResultsScreen results={previewLightningResults} onOpenWaiting={() => setPage('lightning-waiting')} onOpenVeto={() => setPage('lightning-veto')} />
+    : page === 'lightning-veto' ? <LightningVetoScreen results={previewLightningResults} onSubmit={async (destinationIds) => { setPreviewVetoes(destinationIds); setPage('lightning-list'); return true; }} />
+    : page === 'lightning-waiting' ? <LightningWaitingScreen status={lightningStatus} user="dan" onRefresh={() => undefined} onReveal={() => setPage('lightning-reveal')} onOpenResults={() => setPage('lightning-reveal')} />
+    : page === 'lightning-reveal' ? <LightningVerdictScreen results={lightningGroupResults} />
     : page === 'comparison' ? <PreviewComparison />
     : page === 'profile' ? <ProfileScreen profile={profile} traveler="dan" onOpenMyResults={() => setPage('shortlist')} />
       : page === 'atlas' ? <PreviewAtlas onOpenWaiting={() => setPage('waiting')} />

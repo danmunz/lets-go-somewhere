@@ -104,7 +104,10 @@ export type StoreConflictCode =
   | 'pending-missing'
   | 'pending-expired'
   | 'pending-revision-mismatch'
-  | 'pending-offered-mismatch';
+  | 'pending-offered-mismatch'
+  | 'veto-ranking-incomplete'
+  | 'veto-submitted'
+  | 'veto-reveal-open';
 
 export type PendingClaimInput = Comparison & {
   /** The server revision that accompanied the issued pair. */

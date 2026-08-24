@@ -80,9 +80,7 @@ GROUP REVEAL
     ↓
 DESTINATION DETAIL / "WHY"
     ↓
-FINAL GUT CHECK
-    ↓
-RESULTS
+OFF-APP GROUP CONVERSATION
 ```
 
 Post-MVP organizer journey:
@@ -850,7 +848,7 @@ or:
 ```text
 Continue
  ↓
-P10 Final Gut Check
+P11 Personal Results
 ```
 
 ## Emotion
@@ -963,76 +961,6 @@ This screen completes the trick:
 > "Oh! THAT volcano thing was Guatemala."
 
 That connection should be prominently designed.
-
----
-
-# 15. Screen P10 — Final Gut Check
-
-## Purpose
-
-Give conscious preference the final word after the blind experiment.
-
-## Required information
-
-> **Now that you know what they are…**
-
-### Top Choice A
-
-Antigua
-
-### Top Choice B
-
-Quito
-
-> Which would you actually book?
-
-## Actions
-
-- Pick A
-- Pick B
-- **Stick with my ranking**
-
-Potential optional choice:
-
-> "Something else"
-
-but this is probably unnecessary for MVP.
-
-## System behavior
-
-Record the gut-check response separately.
-
-Do not overwrite raw comparisons.
-
-Possible fields:
-
-```text
-modelTopDestination
-gutCheckDestination
-gutCheckMatchesModel
-```
-
-## Exit
-
-```text
-Choose
- ↓
-P11 Personal Results
-```
-
-## Emotion
-
-**Agency**
-
-## Pain point
-
-User may interpret this as "the algorithm was wrong."
-
-## Opportunity
-
-Frame it as intentional:
-
-> Blind preference is one input. Now your actual destination knowledge gets a vote.
 
 ---
 
@@ -1180,12 +1108,11 @@ Make the waiting screen itself socially useful by making it easy to prod the hol
 
 Provide the second major payoff: what the five people collectively prefer.
 
-**Implementation status:** the current local verdict implements the
-transparent points reveal below. It shows all five travelers' personal top
-fives, the stored published tally, evidence-backed social overlap/divergence
-notes, and the immutable post-reveal decision. It is not release-approved:
-the browser rehearsal and fixed-shortlist verification remain open.
-Raw activity choices remain private.
+**Implementation status:** the released verdict shows all five travelers'
+personal top fives, the stored published tally, and evidence-backed social
+overlap/divergence notes. It deliberately ends with the information the group
+needs for an off-app conversation; it records no champion, final vote, or
+follow-up decision. Raw activity choices remain private.
 
 ## Required information
 
@@ -1248,9 +1175,8 @@ Show group-level airfare/logistical context for top destinations.
 ### Actions
 
 - open destination;
-- compare finalists;
-- share result;
-- organizer: advance to decision/finalist stage.
+- inspect the transparent table;
+- return to a personal top five.
 
 ## Emotion
 
@@ -1319,7 +1245,9 @@ Which destination activities appealed to the group most.
 
 # 20. Screen P15 — Head-to-Head Finalist Comparison
 
-Explicitly out of scope for this one-trip build. The final gut check is the required decision action.
+Explicitly out of scope for this one-trip build. The app ends with transparent
+group information; the five travelers make the final decision together
+off-app.
 
 ## Purpose
 
@@ -2056,12 +1984,11 @@ Settings
 | P07 | Preference Profile | Yes | Explain inferred tastes |
 | P08 | Destination Reveal | Yes | Reveal ranking |
 | P09 | Destination Detail / Why | Yes | Explain result |
-| P10 | Final Gut Check | Recommended | Capture conscious finalist preference |
 | P11 | Personal Results | Yes | Persistent summary |
 | P12 | Waiting for Group | Yes | Handle incomplete group |
 | P13 | Group Reveal | Yes | Group ranking/payoff |
 | P14 | Group Destination Detail | Recommended | Explain group result |
-| P15 | Finalist Comparison | Out of scope | The final gut check handles the required group decision action. |
+| P15 | Finalist Comparison | Out of scope | The group makes its final decision together off-app. |
 | P16 | Resume | Yes | Continue incomplete session |
 
 **MVP participant screens: approximately 13–14.**
@@ -2117,8 +2044,7 @@ A clean URL structure could look like:
 Some screens should remain internal state rather than routes:
 
 - P05 reason question;
-- P06 analysis transition;
-- P10 gut check.
+- P06 analysis transition.
 
 ---
 
@@ -2189,7 +2115,7 @@ Preference profile (destination-free)
 Waiting for group
 Why this destination
 Hidden activity reveals
-Gut check
+Transparent group tally
 ```
 
 The trick is explained.
@@ -2418,10 +2344,8 @@ Waiting for group
 Group destination reveal
    ↓
 Why the top five ranked highly
-   ↓
-Final gut check
-   ↓
-Results
+    ↓
+Talk it through together
 ```
 
 The participant should be able to complete the entire active portion in one short phone session.
@@ -2463,7 +2387,6 @@ Supports:
 - P06
 - P07
 - P08
-- P10
 
 ### 5. Destination detail template
 
@@ -2498,3 +2421,18 @@ This journey map should feed directly into:
 8. **Usability-test plan**
 
 The first design problem to solve in depth should be **P04 — Activity Comparison**, because the quality and rhythm of that one screen determine whether the entire concept works.
+
+---
+
+## Lightning Round follow-up journey
+
+The Lightning Round begins only from the already-opened original group reveal. It is a distinct, visibly named second round rather than a return to blind comparison.
+
+1. **Round-two introduction** — explains that the next cards show real places and practical tradeoffs, that everyone gets 48 fair-coverage comparisons plus only necessary close-call tie-breakers, and that the second group list stays sealed.
+2. **Direct choice cards** — two equal cards show photo, place/country, a short pitch, three concrete trip highlights, November temperature/note, travel effort, planning airfare estimates for the three departure cities, and one honest caveat. The player selects the trip they would rather take.
+3. **Personal full list** — immediately after completion, the player sees their 1–24 list. Unresolved placements are labeled as shared tiers rather than forced ranks. A compact decision trail shows each direct “X beat Y” choice in order without pretending the round was an elimination tournament. A privacy reminder tells them not to compare lists before the second envelope opens.
+4. **Private veto step** — the player sees the same list in reverse order and may toggle up to four places they absolutely would not take. A plain counter makes the limit clear; choosing none is valid but must be explicitly saved. The player can revise choices only before saving. After save, their personal list marks the selected places and the group never sees them until the second envelope opens. A veto is a visible dealbreaker signal, not a penalty in the direct ranking or tally.
+5. **Second-envelope waiting** — everybody can see only who has finished. “Finished” means direct choices and the private veto step are both saved; the screen does not reveal whether someone chose any vetoes. It uses a compact departure-board treatment to make the group’s current state scannable. When all five are ready, Dan can open the second envelope.
+6. **Group direct ranking** — an interactive 24-place list shows the transparent 24-to-1 point total, ties, and a detailed practical panel for the selected destination. Any affected destination also names the travelers who vetoed it. An accessible five-column table shows everyone’s ranks, can sort by any traveler, and updates a selected-place summary with all five ranks; a vetoed cell reads `Vetoed` with a red X instead of a rank. It ends by handing the decision back to the group.
+
+The original post-completion navigator deliberately does not appear during this direct follow-up. The original result remains intact and the Lightning Round has its own focused progression.

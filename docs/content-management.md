@@ -20,6 +20,8 @@ This repository is the content source of truth for the fixed five-person trip. T
 | Typography, colors, spacing, cards, map, roster, and motion styling | `design-system/` and `frontend/src/app.css` | Use design tokens and existing component classes before adding a one-off rule. Respect reduced motion and 44px touch targets. |
 | Logo, roster art, and approved non-destination illustrations | `design-system/assets/` and `assets/images/` | Replace only with approved transparent artwork. Traveler art never belongs in destination-blind activity cards. The mood-sheet source art lives in `assets/images/guys-moods/`; run `npm run build:moods` to regenerate its public crops. |
 | Model labels, 32-round progress, and shortlist copy | `backend/src/model/shortlist.ts`, `backend/src/model/profile.ts`, and `frontend/src/main.tsx` | Change the model contract and UI copy together; do not imply certainty or a mathematically final verdict. |
+| Lightning Round destination brief cards | `seed/lightning-round/destination-briefs.json` | One named, direct-comparison record per existing destination. Edit the short pitch, three specific highlights, November weather, travel effort, planning fare estimates, practical caveat, and source links together. These cards are visible only in the post-reveal Lightning Round. |
+| Lightning Round cards, veto step, and second-envelope copy | `frontend/src/screens/LightningScreens.tsx` and `frontend/src/app.css` | Direct-card detail, fixed 48-core/up-to-12-tie-breaker explanation, private full-list and its caller-only decision trail, the up-to-four advisory-veto step, departure-board waiting state, and sortable group-rank table language. Do not reuse this visible destination data in blind comparison UI. |
 
 ## Common edits
 
@@ -31,6 +33,14 @@ This repository is the content source of truth for the fixed five-person trip. T
 4. Keep the description between 10 and 20 words. Include one or two specific details—an ingredient, material, sound, landscape feature, ritual, or architectural texture—so a traveler can judge the actual activity rather than a generic category.
 5. Check that the wording describes an experience rather than advertising a destination. Geographic recognition is an accepted soft cue, but explicit names and metadata are not.
 6. Run `npm run validate:seed`, `npm test`, and `npm run build`.
+
+### Change a Lightning Round destination brief
+
+1. Edit the corresponding `seed/lightning-round/destination-briefs.json` record; its `id` must remain an existing destination ID.
+2. Write three concrete highlights that help someone compare a short trip: an actual place/activity, local specificity, and an honest time commitment.
+3. Treat airfare as a **planning estimate**, not a live quote. Update the `fareNote`, source links, and `researchedAt` date whenever values are reviewed.
+4. Keep the weather, travel summary, and caveat specific and useful. Do not add a sales pitch or hide a meaningful logistical constraint.
+5. Run `npm run validate:lightning-seed`, then the standard test, typecheck, and build checks.
 
 ### Change a destination or atlas gallery
 
@@ -77,6 +87,10 @@ git diff --check
 ```
 
 Seed validation checks the 24 destinations, 120 activities, destination references, 10–20 word activity descriptions, integer attributes, local media paths, three-image galleries, coordinates, alt text, and private credit metadata. Tests cover destination-blind serializers, gate behavior, ranking determinism, and frontend fallbacks. The released production deployment and one-trip reset/reveal procedure are in [deployment.md](deployment.md) and the [one-trip runbook](one-trip-runbook.md). Do not use the guarded reset after a participant has started; it intentionally refuses that operation.
+
+For the Lightning Round, also run `npm run validate:lightning-seed`. The direct destination briefs have their own content version and are sealed once the Lightning Round begins; do not change them mid-round.
+
+Lightning Round veto wording is application behavior, not seed content. It must keep these rules intact: a traveler may save zero to four named places they would not take; their saved list is immutable; vetoes are private until Dan opens the second envelope; and they do not alter direct-model ranks, Borda points, or group order. Keep the group-list and table labels direct and factual—`Vetoed`, `But Matt vetoed`, and `But James and Matt vetoed`—rather than treating a veto as an automatic removal.
 
 ## What is not editable through content files
 

@@ -10,6 +10,8 @@ The app is a TypeScript workspace with a destination-blind React flow, activity-
 
 Production preview: <https://lets-go-somewhere-3549f.web.app>. For shipped scope and the remaining one-trip release boundary, see [implementation status](docs/implementation-status.md).
 
+The repository also contains a local **Lightning Round** follow-up prototype for an already-opened first reveal. It directly compares named destinations with practical trip facts, asks each traveler to save zero to four advisory vetoes after their personal list is ready, keeps original trip data isolated, and creates a second sealed group result. Vetoes are displayed only after that envelope opens and never change the direct ranking or tally. It is not deployed yet.
+
 ## Repository map
 
 - `docs/` — product, UX, architecture, origin context, and design guidance.
@@ -45,7 +47,7 @@ Treat these files as product content: activity wording must preserve destination
 2. `npm run validate:seed && npm test && npm run typecheck && npm run build`
 3. For a local demo, run `LGS_TEST_MODE=demo PORT=8788 npm run dev -w backend`, then `LGS_API_ORIGIN=http://127.0.0.1:8788 npm run dev -w frontend` in another terminal. The demo adapter is local-only and is rejected on Cloud Run.
 
-For a no-data visual walkthrough, open `http://127.0.0.1:5173/?fixture=trip-preview`. Its screen picker previews choice cards, profile, atlas, partial/all-five waiting states, reveal, and a personal shortlist without calling the API or recording choices. It is excluded from production builds.
+For a no-data visual walkthrough, open `http://127.0.0.1:5173/?fixture=trip-preview`. Its screen picker previews choice cards, profile, atlas, partial/all-five waiting states, reveal, a personal shortlist, and Lightning Round screens without calling the API or recording choices. Open `http://127.0.0.1:5173/?fixture=lightning-round` to start directly on the Lightning Round prototype. These fixtures are excluded from production builds.
 
 Production uses Firebase Google sign-in and Firestore-backed responses; local development may use the explicitly non-production identity adapter. See [docs/deployment.md](docs/deployment.md) for the deployed environment and release checks.
 

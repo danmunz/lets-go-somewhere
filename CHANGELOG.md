@@ -1,6 +1,22 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## Unreleased
+
+### Added
+
+- Added a local, isolated Lightning Round follow-up for a completed original trip: 24 researched direct-destination briefs, a Bayesian Bradley–Terry 48-core/up-to-12-tie-breaker policy, uncertainty-honest personal tiers, private full rankings, a second-envelope group gate, and a transparent 24-to-1 Borda result board with the five expandable full lists. It uses separate content sealing and Firestore collections and has not been deployed.
+- Refined the local Lightning Round into a denser direct-choice experience: an enlarged, free-standing round-two cast; more compact responsive cards; a caller-only “X beat Y” decision trail; a departure-board completion view; and a sortable five-person group-rank table. The trail remains private until its owner’s list is available and is never included in the group snapshot.
+- Added a required, private Lightning Round veto step after each direct ranking. Travelers may save zero to four immutable advisory vetoes; they stay sealed until the second envelope, render as clear veto markers in personal and group results, and never change the Bayesian ranking, Borda tally, or group ordering.
+
+### Verified
+
+- Completed the Lightning Round pre-deployment gate locally: canonical seed/mood validation, 166 fast tests, strict type checking, production build, and an eight-test Auth/Firestore Emulator suite including a persisted five-identity original-plus-Lightning rehearsal. Fixture review covered the Lightning flow at desktop and 390px mobile widths. No production project or production trip data was used.
+
+### Changed
 
 - Fixed the count-only operator preflight so fixed-32 completion is derived from saved choices, matching the participant-facing completion status instead of relying on retired timestamp metadata.
 - Replaced scattered post-completion links with one phase-aware navigator: a sticky desktop bar and accessible mobile menu sheet expose only available screens, keep sealed group results out of navigation, and retain contextual help during blind play.
@@ -8,18 +24,7 @@
 - Added 40 optimized, evidence-linked traveler mood portraits for post-completion preference explanations. They reinforce what each person liked on profile, personal-result, and post-reveal views while remaining absent from blind comparison, atlas, and waiting screens.
 - Removed the retired “Champion a place” interaction from the reveal. The app no longer records a post-reveal vote or decision; it ends with the transparent group results and a prompt for the five travelers to talk it through together. Retired decision records, if any, are left untouched and ignored.
 
-## 2026-08-22 — One-trip release
-
-- Deployed the verified one-trip release to Cloud Run revision `lgs-api-00009-x8r` and Firebase Hosting version `ab1c50b7b1550cc8`.
-- Confirmed API health, public Hosting delivery, and an empty count-only production preflight both before and after deployment.
-
-All notable changes to this project will be documented in this file.
-
-The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
-
-### Changed
+### Earlier pre-release work
 
 - Released the verified one-trip experience to Cloud Run revision
   `lgs-api-00007-nfn` and Firebase Hosting after a final empty, count-only
@@ -100,3 +105,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Reconciled deployment, delivery, implementation, and review documents with the shipped Firebase/Cloud Run/Firestore release; documented the remaining one-trip completion gaps separately from platform work that is out of scope.
 - Marked the advanced-model candidate as unreleased after its audit did not support a certified-ranking claim; ADR 0003 now selects the smaller fixed-round shortlist release path instead of pursuing recalibration.
 - Moved the isolated Firestore Emulator to port 8081 to avoid the local service that occupies 8080, and made the emulator test runner architecture-explicit on Apple Silicon.
+
+## 2026-08-22 — One-trip release
+
+- Deployed the verified one-trip release to Cloud Run revision `lgs-api-00009-x8r` and Firebase Hosting version `ab1c50b7b1550cc8`.
+- Confirmed API health, public Hosting delivery, and an empty count-only production preflight both before and after deployment.

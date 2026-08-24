@@ -885,17 +885,13 @@ Do not calculate or label an overall practical score in V1. Airfare figures are 
 
 ---
 
-# 35. Final Gut Check
+# 35. Group Conversation Happens Off-App
 
-After the group reveal, show the five finalists and let each participant name the one they would actually book, or choose “need more research.” This is a discussion input, not a hidden recalculation of the blind ranking.
-
-> # Final question.
->
-> Now that you know what they are:
->
-> **Which finalist would you actually book?**
-
-Record this separately from blind comparisons and show it to the group as an explicit post-reveal preference.
+After the group reveal, the app has done its job: it has shown each
+traveler's top five, the transparent tally, and the places where the group
+agrees or differs. It does not collect another in-app vote, a “champion,” or a
+“need more research” choice. The five travelers talk through the revealed
+information and make the real trip decision together.
 
 ---
 
@@ -1153,3 +1149,18 @@ The software's job is to infer the complicated part:
 That separation is the core of the product.
 
 It removes brand recognition, reduces cognitive load, makes the result more surprising, and turns the final destination reveal into the payoff rather than the premise.
+
+---
+
+# 48. Lightning Round: Direct Destination Comparison
+
+After the original blind round has been revealed, the group may run a separate **Lightning Round** when it needs a more practical, full ordering of the same 24 places. This follow-up never alters the completed blind-round rankings or social snapshot.
+
+- Destination names, countries, photography, activities, November weather, travel effort, planning airfare estimates for DC/NYC/SF, and a practical caveat are intentionally visible on every Lightning card.
+- Each traveler answers 48 direct destination comparisons. The first 36 give every place three appearances; the next 12 bring every place to four appearances. Up to 12 additional comparisons are used only for unresolved adjacent placements.
+- `bayes-direct-destination-v1` is a server-owned Bayesian Bradley–Terry model. It uses deterministic posterior draws to select the most useful remaining direct comparison and only separates adjacent places when posterior evidence clears 85%; otherwise the personal list shows a shared tier.
+- A traveler sees their own full direct list immediately after completing the round. It includes a caller-only, ordered record of the direct choices that produced it, presented as a decision trail rather than an elimination bracket. They then make one explicit, private veto submission: zero to four named places they would not take. The list is shown in reverse order for this decision, and a traveler may toggle selections until they save them. A saved submission, including an empty one, is immutable. The group’s direct tally remains sealed until every roster member has completed both the direct choices and this veto step, then Dan opens a second envelope.
+- A veto is an advisory dealbreaker signal, not a scoring rule. It does not change the Bayesian direct ranking, personal tiers, 24-to-1 Borda points, group ordering, or shared-place handling.
+- The opened group view applies a transparent 24-to-1 Borda tally: rank 1 earns 24 points and rank 24 earns 1. Shared personal tiers split the points occupied by their ranks evenly. It exposes every traveler’s complete direct list as an accessible five-column rank table: the group can sort by any traveler or select a place to compare all five ranks. A submitted veto appears as a clearly labeled red X instead of that traveler’s displayed rank, and each affected group-list row names the travelers who vetoed it. It is a conversation guide, not an automatic trip decision.
+
+The direct round has its own content version, data model, pending-comparison state, veto-submission state, Firestore collections, and immutable result snapshot. The original destination-blind comparison and original reveal data are never rewritten. An already-opened Lightning snapshot is never recalculated or retrofitted with later vetoes.

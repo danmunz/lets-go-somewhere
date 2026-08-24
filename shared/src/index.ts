@@ -589,6 +589,183 @@ export const transparentGroupResultsResponseSchema = z
   .strict();
 export type TransparentGroupResultsResponse = z.infer<typeof transparentGroupResultsResponseSchema>;
 
+// Lightning Round contracts are intentionally separate from the destination-blind
+// game above. The original activity payload must remain blind even after this
+// direct, named-destination round is introduced.
+export const LIGHTNING_MODEL_VERSION = 'bayes-direct-destination-v1' as const;
+export const LIGHTNING_POLICY_VERSION = 'direct-24-adaptive-v1' as const;
+/** A traveler may flag up to four named Lightning destinations as clear no-goes. */
+export const LIGHTNING_VETO_POLICY_VERSION = 'lightning-veto-v1' as const;
+export const lightningSourceSchema = z.object({ label: z.string().min(1), url: z.string().url() }).strict();
+export const lightningHighlightSchema = z.object({ title: z.string().min(1), detail: z.string().min(12) }).strict();
+export const lightningTravelSchema = z.object({
+  effort: z.number().int().min(1).max(5),
+  summary: z.string().min(12),
+  fares: z.object({ dc: z.number().int().positive(), nyc: z.number().int().positive(), sfo: z.number().int().positive() }).strict(),
+  fareNote: z.string().min(12),
+}).strict();
+export const lightningWeatherSchema = z.object({
+  typicalHighF: z.number().int().min(-20).max(120),
+  typicalLowF: z.number().int().min(-40).max(100),
+  note: z.string().min(12),
+}).strict();
+export const lightningDestinationBriefSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  country: z.string().min(1),
+  imageUrl: localMediaPathSchema,
+  pitch: z.string().min(20),
+  highlights: z.array(lightningHighlightSchema).length(3),
+  weather: lightningWeatherSchema,
+  travel: lightningTravelSchema,
+  caveat: z.string().min(12),
+  researchedAt: z.string().date(),
+  sources: z.array(lightningSourceSchema).min(1).max(5),
+}).strict();
+export type LightningDestinationBrief = z.infer<typeof lightningDestinationBriefSchema>;
+
+export const lightningComparisonSchema = z.object({
+  destinationA: z.string().min(1), destinationB: z.string().min(1), winner: z.string().min(1),
+}).strict().superRefine((value, context) => {
+  if (value.destinationA === value.destinationB) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Destinations must differ.' });
+  if (value.winner !== value.destinationA && value.winner !== value.destinationB) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Winner must be offered.' });
+});
+export type LightningComparison = z.infer<typeof lightningComparisonSchema>;
+
+// A submission carries the optimistic-concurrency revision in addition to the
+// persisted comparison. Keep this distinct from LightningComparison so stored
+// data can never accidentally inherit a client-only revision field.
+export const lightningComparisonSubmissionSchema = z.object({
+  destinationA: z.string().min(1), destinationB: z.string().min(1), winner: z.string().min(1),
+  revision: z.number().int().nonnegative(),
+}).strict().superRefine((value, context) => {
+  if (value.destinationA === value.destinationB) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Destinations must differ.' });
+  if (value.winner !== value.destinationA && value.winner !== value.destinationB) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Winner must be offered.' });
+});
+export type LightningComparisonSubmission = z.infer<typeof lightningComparisonSubmissionSchema>;
+
+export const lightningProgressSchema = z.object({
+  comparisons: z.number().int().min(0).max(60), core: z.literal(48), maximum: z.literal(60),
+  phase: z.enum(['core', 'tie-breakers']),
+}).strict();
+export type LightningProgress = z.infer<typeof lightningProgressSchema>;
+export const lightningNextComparisonResponseSchema = z.discriminatedUnion('complete', [
+  z.object({ complete: z.literal(false), progress: lightningProgressSchema, revision: z.number().int().nonnegative(), destinationA: lightningDestinationBriefSchema, destinationB: lightningDestinationBriefSchema }).strict(),
+  z.object({ complete: z.literal(true), progress: lightningProgressSchema }).strict(),
+]);
+export type LightningNextComparisonResponse = z.infer<typeof lightningNextComparisonResponseSchema>;
+
+export const lightningTierSchema = z.object({ rankStart: z.number().int().min(1).max(24), rankEnd: z.number().int().min(1).max(24), destinationIds: z.array(z.string().min(1)).min(1) }).strict().superRefine((value, context) => {
+  if (value.rankEnd < value.rankStart || value.rankEnd - value.rankStart + 1 !== value.destinationIds.length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'A tier must cover each of its displayed ranks exactly once.' });
+});
+export type LightningTier = z.infer<typeof lightningTierSchema>;
+/** A caller-only, named-destination record of one direct Lightning choice. */
+export const lightningComparisonTrailEntrySchema = z.object({
+  order: z.number().int().min(1).max(60),
+  winnerId: z.string().min(1),
+  loserId: z.string().min(1),
+  phase: z.enum(['core', 'tie-breakers']),
+}).strict().superRefine((value, context) => {
+  if (value.winnerId === value.loserId) context.addIssue({ code: z.ZodIssueCode.custom, message: 'A comparison needs two different places.' });
+});
+export type LightningComparisonTrailEntry = z.infer<typeof lightningComparisonTrailEntrySchema>;
+export const lightningVetoSubmissionSchema = z.object({
+  destinationIds: z.array(z.string().min(1)).max(4),
+}).strict().superRefine((value, context) => {
+  if (new Set(value.destinationIds).size !== value.destinationIds.length) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'A place can be vetoed only once.' });
+  }
+});
+export type LightningVetoSubmission = z.infer<typeof lightningVetoSubmissionSchema>;
+export const lightningVetoStateSchema = z.object({
+  submitted: z.boolean(),
+  destinationIds: z.array(z.string().min(1)).max(4),
+}).strict().superRefine((value, context) => {
+  if (!value.submitted && value.destinationIds.length > 0) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Unsubmitted vetoes cannot contain destinations.' });
+  }
+  if (new Set(value.destinationIds).size !== value.destinationIds.length) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'A place can be vetoed only once.' });
+  }
+});
+export type LightningVetoState = z.infer<typeof lightningVetoStateSchema>;
+export const lightningVetoSubmissionResponseSchema = z.object({
+  accepted: z.literal(true),
+  vetoes: lightningVetoStateSchema,
+}).strict();
+export type LightningVetoSubmissionResponse = z.infer<typeof lightningVetoSubmissionResponseSchema>;
+export const lightningPersonalResultsSchema = z.object({
+  modelVersion: z.literal(LIGHTNING_MODEL_VERSION), contentVersion: z.string().min(1), tiers: z.array(lightningTierSchema).min(1), destinations: z.array(lightningDestinationBriefSchema).length(24),
+  comparisonTrail: z.array(lightningComparisonTrailEntrySchema).min(48).max(60),
+  vetoes: lightningVetoStateSchema,
+}).strict();
+export type LightningPersonalResults = z.infer<typeof lightningPersonalResultsSchema>;
+export const lightningStatusSchema = z.object({
+  available: z.literal(true),
+  rankingComplete: z.boolean(),
+  vetoSubmitted: z.boolean(),
+  complete: z.boolean(),
+  revealOpen: z.boolean(),
+  progress: lightningProgressSchema,
+}).strict().superRefine((value, context) => {
+  if (value.complete !== (value.rankingComplete && (value.vetoSubmitted || value.revealOpen))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Lightning completion must include the ranking and either its veto step or a legacy opened envelope.' });
+  }
+  if (value.vetoSubmitted && !value.rankingComplete) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'A veto cannot be submitted before the ranking is complete.' });
+  }
+  if (value.revealOpen && !value.rankingComplete) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'An opened second envelope requires a completed ranking.' });
+  }
+});
+export type LightningStatus = z.infer<typeof lightningStatusSchema>;
+export const lightningGroupStatusSchema = z.object({
+  revealOpen: z.boolean(), allComplete: z.boolean(),
+  members: z.array(rosterCompletionSchema).length(ROSTER_USERS.length), updatedAt: z.string().datetime({ offset: true }),
+}).strict();
+export type LightningGroupStatus = z.infer<typeof lightningGroupStatusSchema>;
+export const lightningGroupRowSchema = z.object({
+  rankStart: z.number().int().min(1).max(24), rankEnd: z.number().int().min(1).max(24), destinationId: z.string().min(1), bordaHalfPoints: z.number().int().min(0), firstPlaceVotes: z.number().min(0).max(ROSTER_USERS.length), supporters: z.array(rosterUserSchema), vetoedBy: z.array(rosterUserSchema).max(ROSTER_USERS.length),
+}).strict().superRefine((value, context) => {
+  if (new Set(value.vetoedBy).size !== value.vetoedBy.length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Vetoing travelers must be unique.' });
+});
+const lightningGroupMemberSchema = z.object({
+  user: rosterUserSchema,
+  tiers: z.array(lightningTierSchema).min(1),
+  vetoedDestinationIds: z.array(z.string().min(1)).max(4),
+}).strict().superRefine((value, context) => {
+  if (new Set(value.vetoedDestinationIds).size !== value.vetoedDestinationIds.length) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'A member cannot veto the same place twice.' });
+  }
+});
+export const lightningGroupResultsSchema = z.object({
+  snapshotId: z.string().min(1), modelVersion: z.literal(LIGHTNING_MODEL_VERSION), contentVersion: z.string().min(1),
+  group: z.array(lightningGroupRowSchema).length(24), members: z.array(lightningGroupMemberSchema).length(ROSTER_USERS.length), destinations: z.array(lightningDestinationBriefSchema).length(24),
+}).strict().superRefine((value, context) => {
+  const destinationIds = new Set(value.destinations.map((destination) => destination.id));
+  if (destinationIds.size !== value.destinations.length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Snapshot destinations must be unique.' });
+  const groupIds = new Set(value.group.map((row) => row.destinationId));
+  if (groupIds.size !== value.group.length || [...groupIds].some((id) => !destinationIds.has(id))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Every group row must reference one unique snapshot destination.' });
+  }
+  const members = new Set(value.members.map((member) => member.user));
+  if (members.size !== ROSTER_USERS.length || ROSTER_USERS.some((user) => !members.has(user))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Snapshot members must match the roster exactly.' });
+  }
+  for (const member of value.members) {
+    if (member.vetoedDestinationIds.some((id) => !destinationIds.has(id))) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: `Unknown veto destination for ${member.user}.` });
+    }
+  }
+  for (const row of value.group) {
+    const expected = ROSTER_USERS.filter((user) => value.members.find((member) => member.user === user)?.vetoedDestinationIds.includes(row.destinationId));
+    if (expected.length !== row.vetoedBy.length || expected.some((user, index) => row.vetoedBy[index] !== user)) {
+      context.addIssue({ code: z.ZodIssueCode.custom, message: `Veto summary does not match member data for ${row.destinationId}.` });
+    }
+  }
+});
+export type LightningGroupResults = z.infer<typeof lightningGroupResultsSchema>;
+
 export const modelDiagnosticsSchema = z
   .object({
     converged: z.boolean(),

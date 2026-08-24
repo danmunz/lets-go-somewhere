@@ -82,6 +82,58 @@ describe.runIf(process.env.LGS_TEST_MODE === 'emulator')('five-identity authenti
     expect(done).toEqual({ complete: true, completion: { complete: true, reason: 'fixed-round-complete' } });
   }
 
+  type LightningOffer = {
+    complete: boolean;
+    revision?: number;
+    progress: { comparisons: number; core: 48; maximum: 60; phase: 'core' | 'tie-breakers' };
+    destinationA?: { id: string; name: string; country: string };
+    destinationB?: { id: string; name: string; country: string };
+  };
+
+  async function nextLightning(user: RosterUser): Promise<LightningOffer> {
+    const response = await request(user, '/v1/lightning-round/comparison/next');
+    expect(response.status).toBe(200);
+    return await response.json() as LightningOffer;
+  }
+
+  async function finishLightningRanking(user: RosterUser) {
+    const seenPairs = new Set<string>();
+    let first = await nextLightning(user);
+    // A refresh/resume must preserve the same outstanding direct comparison.
+    const resumed = await nextLightning(user);
+    expect(resumed).toMatchObject({
+      complete: first.complete,
+      revision: first.revision,
+      destinationA: { id: first.destinationA?.id },
+      destinationB: { id: first.destinationB?.id },
+    });
+
+    while (!first.complete) {
+      expect(first.progress.comparisons).toBeGreaterThanOrEqual(0);
+      expect(first.progress.comparisons).toBeLessThanOrEqual(60);
+      expect(first.destinationA).toMatchObject({ id: expect.any(String), name: expect.any(String), country: expect.any(String) });
+      expect(first.destinationB).toMatchObject({ id: expect.any(String), name: expect.any(String), country: expect.any(String) });
+      const pair = [first.destinationA!.id, first.destinationB!.id].sort().join('\u0000');
+      expect(seenPairs.has(pair)).toBe(false);
+      seenPairs.add(pair);
+      const accepted = await request(user, '/v1/lightning-round/comparisons', {
+        method: 'POST',
+        body: JSON.stringify({
+          destinationA: first.destinationA!.id,
+          destinationB: first.destinationB!.id,
+          winner: first.destinationA!.id,
+          revision: first.revision,
+        }),
+      });
+      expect(accepted.status).toBe(200);
+      first = await nextLightning(user);
+    }
+
+    expect(seenPairs.size).toBeGreaterThanOrEqual(48);
+    expect(seenPairs.size).toBeLessThanOrEqual(60);
+    return seenPairs.size;
+  }
+
   beforeAll(() => {
     // `authenticate` reads this at request time. These are test-only aliases
     // and are never accepted by the deployed service.
@@ -181,4 +233,84 @@ describe.runIf(process.env.LGS_TEST_MODE === 'emulator')('five-identity authenti
     // transparent results together rather than recording a final vote here.
     expect((await request('dan', '/v1/final-decision')).status).toBe(404);
   }, 120_000);
+
+  it('takes all five authenticated travelers through the persisted Lightning Round, vetoes, and immutable second envelope', async () => {
+    for (const user of ROSTER) tokens.set(user, await createEmulatorIdentity(user));
+
+    // The original envelope is already covered by the first rehearsal. Here
+    // we create it via that same public flow so Lightning's opening guard is
+    // exercised against the Firestore-backed original result.
+    for (const user of ROSTER) await complete(user);
+    expect((await request('dan', '/v1/reveal', { method: 'POST' })).status).toBe(200);
+
+    // No second-envelope information leaks before all five rankings and
+    // explicit (including zero-veto) veto submissions are saved.
+    expect((await request('dan', '/v1/lightning-round/results/group')).status).toBe(423);
+    expect((await request('james', '/v1/lightning-round/reveal', { method: 'POST' })).status).toBe(403);
+
+    const rankingLengths = new Map<RosterUser, number>();
+    for (const user of ROSTER) rankingLengths.set(user, await finishLightningRanking(user));
+    for (const count of rankingLengths.values()) {
+      expect(count).toBeGreaterThanOrEqual(48);
+      expect(count).toBeLessThanOrEqual(60);
+    }
+
+    const personalBeforeVeto = await request('dan', '/v1/lightning-round/results/me');
+    expect(personalBeforeVeto.status).toBe(200);
+    const danList = await personalBeforeVeto.json() as {
+      destinations: Array<{ id: string }>;
+      comparisonTrail: Array<{ order: number; winnerId: string; loserId: string }>;
+      vetoes: { submitted: boolean; destinationIds: string[] };
+    };
+    expect(danList.destinations).toHaveLength(24);
+    expect(danList.comparisonTrail).toHaveLength(rankingLengths.get('dan'));
+    expect(danList.comparisonTrail.map(({ order }) => order)).toEqual(Array.from({ length: danList.comparisonTrail.length }, (_, index) => index + 1));
+    expect(danList.vetoes).toEqual({ submitted: false, destinationIds: [] });
+
+    const vetoes: Record<RosterUser, readonly string[]> = {
+      dan: danList.destinations.slice(-2).map(({ id }) => id),
+      james: [],
+      john: [danList.destinations[0]!.id],
+      matt: [danList.destinations[1]!.id, danList.destinations[2]!.id],
+      peter: [],
+    };
+    for (const user of ROSTER) {
+      const saved = await request(user, '/v1/lightning-round/vetoes', {
+        method: 'POST', body: JSON.stringify({ destinationIds: vetoes[user] }),
+      });
+      expect(saved.status).toBe(200);
+    }
+
+    const ready = await request('dan', '/v1/lightning-round/group-status');
+    expect(ready.status).toBe(200);
+    expect(await ready.json()).toMatchObject({ revealOpen: false, allComplete: true, members: ROSTER.map((user) => ({ user, complete: true })) });
+    const opened = await request('dan', '/v1/lightning-round/reveal', { method: 'POST' });
+    expect(opened.status).toBe(200);
+    const opening = await opened.json() as { revealOpen: true; snapshotId: string };
+    expect(opening.snapshotId).toMatch(/^lightning-/);
+
+    // Every traveler reloads the exact same second envelope. Vetoes are an
+    // overlay on the transparent ranking, not a hidden scoring adjustment.
+    let canonicalPayload = '';
+    for (const user of ROSTER) {
+      const result = await request(user, '/v1/lightning-round/results/group');
+      expect(result.status).toBe(200);
+      const payload = await result.json() as {
+        snapshotId: string;
+        members: Array<{ user: RosterUser; vetoedDestinationIds: string[] }>;
+        group: Array<{ destinationId: string; vetoedBy: RosterUser[] }>;
+      };
+      expect(payload.snapshotId).toBe(opening.snapshotId);
+      expect(payload.members).toHaveLength(5);
+      expect(payload.group).toHaveLength(24);
+      expect(payload.members.find((member) => member.user === user)?.vetoedDestinationIds).toEqual([...vetoes[user]].sort());
+      if (!canonicalPayload) canonicalPayload = JSON.stringify(payload);
+      else expect(JSON.stringify(payload)).toBe(canonicalPayload);
+    }
+
+    const postRevealVeto = await request('dan', '/v1/lightning-round/vetoes', {
+      method: 'POST', body: JSON.stringify({ destinationIds: [] }),
+    });
+    expect(postRevealVeto.status).toBe(409);
+  }, 300_000);
 });

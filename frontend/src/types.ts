@@ -1,6 +1,10 @@
 import type {
   AtlasDestination,
   TransparentGroupResultsResponse,
+  LightningGroupResults,
+  LightningGroupStatus,
+  LightningNextComparisonResponse,
+  LightningPersonalResults,
   GroupStatus,
   NextComparisonResponse,
   PersonalResultsResponse,
@@ -23,7 +27,13 @@ export type AppScreen =
   | 'atlas'
   | 'waiting'
   | 'verdict'
-  | 'my-results';
+  | 'my-results'
+  | 'lightning-intro'
+  | 'lightning-comparison'
+  | 'lightning-results'
+  | 'lightning-veto'
+  | 'lightning-waiting'
+  | 'lightning-verdict';
 
 export type ApiRequestSource =
   | 'comparison'
@@ -32,7 +42,8 @@ export type ApiRequestSource =
   | 'atlas'
   | 'group-status'
   | 'personal-results'
-  | 'group-results';
+  | 'group-results'
+  | 'lightning';
 
 export type ApiRouteIntent =
   | 'stay-put'
@@ -50,6 +61,10 @@ export type OneTripApiContracts = {
   groupStatus: GroupStatus;
   personalResults: PersonalResultsResponse;
   groupResults: TransparentGroupResultsResponse;
+  lightningNextComparison: LightningNextComparisonResponse;
+  lightningPersonalResults: LightningPersonalResults;
+  lightningGroupStatus: LightningGroupStatus;
+  lightningGroupResults: LightningGroupResults;
 };
 
 export type { PreferenceProfile, RosterUser };

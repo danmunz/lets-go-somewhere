@@ -1,6 +1,6 @@
 # Implementation status
 
-Last reconciled: 2026-08-21 (production release).
+Last reconciled: 2026-08-24 (Lightning Round pre-deployment candidate).
 
 This is the operational status companion to the product specification. It records what is shipped without weakening the product requirements in [spec.md](spec.md) or the intended journey in [ux.md](ux.md).
 
@@ -26,6 +26,19 @@ contribute zero, and published ties remain ties if first-place and top-five
 count tiebreaks cannot resolve them. It exposes no raw activity-by-activity
 choices, normalized utilities, polarization penalties, or group confidence
 claims.
+
+## Lightning Round prototype
+
+The original group reveal is complete and remains immutable. A separate direct-destination Lightning Round is implemented locally for the group’s follow-up decision: 24 researched destination briefs, 48 fair-coverage comparisons plus at most 12 deterministic tie-breakers, Bayesian direct-destination tiering, compact direct-choice cards, private full rankings with a caller-only decision trail, a required zero-to-four advisory-veto step, a departure-board waiting state, second-envelope gating, and a transparent 24-to-1 Borda group board with a sortable five-person rank table. A saved veto tells the group that its owner would not take that trip; it does not alter model ranks, Borda points, or group order. It uses isolated content versioning and `lgsV4Lightning*` Firestore collections, so it cannot change original comparisons or their snapshot. This candidate has passed static validation, fast tests, a real Auth/Firestore Emulator five-identity rehearsal, and local desktop/mobile visual review on 2026-08-24. It has not been deployed yet.
+
+### Lightning Round pre-deployment evidence — passed locally (2026-08-24)
+
+- `npm run validate:seed`, `npm run validate:lightning-seed`, and `npm run validate:moods` all passed.
+- The fast suite passed with 166 tests and eight intentionally skipped Emulator-only checks. `npm run typecheck`, `npm run build`, and `git diff --check` passed.
+- `npm run test:emulator`, with only the local Java/Firebase emulators, passed all eight tests. Its five-identity rehearsal drove both the original fixed-32 round and the persisted Lightning Round through real API routes, resume-safe direct comparisons, zero-to-four veto submissions, Dan-only second-envelope opening, immutable reload parity, and post-reveal mutation rejection.
+- Fixture-based browser review covered desktop and 390px mobile Lightning introduction, direct cards, private ranking/veto selection, waiting board, and group reveal. Development fixture controls are excluded from production builds.
+
+The production build still reports one non-blocking initial JavaScript bundle warning (about 418 kB gzip), driven primarily by MapLibre and ambient visual dependencies. It is a performance optimization opportunity, not a functional or release-gate failure; the warning is retained rather than suppressed.
 
 ## Released one-trip experience
 

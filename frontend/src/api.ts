@@ -6,6 +6,14 @@ import {
   personalResultsResponseSchema,
   profileResponseSchema,
   rosterUserSchema,
+  lightningComparisonSubmissionSchema,
+  lightningGroupResultsSchema,
+  lightningGroupStatusSchema,
+  lightningNextComparisonResponseSchema,
+  lightningPersonalResultsSchema,
+  lightningStatusSchema,
+  lightningVetoSubmissionResponseSchema,
+  lightningVetoSubmissionSchema,
   type TransparentGroupResultsResponse,
   type GroupStatus,
   type NextComparisonResponse,
@@ -92,6 +100,16 @@ export function createApiClient(authentication: ApiAuthentication, fetchImpl: Fe
     getPersonalResults: () => request('/v1/results/me', personalResultsResponseSchema),
     getGroupResults: () => request('/v1/results/group', transparentGroupResultsResponseSchema),
     openReveal: () => request('/v1/reveal', revealResponseParser, { method: 'POST' }),
+    getLightningStatus: () => request('/v1/lightning-round/status', lightningStatusSchema),
+    getNextLightningComparison: () => request('/v1/lightning-round/comparison/next', lightningNextComparisonResponseSchema),
+    submitLightningComparison: (comparison: { destinationA: string; destinationB: string; winner: string; revision: number }) =>
+      request('/v1/lightning-round/comparisons', acceptedComparisonParser, { method: 'POST', body: JSON.stringify(lightningComparisonSubmissionSchema.parse(comparison)) }),
+    getLightningPersonalResults: () => request('/v1/lightning-round/results/me', lightningPersonalResultsSchema),
+    submitLightningVetoes: (destinationIds: readonly string[]) =>
+      request('/v1/lightning-round/vetoes', lightningVetoSubmissionResponseSchema, { method: 'POST', body: JSON.stringify(lightningVetoSubmissionSchema.parse({ destinationIds })) }),
+    getLightningGroupStatus: () => request('/v1/lightning-round/group-status', lightningGroupStatusSchema),
+    openLightningReveal: () => request('/v1/lightning-round/reveal', revealResponseParser, { method: 'POST' }),
+    getLightningGroupResults: () => request('/v1/lightning-round/results/group', lightningGroupResultsSchema),
   };
 }
 
